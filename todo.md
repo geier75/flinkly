@@ -576,3 +576,54 @@
   - [x] Hook-Reihenfolge analysiert
   - [x] useState nach Early Return verschoben
   - [x] Getestet
+
+
+---
+
+## 💬 MESSAGING-SYSTEM IMPLEMENTATION (60h)
+
+**Status:** In Progress  
+**Priorität:** 🔴 Critical (Pre-Launch Blocker)
+
+### Phase 1: Datenbank-Schema (4h)
+- [x] Schema in drizzle/schema.ts hinzugefügt (conversations, messages)
+- [x] pnpm db:push ausgeführt
+- [x] DB-Helper in server/db.ts erstellt (createConversation, getMessages, markAsRead, etc.)
+
+### Phase 2: Backend-API (tRPC) (8h)
+- [x] server/routers/messages.ts erstellt
+- [x] tRPC-Procedures implementiert (getConversations, getMessages, sendMessage, markAsRead, uploadFile, getUnreadCount)
+- [x] user-Router und messages-Router in routers.ts registriert
+- [x] Alle TypeScript-Fehler behoben
+- [ ] Zod-Validation für alle Inputs
+- [ ] Authorization-Checks
+
+### Phase 3: Socket.io-Integration (12h)
+- [ ] Socket.io-Server in server/_core/socket.ts einrichten
+- [ ] Event-Handler implementieren (join, leave, send-message, typing, mark-as-read)
+- [ ] Authentication-Middleware (JWT)
+- [ ] Room-Management
+- [ ] Disconnect-Handling
+
+### Phase 4: Frontend-UI (16h)
+- [ ] Messages.tsx erstellen (2-Column-Layout)
+- [ ] ConversationList.tsx erstellen
+- [ ] ChatWindow.tsx erstellen
+- [ ] MessageBubble.tsx erstellen
+- [ ] MessageInput.tsx erstellen
+
+### Phase 5: Real-time Features (8h)
+- [ ] useSocket.ts Hook erstellen
+- [ ] useMessages.ts Hook erstellen (Zustand-Store)
+- [ ] Typing-Indicator implementieren
+- [ ] Read-Receipts implementieren
+
+### Phase 6: File-Sharing (6h)
+- [ ] File-Upload-UI (Drag & Drop, Preview, Progress)
+- [ ] S3-Upload-Logic (storagePut)
+- [ ] File-Message-Rendering (Images, PDFs, etc.)
+
+### Phase 7: Notifications (6h)
+- [ ] In-App-Notifications (Badge, Toast)
+- [ ] Push-Notifications (Browser)
+- [ ] Manus Built-in Notification API Integration

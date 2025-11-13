@@ -1,0 +1,324 @@
+/**
+ * Datenexport-Seite (DSGVO Art. 20 - Recht auf Datenübertragbarkeit)
+ */
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { trpc } from "@/lib/trpc";
+import { Download, FileJson, FileText, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { toast } from "sonner";
+import MetaTags from "@/components/MetaTags";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { getLoginUrl } from "@/const";
+
+export default function DataExport() {
+  const { user, isAuthenticated } = useAuth();
+  const [selectedData, setSelectedData] = useState({
+    profile: true,
+    gigs: true,
+    orders: true,
+    messages: true,
+    reviews: true,
+    transactions: true,
+  });
+  const [format, setFormat] = useState<"json" | "csv">("json");
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportSuccess, setExportSuccess] = useState(false);
+
+  const exportDataMutation = trpc.user.exportData.useMutation({
+    onSuccess: (data: any) => {
+      // Create download link
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `flinkly-datenexport-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      setIsExporting(false);
+      setExportSuccess(true);
+      toast.success("Daten erfolgreich exportiert!");
+    },
+    onError: (error: any) => {
+      setIsExporting(false);
+      toast.error(`Fehler beim Export: ${error.message}`);
+    },
+  });
+
+  const handleExport = () => {
+    if (!isAuthenticated) {
+      window.location.href = getLoginUrl();
+      return;
+    }
+
+    setIsExporting(true);
+    setExportSuccess(false);
+
+    exportDataMutation.mutate({
+      includeProfile: selectedData.profile,
+      includeGigs: selectedData.gigs,
+      includeOrders: selectedData.orders,
+      includeMessages: selectedData.messages,
+      includeReviews: selectedData.reviews,
+      includeTransactions: selectedData.transactions,
+      format,
+    });
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardHeader>
+            <CardTitle>Anmeldung erforderlich</CardTitle>
+            <CardDescription>
+              Sie müssen angemeldet sein, um Ihre Daten zu exportieren.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => window.location.href = getLoginUrl()} className="w-full">
+              Jetzt anmelden
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-slate-50">
+      <MetaTags
+        title="Datenexport - Flinkly"
+        description="Exportieren Sie Ihre personenbezogenen Daten gemäß DSGVO Art. 20."
+        type="website"
+      />
+
+      <div className="container mx-auto px-4 py-12 max-w-3xl">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+            Datenexport
+          </h1>
+          <p className="text-slate-600">
+            Exportieren Sie Ihre personenbezogenen Daten gemäß Art. 20 DSGVO (Recht auf Datenübertragbarkeit).
+          </p>
+        </div>
+
+        {/* Info Card */}
+        <Card className="mb-8 bg-blue-50 border-blue-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-blue-600" />
+              Was wird exportiert?
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-slate-700">
+              Der Export enthält alle Daten, die Sie uns zur Verfügung gestellt haben oder die im Rahmen
+              der Nutzung unserer Dienste erhoben wurden. Die Daten werden in einem maschinenlesbaren
+              Format (JSON oder CSV) bereitgestellt.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Data Selection */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Wählen Sie die zu exportierenden Daten</CardTitle>
+            <CardDescription>
+              Sie können auswählen, welche Datenkategorien exportiert werden sollen.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="profile"
+                checked={selectedData.profile}
+                onCheckedChange={(checked) =>
+                  setSelectedData({ ...selectedData, profile: checked as boolean })
+                }
+              />
+              <label
+                htmlFor="profile"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Profildaten (Name, E-Mail, Bio, Avatar)
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="gigs"
+                checked={selectedData.gigs}
+                onCheckedChange={(checked) =>
+                  setSelectedData({ ...selectedData, gigs: checked as boolean })
+                }
+              />
+              <label
+                htmlFor="gigs"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Gigs (Titel, Beschreibung, Preis, Bilder)
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="orders"
+                checked={selectedData.orders}
+                onCheckedChange={(checked) =>
+                  setSelectedData({ ...selectedData, orders: checked as boolean })
+                }
+              />
+              <label
+                htmlFor="orders"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Bestellungen (Käufe und Verkäufe)
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="messages"
+                checked={selectedData.messages}
+                onCheckedChange={(checked) =>
+                  setSelectedData({ ...selectedData, messages: checked as boolean })
+                }
+              />
+              <label
+                htmlFor="messages"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Nachrichten (Konversationen mit anderen Nutzern)
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="reviews"
+                checked={selectedData.reviews}
+                onCheckedChange={(checked) =>
+                  setSelectedData({ ...selectedData, reviews: checked as boolean })
+                }
+              />
+              <label
+                htmlFor="reviews"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Bewertungen (Abgegebene und erhaltene Reviews)
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="transactions"
+                checked={selectedData.transactions}
+                onCheckedChange={(checked) =>
+                  setSelectedData({ ...selectedData, transactions: checked as boolean })
+                }
+              />
+              <label
+                htmlFor="transactions"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+              >
+                Transaktionen (Zahlungshistorie, Auszahlungen)
+              </label>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Format Selection */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>Exportformat</CardTitle>
+            <CardDescription>
+              Wählen Sie das Format, in dem Ihre Daten exportiert werden sollen.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="json"
+                checked={format === "json"}
+                onCheckedChange={() => setFormat("json")}
+              />
+              <label
+                htmlFor="json"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2"
+              >
+                <FileJson className="h-4 w-4" />
+                JSON (empfohlen für technische Nutzer)
+              </label>
+            </div>
+
+            <div className="flex items-center space-x-3">
+              <Checkbox
+                id="csv"
+                checked={format === "csv"}
+                onCheckedChange={() => setFormat("csv")}
+              />
+              <label
+                htmlFor="csv"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2"
+              >
+                <FileText className="h-4 w-4" />
+                CSV (für Excel/Spreadsheets)
+              </label>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Export Button */}
+        <Card>
+          <CardContent className="pt-6">
+            {exportSuccess ? (
+              <div className="flex items-center justify-center gap-3 text-green-600 mb-4">
+                <CheckCircle2 className="h-6 w-6" />
+                <span className="font-semibold">Export erfolgreich!</span>
+              </div>
+            ) : null}
+
+            <Button
+              onClick={handleExport}
+              disabled={isExporting}
+              className="w-full"
+              size="lg"
+            >
+              {isExporting ? (
+                <>
+                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                  Exportiere Daten...
+                </>
+              ) : (
+                <>
+                  <Download className="h-5 w-5 mr-2" />
+                  Daten jetzt exportieren
+                </>
+              )}
+            </Button>
+
+            <p className="text-xs text-slate-500 mt-4 text-center">
+              Der Export kann je nach Datenmenge einige Sekunden dauern.
+              Die Datei wird automatisch heruntergeladen.
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* Legal Notice */}
+        <div className="mt-8 p-4 bg-slate-100 rounded-lg">
+          <p className="text-xs text-slate-600">
+            <strong>Rechtlicher Hinweis:</strong> Dieser Export erfolgt gemäß Art. 20 DSGVO (Recht auf Datenübertragbarkeit).
+            Die exportierten Daten enthalten alle personenbezogenen Daten, die Sie uns zur Verfügung gestellt haben.
+            Bitte beachten Sie, dass der Export keine Daten Dritter (z.B. Nachrichten anderer Nutzer) enthält.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

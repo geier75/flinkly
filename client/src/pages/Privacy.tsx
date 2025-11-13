@@ -159,6 +159,31 @@ export default function Privacy() {
             <p className="text-slate-700 mt-4">
               Kontaktieren Sie uns unter <a href="mailto:info@mimitechai.com" className="text-blue-600 hover:underline">info@mimitechai.com</a> zur Ausübung Ihrer Rechte.
             </p>
+            
+            <div className="bg-blue-50 border-l-4 border-blue-600 p-6 mt-6 rounded-r-lg">
+              <h3 className="text-lg font-semibold text-slate-900 mb-4">Datenexport & Account-Löschung</h3>
+              <p className="text-slate-700 mb-4">
+                Sie können Ihre Rechte direkt über unsere Self-Service-Tools ausüben:
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/settings/data-export">
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Daten exportieren
+                  </Button>
+                </Link>
+                <Link href="/settings/delete-account">
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Account löschen
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </section>
 
           <section className="mb-12">

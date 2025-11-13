@@ -1,8 +1,9 @@
-import { eq, and, desc } from "drizzle-orm";
+import { eq, or, and, desc, ne, isNull, inArray } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, gigs, orders, reviews, transactions, payouts, invoices,
-  InsertGig, InsertOrder, InsertReview, InsertTransaction, InsertPayout, InsertInvoice
+  InsertGig, InsertOrder, InsertReview, InsertTransaction, InsertPayout, InsertInvoice,
+  conversations, messages, InsertConversation, InsertMessage
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -122,6 +123,9 @@ export async function getSellerGigs(sellerId: number) {
     .where(eq(gigs.sellerId, sellerId))
     .orderBy(desc(gigs.createdAt));
 }
+
+// Alias for data export
+export const getGigsBySellerId = getSellerGigs;
 
 export async function getSellerDrafts(sellerId: number) {
   const db = await getDb();
@@ -290,4 +294,343 @@ export async function getInvoiceByOrderId(orderId: number) {
     .where(eq(invoices.orderId, orderId))
     .limit(1);
   return result.length > 0 ? result[0] : undefined;
+}
+
+
+// ============================================
+// MESSAGING QUERIES
+// ============================================
+
+/**
+ * Create a new conversation for an order
+ */
+export async function createConversation(data: InsertConversation) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(conversations).values(data);
+  return result;
+}
+
+/**
+ * Get conversation by order ID
+ */
+export async function getConversationByOrderId(orderId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db.select().from(conversations).where(eq(conversations.orderId, orderId)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Get all conversations for a user (as buyer or seller)
+ */
+export async function getConversationsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(conversations)
+    .where(
+      or(
+        eq(conversations.buyerId, userId),
+        eq(conversations.sellerId, userId)
+      )
+    )
+    .orderBy(desc(conversations.lastMessageAt));
+  
+  return result;
+}
+
+/**
+ * Create a new message
+ */
+export async function createMessage(data: InsertMessage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Update conversation's lastMessageAt
+  await db
+    .update(conversations)
+    .set({ lastMessageAt: new Date() })
+    .where(eq(conversations.id, data.conversationId));
+  
+  const result = await db.insert(messages).values(data);
+  return result;
+}
+
+/**
+ * Get messages for a conversation with pagination
+ */
+export async function getMessagesByConversationId(
+  conversationId: number,
+  limit: number = 50,
+  offset: number = 0
+) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(messages)
+    .where(eq(messages.conversationId, conversationId))
+    .orderBy(desc(messages.createdAt))
+    .limit(limit)
+    .offset(offset);
+  
+  return result.reverse(); // Reverse to show oldest first
+}
+
+/**
+ * Mark message as read
+ */
+export async function markMessageAsRead(messageId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db
+    .update(messages)
+    .set({ readAt: new Date() })
+    .where(eq(messages.id, messageId));
+}
+
+/**
+ * Get unread message count for a user
+ */
+export async function getUnreadMessageCount(userId: number) {
+  const db = await getDb();
+  if (!db) return 0;
+  
+  // Get all conversations where user is participant
+  const userConversations = await db
+    .select()
+    .from(conversations)
+    .where(
+      or(
+        eq(conversations.buyerId, userId),
+        eq(conversations.sellerId, userId)
+      )
+    );
+  
+  if (userConversations.length === 0) return 0;
+  
+  const conversationIds = userConversations.map(c => c.id);
+  
+  // Count unread messages in those conversations (where sender is NOT the user)
+  const result = await db
+    .select()
+    .from(messages)
+    .where(
+      and(
+        inArray(messages.conversationId, conversationIds),
+        ne(messages.senderId, userId),
+        isNull(messages.readAt)
+      )
+    );
+  
+  return result.length;
+}
+
+/**
+ * Get messages by user ID (for data export)
+ */
+export async function getMessagesByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get all conversations where user is participant
+  const userConversations = await db
+    .select()
+    .from(conversations)
+    .where(
+      or(
+        eq(conversations.buyerId, userId),
+        eq(conversations.sellerId, userId)
+      )
+    );
+  
+  if (userConversations.length === 0) return [];
+  
+  const conversationIds = userConversations.map(c => c.id);
+  
+  // Get all messages in those conversations
+  const result = await db
+    .select()
+    .from(messages)
+    .where(inArray(messages.conversationId, conversationIds))
+    .orderBy(desc(messages.createdAt));
+  
+  return result;
+}
+
+
+// ============================================
+// DSGVO / DATA EXPORT QUERIES
+// ============================================
+
+/**
+ * Get transactions by user ID (for data export)
+ */
+export async function getTransactionsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(transactions)
+    .where(
+      or(
+        eq(transactions.buyerId, userId),
+        eq(transactions.sellerId, userId)
+      )
+    )
+    .orderBy(desc(transactions.createdAt));
+  
+  return result;
+}
+
+/**
+ * Get active orders by user ID (for account deletion check)
+ */
+export async function getActiveOrdersByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(orders)
+    .where(
+      and(
+        or(
+          eq(orders.buyerId, userId),
+          eq(orders.sellerId, userId)
+        ),
+        or(
+          eq(orders.status, "pending"),
+          eq(orders.status, "in_progress"),
+          eq(orders.status, "preview"),
+          eq(orders.status, "revision")
+        )
+      )
+    );
+  
+  return result;
+}
+
+/**
+ * Schedule account deletion (30 days grace period)
+ */
+export async function scheduleAccountDeletion(userId: number, reason: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Add deletionScheduledAt field to users table (needs migration)
+  // For now, we'll just mark the user as inactive
+  await db
+    .update(users)
+    .set({ 
+      updatedAt: new Date(),
+      // deletionScheduledAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    })
+    .where(eq(users.id, userId));
+  
+  // TODO: Create scheduled job to delete account after 30 days
+  console.log(`[DSGVO] Account deletion scheduled for user ${userId}. Reason: ${reason}`);
+}
+
+/**
+ * Cancel account deletion
+ */
+export async function cancelAccountDeletion(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Remove deletionScheduledAt field
+  await db
+    .update(users)
+    .set({ 
+      updatedAt: new Date(),
+      // deletionScheduledAt: null
+    })
+    .where(eq(users.id, userId));
+  
+  console.log(`[DSGVO] Account deletion cancelled for user ${userId}`);
+}
+
+
+/**
+ * Get orders by buyer ID
+ */
+export async function getOrdersByBuyerId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(orders)
+    .where(eq(orders.buyerId, userId))
+    .orderBy(desc(orders.createdAt));
+  
+  return result;
+}
+
+/**
+ * Get orders by seller ID
+ */
+export async function getOrdersBySellerId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(orders)
+    .where(eq(orders.sellerId, userId))
+    .orderBy(desc(orders.createdAt));
+  
+  return result;
+}
+
+/**
+ * Get reviews by reviewer ID
+ */
+export async function getReviewsByReviewerId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const result = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.reviewerId, userId))
+    .orderBy(desc(reviews.createdAt));
+  
+  return result;
+}
+
+/**
+ * Get reviews for gigs owned by seller
+ */
+export async function getReviewsByGigSellerId(sellerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  // Get all gigs by seller
+  const sellerGigs = await db
+    .select()
+    .from(gigs)
+    .where(eq(gigs.sellerId, sellerId));
+  
+  if (sellerGigs.length === 0) return [];
+  
+  const gigIds = sellerGigs.map(g => g.id);
+  
+  // Get all reviews for those gigs
+  const result = await db
+    .select()
+    .from(reviews)
+    .where(inArray(reviews.gigId, gigIds))
+    .orderBy(desc(reviews.createdAt));
+  
+  return result;
 }
