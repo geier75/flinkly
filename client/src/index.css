@@ -134,6 +134,76 @@
 }
 
 @layer components {
+  /* Flinkly Custom Components */
+  .gig-card {
+    @apply bg-card border border-border rounded-lg overflow-hidden transition-all hover:shadow-lg hover:border-primary/50;
+  }
+
+  .gig-card-image {
+    @apply w-full h-48 object-cover;
+  }
+
+  .gig-card-content {
+    @apply p-4 space-y-3;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .status-badge-pending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-badge-in-progress {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .status-badge-completed {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-badge-cancelled {
+    @apply bg-red-100 text-red-800;
+  }
+
+  .trust-metric {
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .category-pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer;
+  }
+
+  .price-display {
+    @apply text-2xl font-bold text-foreground;
+  }
+
+  .sticky-booking-card {
+    @apply sticky top-24 bg-card border border-border rounded-lg p-6 shadow-lg;
+  }
+
+  .mobile-action-bar {
+    @apply fixed bottom-0 left-0 right-0 bg-card border-t border-border p-4 shadow-lg z-50 md:hidden;
+  }
+
+  .kanban-column {
+    @apply bg-muted/50 rounded-lg p-4 min-w-[280px];
+  }
+
+  .kanban-card {
+    @apply bg-card border border-border rounded-lg p-4 mb-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer;
+  }
+
+  .earnings-card {
+    @apply bg-gradient-to-br from-primary/10 to-secondary/10 border border-primary/20 rounded-lg p-6;
+  }
+
+  .earnings-value {
+    @apply text-4xl font-bold text-foreground;
+  }
+
+
   /**
    * Custom container utility that centers content and adds responsive padding.
    *
