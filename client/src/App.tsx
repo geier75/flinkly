@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Onboarding from "./components/Onboarding";
 import GlobalHeader from "./components/GlobalHeader";
 import MobileActionBar from "./components/MobileActionBar";
+import CookieConsent from "./components/CookieConsent";
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import Dashboard from "./pages/Dashboard";
@@ -72,6 +73,7 @@ function App() {
           <Onboarding />
           <Router />
           <MobileActionBar />
+          <CookieConsent />
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

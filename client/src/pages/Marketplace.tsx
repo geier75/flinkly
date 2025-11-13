@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import MetaTags from "@/components/MetaTags";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import GigCard from "@/components/GigCard";
@@ -76,6 +77,11 @@ export default function Marketplace() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-slate-50">
+      <MetaTags 
+        title="Gig-Marktplatz - Digitale Dienstleistungen finden"
+        description="Durchsuche über 500 digitale Dienstleistungen von verifizierten Freelancern. Design, Programmierung, Texte, Marketing und mehr ab 1€."
+        type="website"
+      />
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-10">

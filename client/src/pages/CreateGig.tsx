@@ -41,6 +41,7 @@ export default function CreateGig() {
     price: "",
     deliveryDays: "3",
     imageUrl: "",
+    imageAlt: "",
   });
 
   const createGigMutation = trpc.gigs.create.useMutation({
@@ -55,8 +56,23 @@ export default function CreateGig() {
       }, 1500);
     },
     onError: (error) => {
+      // Provide specific, helpful error messages
+      let errorMessage = "Bitte versuche es später erneut.";
+      
+      if (error.message.includes("title")) {
+        errorMessage = "Bitte gib einen gültigen Titel ein (10-100 Zeichen).";
+      } else if (error.message.includes("price")) {
+        errorMessage = "Preis muss zwischen 10€ und 250€ liegen.";
+      } else if (error.message.includes("description")) {
+        errorMessage = "Beschreibung muss mindestens 50 Zeichen lang sein.";
+      } else if (error.message.includes("category")) {
+        errorMessage = "Bitte wähle eine Kategorie aus.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast.error("✗ Fehler beim Erstellen des Gigs", {
-        description: error.message || "Bitte versuche es später erneut.",
+        description: errorMessage,
         duration: 4000,
       });
     },
@@ -360,6 +376,23 @@ export default function CreateGig() {
                       onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                     />
                   </div>
+
+                  {formData.imageUrl && (
+                    <div>
+                      <Label htmlFor="imageAlt">Bildbeschreibung (Alt-Text) *</Label>
+                      <Input
+                        id="imageAlt"
+                        type="text"
+                        placeholder="z.B. Modernes Logo-Design für Café, minimalistisch, schwarz-weiß"
+                        value={formData.imageAlt}
+                        onChange={(e) => setFormData({ ...formData, imageAlt: e.target.value })}
+                        required
+                      />
+                      <p className="text-sm text-slate-500 mt-1">
+                        Beschreibe das Bild für sehbehinderte Nutzer (wichtig für Barrierefreiheit)
+                      </p>
+                    </div>
+                  )}
 
                   <div className="flex gap-3 pt-4">
                     <Button variant="outline" onClick={() => setCurrentStep(2)}>

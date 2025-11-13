@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
+import MetaTags from "@/components/MetaTags";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,7 +18,6 @@ import {
   Package,
   X,
 } from "lucide-react";
-import { useState } from "react";
 
 export default function GigDetail() {
   const { id } = useParams();
@@ -82,6 +83,13 @@ export default function GigDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
+      <MetaTags 
+        title={gig.title}
+        description={gig.description}
+        image={gig.imageUrl || undefined}
+        type="product"
+        price={Number(gig.price)}
+      />
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-600 mb-6">
@@ -336,7 +344,7 @@ export default function GigDetail() {
                     className="w-full text-lg h-14"
                     onClick={() => setLocation(`/checkout/${gig.id}`)}
                   >
-                    In 3 Klicks beauftragen
+                     Projekt starten
                   </Button>
 
                   <Button
@@ -416,7 +424,7 @@ export default function GigDetail() {
             className="flex-1"
             onClick={() => setLocation(`/checkout/${gig.id}`)}
           >
-            Jetzt beauftragen
+            Projekt starten
           </Button>
         </div>
       </div>

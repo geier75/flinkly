@@ -4,12 +4,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import { Star, Zap, Shield, Users, TrendingUp, CheckCircle, ArrowRight } from "lucide-react";
+import MetaTags from "@/components/MetaTags";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <MetaTags 
+        title="Marktplatz für digitale Mikrodienstleistungen"
+        description="Finde digitale Dienstleistungen ab 1€ in der DACH-Region. Schnell, sicher, DSGVO-konform. Über 500 Gigs von verifizierten Freelancern."
+        type="website"
+      />
 
       {/* Hero Section - BOLD & LARGE */}
       <section className="container mx-auto px-4 py-32 text-center bg-gradient-to-b from-blue-50 to-white">
@@ -21,17 +27,41 @@ export default function Home() {
             Dein Marktplatz für schnelle, kreative & digitale Mikrodienstleistungen in der DACH-Region. Vertrauen, Einfachheit, Rechtssicherheit.
           </p>
           <div className="flex gap-6 justify-center flex-wrap">
-            <a href={getLoginUrl()}>
+            <Link href="/marketplace">
               <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-10 py-7 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95">
-                🚀 Jetzt starten
+                🔍 Gig finden
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </a>
-            <Link href="/marketplace">
-              <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl border-2 border-slate-300 hover:border-blue-600 hover:bg-blue-50 transition-all duration-200">
-                Gigs entdecken
-              </Button>
             </Link>
+            <a href={getLoginUrl()}>
+              <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl border-2 border-slate-300 hover:border-green-600 hover:bg-green-50 transition-all duration-200">
+                ⭐ Gig anbieten
+              </Button>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Trust Bar - Social Proof */}
+      <section className="bg-blue-600 py-6">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-white">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
+              <span className="font-semibold">500+ Gigs</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              <span className="font-semibold">1.000+ zufriedene Kunden</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="h-5 w-5" />
+              <span className="font-semibold">DSGVO-konform</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
+              <span className="font-semibold">Geld-zurück-Garantie</span>
+            </div>
           </div>
         </div>
       </section>

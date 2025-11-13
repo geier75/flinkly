@@ -50,15 +50,28 @@ interface OnboardingProps {
 
 export default function Onboarding({ onComplete, onSkip }: OnboardingProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
     // Check if user has already seen onboarding
     const hasSeenOnboarding = localStorage.getItem("flinkly_onboarding_seen");
     if (hasSeenOnboarding) {
-      setIsVisible(false);
+      return;
     }
-  }, []);
+
+    // Show onboarding after user scrolls 20% of viewport height
+    const handleScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.2 && !hasScrolled) {
+        setHasScrolled(true);
+        setIsVisible(true);
+        window.removeEventListener('scroll', handleScroll);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasScrolled]);
 
   if (!isVisible) return null;
 

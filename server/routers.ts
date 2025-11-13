@@ -213,52 +213,47 @@ export const appRouter = router({
   }),
 
   payment: router({
-    createIntent: protectedProcedure
+    createCheckout: protectedProcedure
       .input(z.object({ 
-        orderId: z.number(),
-        paymentMethod: z.enum(['card', 'sepa', 'klarna', 'twint']).default('card'),
+        gigId: z.number(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { createPaymentIntent } = await import('./payment');
+        const { createCheckoutSession } = await import('./payment');
         
-        const order = await db.getOrderById(input.orderId);
-        if (!order) throw new Error("Order not found");
+        const gig = await db.getGigById(input.gigId);
+        if (!gig) throw new Error("Gig not found");
 
-        const paymentIntent = await createPaymentIntent({
-          amount: order.totalPrice,
-          orderId: input.orderId,
+        const session = await createCheckoutSession({
+          gigId: gig.id,
+          gigTitle: gig.title,
+          gigPrice: Number(gig.price),
           buyerId: ctx.user.id,
-          sellerId: order.sellerId,
-          paymentMethod: input.paymentMethod,
+          buyerEmail: ctx.user.email || '',
+          buyerName: ctx.user.name || '',
+          sellerId: gig.sellerId,
+          origin: ctx.req.headers.origin || 'http://localhost:3000',
         });
 
-        await db.createTransaction({
-          orderId: input.orderId,
-          buyerId: ctx.user.id,
-          sellerId: order.sellerId,
-          amount: order.totalPrice,
-          currency: 'EUR',
-          paymentMethod: input.paymentMethod,
-          paymentIntentId: paymentIntent.id,
-          status: 'pending',
-        });
-
-        return {
-          clientSecret: paymentIntent.client_secret,
-          paymentIntentId: paymentIntent.id,
-        };
+        return session;
       }),
 
-    confirmPayment: protectedProcedure
+    capturePayment: protectedProcedure
       .input(z.object({ paymentIntentId: z.string() }))
-      .mutation(async ({ input }) => {
-        const { confirmPaymentIntent } = await import('./payment');
-        
-        const paymentIntent = await confirmPaymentIntent(input.paymentIntentId);
-        
-        // TODO: Update transaction status based on payment intent ID
-        
-        return { success: true, status: paymentIntent.status };
+      .mutation(async ({ ctx, input }) => {
+        const { capturePayment } = await import('./payment');
+        await capturePayment(input.paymentIntentId);
+        return { success: true };
+      }),
+
+    refund: protectedProcedure
+      .input(z.object({ 
+        paymentIntentId: z.string(),
+        amount: z.number().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { refundPayment } = await import('./payment');
+        await refundPayment(input.paymentIntentId, input.amount);
+        return { success: true };
       }),
   }),
 
@@ -274,7 +269,10 @@ export const appRouter = router({
       }),
 
     requestPayout: protectedProcedure
-      .input(z.object({ amount: z.number().min(2000) })) // Minimum 20€
+      .input(z.object({ 
+        amount: z.number().min(2000), // Minimum 20€
+        stripeAccountId: z.string(),
+      }))
       .mutation(async ({ ctx, input }) => {
         const { createPayout: createPayoutStripe } = await import('./payment');
         
@@ -283,12 +281,13 @@ export const appRouter = router({
           throw new Error("Insufficient balance");
         }
 
-        const stripePayoutId = await createPayoutStripe({
-          sellerId: ctx.user.id,
-          amount: input.amount,
-          currency: 'EUR',
-        });
+        // Create Stripe payout
+        const stripePayoutId = await createPayoutStripe(
+          input.stripeAccountId,
+          input.amount / 100 // Convert cents to EUR
+        );
 
+        // Record payout in DB
         await db.createPayout({
           sellerId: ctx.user.id,
           amount: input.amount,

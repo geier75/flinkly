@@ -11,32 +11,27 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 interface PaymentWidgetProps {
-  orderId: number;
+  gigId: number;
+  gigTitle: string;
   amount: number;
   onSuccess?: () => void;
   onError?: (error: string) => void;
 }
 
-export default function PaymentWidget({ orderId, amount, onSuccess, onError }: PaymentWidgetProps) {
-  const [selectedMethod, setSelectedMethod] = useState<'card' | 'sepa' | 'klarna' | 'twint'>('card');
+export default function PaymentWidget({ gigId, gigTitle, amount, onSuccess, onError }: PaymentWidgetProps) {
   const [acceptEscrow, setAcceptEscrow] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const createPaymentMutation = trpc.payment.createIntent.useMutation({
-    onSuccess: async (data) => {
-      // In production, this would redirect to payment provider
-      toast.success("Zahlung wird verarbeitet...");
-      
-      // Simulate payment confirmation
-      setTimeout(() => {
-        setIsProcessing(false);
-        toast.success("Zahlung erfolgreich!");
-        onSuccess?.();
-      }, 2000);
-    },
-    onError: (error) => {
+  const createCheckoutMutation = trpc.payment.createCheckout.useMutation({
+    onSuccess: (data: { id: string; url: string }) => {
+      // Redirect to Stripe Checkout
+      toast.success("🚀 Weiterleitung zu Stripe Checkout...");
+      window.open(data.url, '_blank');
       setIsProcessing(false);
-      toast.error("Fehler bei der Zahlung");
+    },
+    onError: (error: any) => {
+      setIsProcessing(false);
+      toast.error("❌ Fehler bei der Zahlung");
       onError?.(error.message);
     },
   });
@@ -48,10 +43,7 @@ export default function PaymentWidget({ orderId, amount, onSuccess, onError }: P
     }
 
     setIsProcessing(true);
-    createPaymentMutation.mutate({
-      orderId,
-      paymentMethod: selectedMethod,
-    });
+    createCheckoutMutation.mutate({ gigId });
   };
 
   const getPaymentIcon = (method: string) => {
@@ -87,19 +79,14 @@ export default function PaymentWidget({ orderId, amount, onSuccess, onError }: P
           <span className="text-2xl font-bold">{formatPrice(amount)}</span>
         </div>
 
-        {/* Payment Methods */}
+        {/* Payment Methods Info */}
         <div className="space-y-3">
-          <Label className="text-base font-semibold">Zahlungsmethode</Label>
-          <RadioGroup value={selectedMethod} onValueChange={(value: any) => setSelectedMethod(value)}>
+          <Label className="text-base font-semibold">Verfügbare Zahlungsmethoden</Label>
+          <div className="grid grid-cols-2 gap-3">
             {PAYMENT_METHODS.map((method) => (
               <div
                 key={method.value}
-                className={`flex items-center space-x-3 border rounded-lg p-4 cursor-pointer transition-all ${
-                  selectedMethod === method.value
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50'
-                }`}
-                onClick={() => setSelectedMethod(method.value as any)}
+                className="flex items-center space-x-3 border rounded-lg p-3 bg-muted/30"
               >
                 <RadioGroupItem value={method.value} id={method.value} />
                 <Label
@@ -129,7 +116,7 @@ export default function PaymentWidget({ orderId, amount, onSuccess, onError }: P
                 </Label>
               </div>
             ))}
-          </RadioGroup>
+          </div>
         </div>
 
         {/* Escrow Information */}

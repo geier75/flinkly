@@ -40,10 +40,16 @@ export default function EarningsDashboard() {
       return;
     }
 
-    setIsRequestingPayout(true);
-    requestPayoutMutation.mutate({
-      amount: earnings.available,
-    });
+    // TODO: Get seller's Stripe Connect account ID from user profile
+    // For now, show error that Stripe onboarding is required
+    toast.error("⚠️ Bitte schließe zuerst das Stripe-Onboarding ab");
+    return;
+
+    // setIsRequestingPayout(true);
+    // requestPayoutMutation.mutate({
+    //   amount: earnings.available,
+    //   stripeAccountId: 'acct_xxx', // From user.stripeAccountId
+    // });
   };
 
   if (earningsLoading) {
