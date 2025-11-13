@@ -8,11 +8,15 @@ import * as v from "./validation";
 import { sanitizeHTML, sanitizeText } from "@shared/sanitize";
 import { userRouter } from "./routers/user";
 import { messagesRouter } from "./routers/messages";
+import { verificationRouter } from "./routers/verification";
+import { adminRouter } from "./routers/admin";
 
 export const appRouter = router({
   system: systemRouter,
   user: userRouter,
   messages: messagesRouter,
+  verification: verificationRouter,
+  admin: adminRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

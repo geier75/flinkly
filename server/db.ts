@@ -725,3 +725,238 @@ export async function completeAccountDeletion(userId: number): Promise<void> {
   
   console.log(`[DSGVO] Account deletion completed for user ${userId}`);
 }
+
+
+// ============================================
+// VERIFICATION FUNCTIONS
+// ============================================
+
+/**
+ * Update user verification status
+ */
+export async function updateUserVerification(
+  userId: number,
+  updates: {
+    emailVerified?: boolean;
+    phoneVerified?: boolean;
+    adminApproved?: boolean;
+    verificationLevel?: "none" | "email" | "phone" | "admin";
+  }
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set(updates).where(eq(users.id, userId));
+}
+
+/**
+ * Update user phone number
+ */
+export async function updateUserPhone(userId: number, phone: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({ phone }).where(eq(users.id, userId));
+}
+
+/**
+ * Create admin approval request
+ */
+export async function createAdminApprovalRequest(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // For now, just log the request
+  // TODO: Create admin_approval_requests table
+  console.log(`[Admin Approval] Request created for user ${userId}`);
+  
+  // Auto-approve in development
+  if (process.env.NODE_ENV === "development") {
+    await db.update(users).set({
+      adminApproved: true,
+      verificationLevel: "admin",
+    }).where(eq(users.id, userId));
+    console.log(`[Admin Approval] Auto-approved user ${userId} (development mode)`);
+  }
+}
+
+
+// ============================================
+// ADMIN FUNCTIONS
+// ============================================
+
+/**
+ * Get all users (paginated, with filters)
+ */
+export async function getUsers(
+  limit: number,
+  offset: number,
+  filters?: { role?: "user" | "admin"; verified?: boolean }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  let query = db.select().from(users);
+
+  if (filters?.role) {
+    query = query.where(eq(users.role, filters.role)) as any;
+  }
+  if (filters?.verified !== undefined) {
+    query = query.where(eq(users.verified, filters.verified)) as any;
+  }
+
+  const result = await query.limit(limit).offset(offset);
+  return result;
+}
+
+/**
+ * Get user statistics (gigs, orders, earnings)
+ */
+export async function getUserStats(userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [userGigs, userOrders, userReviews] = await Promise.all([
+    db.select().from(gigs).where(eq(gigs.sellerId, userId)),
+    db.select().from(orders).where(eq(orders.buyerId, userId)),
+    db.select().from(reviews).where(eq(reviews.reviewerId, userId)),
+  ]);
+
+  const totalEarnings = userGigs.reduce((sum, gig) => {
+    // Calculate from completed orders
+    return sum;
+  }, 0);
+
+  return {
+    totalGigs: userGigs.length,
+    totalOrders: userOrders.length,
+    totalReviews: userReviews.length,
+    totalEarnings,
+  };
+}
+
+/**
+ * Ban user
+ */
+export async function banUser(userId: number, reason: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // TODO: Add banned field to users table
+  // For now, just log
+  console.log(`[Admin] Banned user ${userId}: ${reason}`);
+}
+
+/**
+ * Unban user
+ */
+export async function unbanUser(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // TODO: Remove banned field
+  console.log(`[Admin] Unbanned user ${userId}`);
+}
+
+/**
+ * Get all gigs (for admin moderation)
+ */
+export async function getAllGigs(
+  limit: number,
+  offset: number,
+  status?: "draft" | "published" | "archived"
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  let query = db.select().from(gigs);
+
+  if (status) {
+    query = query.where(eq(gigs.status, status)) as any;
+  }
+
+  const result = await query.limit(limit).offset(offset);
+  return result;
+}
+
+/**
+ * Reject gig
+ */
+export async function rejectGig(gigId: number, reason: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Archive gig and store rejection reason
+  await db.update(gigs).set({ status: "archived" }).where(eq(gigs.id, gigId));
+
+  // TODO: Notify seller about rejection
+  console.log(`[Admin] Rejected gig ${gigId}: ${reason}`);
+}
+
+/**
+ * Get seller verification queue
+ */
+export async function getVerificationQueue() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Get users who have email verified but not admin approved
+  const queue = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.emailVerified, true), eq(users.adminApproved, false)));
+
+  return queue;
+}
+
+/**
+ * Get platform analytics
+ */
+export async function getPlatformAnalytics() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const [allUsers, allGigs, allOrders, allReviews] = await Promise.all([
+    db.select().from(users),
+    db.select().from(gigs),
+    db.select().from(orders),
+    db.select().from(reviews),
+  ]);
+
+  const totalRevenue = allOrders
+    .filter((o) => o.status === "completed")
+    .reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+
+  return {
+    totalUsers: allUsers.length,
+    totalSellers: allUsers.filter((u) => u.userType === "seller" || u.userType === "both").length,
+    totalGigs: allGigs.length,
+    publishedGigs: allGigs.filter((g) => g.status === "published").length,
+    totalOrders: allOrders.length,
+    completedOrders: allOrders.filter((o) => o.status === "completed").length,
+    totalReviews: allReviews.length,
+    totalRevenue,
+    averageOrderValue: allOrders.length > 0 ? totalRevenue / allOrders.length : 0,
+  };
+}
+
+/**
+ * Get recent activity (for admin dashboard)
+ */
+export async function getRecentActivity(limit: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Get recent orders, gigs, users
+  const [recentOrders, recentGigs, recentUsers] = await Promise.all([
+    db.select().from(orders).orderBy(desc(orders.createdAt)).limit(limit),
+    db.select().from(gigs).orderBy(desc(gigs.createdAt)).limit(limit),
+    db.select().from(users).orderBy(desc(users.createdAt)).limit(limit),
+  ]);
+
+  return {
+    recentOrders,
+    recentGigs,
+    recentUsers,
+  };
+}

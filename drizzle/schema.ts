@@ -16,6 +16,11 @@ export const users = mysqlTable("users", {
   avatarUrl: text("avatarUrl"),
   country: varchar("country", { length: 2 }), // DE, AT, CH
   verified: boolean("verified").default(false),
+  emailVerified: boolean("emailVerified").default(false),
+  phoneVerified: boolean("phoneVerified").default(false),
+  phone: varchar("phone", { length: 20 }),
+  adminApproved: boolean("adminApproved").default(false),
+  verificationLevel: mysqlEnum("verificationLevel", ["none", "email", "phone", "admin"]).default("none"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
