@@ -701,10 +701,11 @@
 - [x] CORS konfiguriert
 
 ### Phase 4: Zod-Validation (8h)
-- [ ] Zod-Schemas für alle tRPC-Procedures
-- [ ] Input-Validation mit z.object()
-- [ ] Custom Error-Messages
-- [ ] Type-Safety überprüfen
+- [x] Zod-Schemas für alle tRPC-Procedures (server/validation.ts)
+- [x] Input-Validation mit z.object()
+- [x] Custom Error-Messages (DACH-Sprache)
+- [x] Type-Safety überprüft
+- [x] Zentrale Validation-Schemas importiert in routers.ts
 
 ### Phase 5: Input-Sanitization (4h)
 - [ ] DOMPurify für HTML-Content

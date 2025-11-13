@@ -4,6 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
+import * as v from "./validation";
 import { userRouter } from "./routers/user";
 import { messagesRouter } from "./routers/messages";
 
