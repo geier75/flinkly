@@ -571,3 +571,8 @@
   - [x] Route-Registrierung für GET + POST
   - [x] Server-Logs analysiert
   - [x] Endpoint getestet (200 OK + JSON)
+
+- [x] **React Hook-Fehler in Marketplace behoben** (1h)
+  - [x] Hook-Reihenfolge analysiert
+  - [x] useState nach Early Return verschoben
+  - [x] Getestet

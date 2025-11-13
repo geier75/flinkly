@@ -27,8 +27,18 @@ export default function Marketplace() {
   const [minRating, setMinRating] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<"relevance" | "price" | "delivery" | "rating">("relevance");
   const [showFilters, setShowFilters] = useState(false);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const { data: gigs, isLoading } = trpc.gigs.list.useQuery({});
+
+  const categoriesHierarchy = [
+    { name: "Design", icon: "🎨", subcategories: ["Logo Design", "Grafik Design", "UI/UX Design"] },
+    { name: "Marketing", icon: "📱", subcategories: ["Social Media", "SEO", "Content Marketing"] },
+    { name: "Schreiben", icon: "✍️", subcategories: ["Content Writing", "Copywriting", "Blogging"] },
+    { name: "Video & Audio", icon: "🎬", subcategories: ["Video Editing", "Animation", "Voice Over"] },
+    { name: "Entwicklung", icon: "💻", subcategories: ["Web Development", "App Development", "WordPress"] },
+  ];
+  const allCategories = categoriesHierarchy.flatMap((cat) => cat.subcategories);
 
   // Skeleton Loading State
   if (isLoading) {
@@ -78,17 +88,6 @@ export default function Marketplace() {
           return (b.completedOrders || 0) - (a.completedOrders || 0);
       }
     });
-
-  const categoriesHierarchy = [
-    { name: "Design", icon: "🎨", subcategories: ["Logo Design", "Grafik Design", "UI/UX Design"] },
-    { name: "Marketing", icon: "📱", subcategories: ["Social Media", "SEO", "Content Marketing"] },
-    { name: "Schreiben", icon: "✍️", subcategories: ["Content Writing", "Copywriting", "Blogging"] },
-    { name: "Video & Audio", icon: "🎬", subcategories: ["Video Editing", "Animation", "Voice Over"] },
-    { name: "Entwicklung", icon: "💻", subcategories: ["Web Development", "App Development", "WordPress"] },
-  ];
-
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const allCategories = categoriesHierarchy.flatMap((cat) => cat.subcategories);
 
   const activeFiltersCount = [
     maxPrice < 250,
