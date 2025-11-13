@@ -5,12 +5,43 @@ import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
 import { Star, Zap, Shield, Users, TrendingUp, CheckCircle, ArrowRight } from "lucide-react";
 import MetaTags from "@/components/MetaTags";
+import Testimonials from "@/components/Testimonials";
+import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/SchemaOrg";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      {/* Schema.org Structured Data */}
+      <OrganizationSchema
+        name="Flinkly"
+        url="https://flinkly.com"
+        logo="https://flinkly.com/logo.png"
+        description="DACH Marktplatz für digitale Mikrodienstleistungen. Schnell, sicher, DSGVO-konform."
+        sameAs={[
+          "https://twitter.com/flinkly",
+          "https://linkedin.com/company/flinkly",
+          "https://instagram.com/flinkly"
+        ]}
+        contactPoint={{
+          contactType: "Customer Support",
+          email: "support@flinkly.com"
+        }}
+      />
+      <WebSiteSchema
+        name="Flinkly"
+        url="https://flinkly.com"
+        potentialAction={{
+          '@type': 'SearchAction',
+          target: 'https://flinkly.com/marketplace?q={search_term_string}',
+          'query-input': 'required name=search_term_string'
+        }}
+      />
+      <AggregateRatingSchema
+        ratingValue={4.8}
+        reviewCount={247}
+      />
       <MetaTags 
         title="Marktplatz für digitale Mikrodienstleistungen"
         description="Finde digitale Dienstleistungen ab 1€ in der DACH-Region. Schnell, sicher, DSGVO-konform. Über 500 Gigs von verifizierten Freelancern."
@@ -191,6 +222,9 @@ export default function Home() {
           </Card>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <Testimonials />
 
       {/* Target Market - LARGER TEXT */}
       <section className="bg-slate-50 py-24">

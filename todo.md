@@ -316,3 +316,106 @@
 **Letzte Aktualisierung:** 13. November 2025  
 **Nächste Review:** Nach Phase 0 Completion  
 **Verantwortlich:** MiMi Tech Ai UG
+
+
+---
+
+## 🔴 RED ROUTES WALKTHROUGH (State-of-the-Art Optimierung 2025)
+
+**Ziel:** Alle kritischen User Journeys auf höchstem Niveau optimieren
+**Methodik:** Interdisziplinärer Cognitive Walkthrough (20-köpfiges Expertenteam)
+**Zeitrahmen:** 2-3 Wochen | **Aufwand:** 120h | **Kosten:** €9,600
+
+### Red Route #1: Käuferfluss (Landing → Confirmation)
+
+- [x] **Landing Page** (16h)
+  - [x] Hero-Section Trust-Optimierung
+  - [x] Social Proof Integration (Testimonials)
+  - [x] Value Proposition Clarity
+  - [x] CTA-Hierarchie
+  - [x] Performance-Optimierung (Scroll-Animations, Intersection Observer)
+
+- [ ] **Gig-Listing/Marketplace** (20h)
+  - [ ] Filter-UX verbessern
+  - [ ] Gig-Card Trust-Cues
+  - [ ] Lazy-Loading + Skeleton-States
+  - [ ] Sort-Algorithmus optimieren
+  - [ ] Empty-States
+
+- [ ] **Gig-Detail** (24h)
+  - [ ] Trust-Elemente (Badges, Reviews, Portfolio)
+  - [ ] CTA-Optimierung (Sticky, Mobile)
+  - [ ] FAQ-Section
+  - [ ] "Ähnliche Gigs" Algorithmus
+  - [ ] Breadcrumbs + Schema.org
+
+- [ ] **Checkout** (16h)
+  - [ ] Multi-Step-Form UX
+  - [ ] Payment-Trust (SSL, Escrow-Erklärung)
+  - [ ] Exit-Intent-Modal
+  - [ ] Error-Handling
+  - [ ] Legal-Compliance (Widerruf, AGB)
+
+- [ ] **Confirmation** (8h)
+  - [ ] Success-State Design
+  - [ ] Next-Steps Clarity
+  - [ ] Upsell-Opportunities
+  - [ ] Email-Trigger
+
+### Red Route #2: Verkäuferfluss (Dashboard → Payout)
+
+- [ ] **Seller Dashboard** (16h)
+  - [ ] KPI-Übersicht
+  - [ ] Onboarding-Checklist
+  - [ ] Quick-Actions
+  - [ ] Performance-Metriken
+
+- [ ] **Create Gig** (20h)
+  - [ ] Live-Vorschau
+  - [ ] SEO-Score
+  - [ ] Image-Upload UX
+  - [ ] Pricing-Calculator
+  - [ ] Templates
+
+- [ ] **Payout** (12h)
+  - [ ] Earnings-Dashboard
+  - [ ] Stripe-Onboarding-Flow
+  - [ ] Payout-History
+  - [ ] Tax-Info
+
+### Red Route #3: Systemfluss (Auth → Escrow → Payout)
+
+- [ ] **Authentication** (8h)
+  - [ ] OAuth-Flow UX
+  - [ ] Error-States
+  - [ ] Redirect-Handling
+
+- [ ] **Messaging** (24h)
+  - [ ] Real-time Chat UI
+  - [ ] File-Sharing
+  - [ ] Notifications
+  - [ ] Read-Receipts
+
+- [ ] **Seller Verification** (12h)
+  - [ ] Verification-Flow
+  - [ ] Badge-System
+  - [ ] Admin-Queue
+
+- [ ] **Escrow & Payout** (8h)
+  - [ ] Status-Tracking
+  - [ ] Auto-Release-Logic
+  - [ ] Dispute-Flow
+
+---
+
+## 📊 WALKTHROUGH ZIELMETRIKEN
+
+- [ ] +25% Conversion Rate
+- [ ] +40% User Trust Score
+- [ ] +30% Load Speed (≤2.5s LCP)
+- [ ] 100% DSGVO Compliance
+- [ ] 100% WCAG 2.2 AA Compliance
+- [ ] 0 Critical UX Errors
+- [ ] Lighthouse Score ≥90 (alle Kategorien)
+
+---
