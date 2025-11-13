@@ -14,6 +14,7 @@ import { trpc } from "@/lib/trpc";
 import { CheckoutSkeleton } from "@/components/SkeletonUI";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { ExitIntentModal } from "@/components/ExitIntentModal";
 import {
   CheckCircle,
   Upload,
@@ -32,6 +33,7 @@ export default function Checkout() {
   const [, setLocation] = useLocation();
   const { user, isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
+  const [showExitIntent, setShowExitIntent] = useState(true);
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: parseInt(id!) });
 
@@ -571,6 +573,15 @@ export default function Checkout() {
           </div>
         </div>
       </div>
+
+      {/* Exit Intent Modal */}
+      <ExitIntentModal 
+        inCheckout={showExitIntent} 
+        onContinue={() => {
+          // Continue to payment
+          setCurrentStep(3);
+        }} 
+      />
     </div>
   );
 }

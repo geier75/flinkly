@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { SimilarGigs } from "@/components/SimilarGigs";
 import {
   Clock,
   Star,
@@ -497,6 +498,14 @@ export default function GigDetail() {
               </Card>
             </div>
           </div>
+        </div>
+
+        {/* Similar Gigs Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">
+            Ähnliche Gigs
+          </h2>
+          <SimilarGigs gigId={gig.id} k={8} excludeSameSeller={true} />
         </div>
       </div>
 

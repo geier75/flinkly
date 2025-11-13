@@ -38,6 +38,7 @@ export const gigs = mysqlTable("gigs", {
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
   category: varchar("category", { length: 64 }).notNull(),
+  tags: text("tags"), // JSON array of tags for similarity matching
   price: int("price").notNull(), // in cents, max 25000 (250€)
   deliveryDays: int("deliveryDays").notNull().default(3),
   imageUrl: text("imageUrl"),

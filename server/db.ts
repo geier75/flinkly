@@ -960,3 +960,93 @@ export async function getRecentActivity(limit: number) {
     recentUsers,
   };
 }
+
+
+// ============================================
+// Similar Gigs Algorithm (Content-Based Filtering)
+// ============================================
+
+/**
+ * Get similar gigs based on content similarity (category, tags, price, delivery, rating)
+ * Uses weighted scoring: text similarity (0.45) + price proximity (0.15) + delivery proximity (0.15) + trust (0.25)
+ * 
+ * @param gigId - The gig ID to find similar gigs for
+ * @param k - Maximum number of similar gigs to return (default: 12)
+ * @param excludeSameSeller - Whether to exclude gigs from the same seller (default: true)
+ * @returns Array of similar gigs with similarity scores
+ */
+export async function getSimilarGigs(gigId: number, k: number = 12, excludeSameSeller: boolean = true) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get similar gigs: database not available");
+    return [];
+  }
+
+  try {
+    // Get the reference gig
+    const [refGig] = await db.select().from(gigs).where(eq(gigs.id, gigId)).limit(1);
+    if (!refGig || !refGig.active) return [];
+
+    // Parse tags (JSON array)
+    const refTags = refGig.tags ? JSON.parse(refGig.tags) : [];
+    const refSearchBlob = `${refGig.category} ${refTags.join(' ')}`.toLowerCase();
+
+    // Get candidate gigs (active, not the same gig, optionally not same seller)
+    const candidates = await db
+      .select()
+      .from(gigs)
+      .where(
+        and(
+          eq(gigs.active, true),
+          ne(gigs.id, gigId),
+          excludeSameSeller ? ne(gigs.sellerId, refGig.sellerId) : undefined
+        )
+      );
+
+    // Calculate similarity scores for each candidate
+    const scored = candidates.map((cand) => {
+      const candTags = cand.tags ? JSON.parse(cand.tags) : [];
+      const candSearchBlob = `${cand.category} ${candTags.join(' ')}`.toLowerCase();
+
+      // Text similarity (Jaccard + simple word overlap)
+      const refWords = new Set(refSearchBlob.split(' '));
+      const candWords = new Set(candSearchBlob.split(' '));
+      const intersection = new Set(Array.from(refWords).filter(w => candWords.has(w)));
+      const union = new Set([...Array.from(refWords), ...Array.from(candWords)]);
+      const textSim = union.size > 0 ? intersection.size / union.size : 0;
+
+      // Price proximity (normalized)
+      const maxPrice = Math.max(refGig.price, cand.price);
+      const priceSim = maxPrice > 0 ? 1 - Math.abs(refGig.price - cand.price) / maxPrice : 0;
+
+      // Delivery proximity (normalized)
+      const maxDelivery = Math.max(refGig.deliveryDays, cand.deliveryDays);
+      const deliverySim = maxDelivery > 0 ? 1 - Math.abs(refGig.deliveryDays - cand.deliveryDays) / maxDelivery : 0;
+
+      // Trust score (rating + completed orders, capped at 50 orders)
+      const ratingScore = (cand.averageRating || 0) / 500; // 0-1 scale (500 = 5.00 rating)
+      const ordersScore = Math.min(cand.completedOrders || 0, 50) / 50; // 0-1 scale, capped at 50
+      const trustSim = ratingScore * 0.6 + ordersScore * 0.4;
+
+      // Weighted total score
+      const score = 
+        0.45 * textSim +
+        0.15 * priceSim +
+        0.15 * deliverySim +
+        0.25 * trustSim;
+
+      return {
+        ...cand,
+        score: Math.round(score * 1000) / 1000, // Round to 3 decimals
+      };
+    });
+
+    // Sort by score descending and return top k
+    return scored
+      .sort((a, b) => b.score - a.score)
+      .slice(0, k);
+  } catch (error) {
+    console.error("[Database] Failed to get similar gigs:", error);
+    return [];
+  }
+}

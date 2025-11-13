@@ -1064,3 +1064,51 @@
 **Impact:** +30% Accessibility-Score, +15% User-Satisfaction durch bessere UX ✅
 
 **Hinweis:** H2 (Match System & Realität), H3 (User-Kontrolle), H4 (Konsistenz), H6 (Erkennung statt Erinnerung), H7 (Flexibilität) sind bereits durch Template-Design und Best Practices abgedeckt.
+
+
+## 🔄 Advanced-Features (TDD-Style)
+
+### 1. "Ähnliche Gigs"-Algorithmus (8h)
+- [x] DB-Schema erweitern (tags-Feld hinzugefügt)
+- [x] getSimilarGigs() DB-Helper implementieren (Content-Based Filtering)
+  - Jaccard-Similarity für Text (Category + Tags)
+  - Price-Proximity (normalized)
+  - Delivery-Proximity (normalized)
+  - Trust-Score (Rating + Orders, capped at 50)
+  - Weighted Score: 0.45 Text + 0.15 Price + 0.15 Delivery + 0.25 Trust
+- [x] tRPC-Procedure similarGigs.byGigId erstellen
+- [x] SimilarGigs-Komponente erstellen
+- [x] GigDetail.tsx Integration ("Ähnliche Gigs" Section)
+- [ ] Telemetrie (similar_gigs.requested, similar_gigs.rendered) - TODO: PostHog
+- [ ] Vitest-Tests schreiben - TODO
+
+### 2. Exit-Intent-Modal (4h)
+- [x] useExitIntent-Hook implementieren (Mouse-Y ≤ 0, Inaktivität 30s)
+  - Mouse-out detection (clientY ≤ 0)
+  - Inactivity timeout (default: 30s)
+  - Session-based firing (once per session)
+- [x] ExitIntentModal-Komponente erstellen
+  - Variant: "control" vs. "discount" (A/B-ready)
+  - Discount-Offer: 5€ Rabatt
+  - SessionStorage-Guard (exit_intent_done)
+- [x] Checkout.tsx Integration
+- [ ] A/B-Testing-Integration (Feature-Flags) - TODO
+- [ ] Stripe-Discount-Erzeugung (createDiscount) - TODO
+- [ ] Telemetrie (exit_intent.triggered, shown, accepted, dismissed) - TODO: PostHog
+- [ ] React-Testing-Library-Tests schreiben - TODO
+
+### 3. Advanced Analytics (16h)
+- [x] Event-Schema versioniert (v:1) - analytics.ts erstellt
+- [x] Analytics-Helper-Functions (A.viewMarketplace, A.viewGig, etc.)
+  - KPI-Funnel: view_marketplace → view_gig → start_checkout → checkout_step → purchase_succeeded
+  - Similar-Gigs-Events: similarGigsRequested, similarGigsRendered
+  - Exit-Intent-Events: exitIntentTriggered, shown, accepted, dismissed
+  - User-Events: userSignup, userLogin
+  - Search/Filter-Events
+- [x] Consent-Helper-Functions (getConsent, updateConsent)
+- [x] Telemetrie in SimilarGigs.tsx integriert
+- [x] Telemetrie in ExitIntentModal.tsx integriert
+- [ ] PostHog-Integration (client-side) - TODO: main.tsx initialisieren
+- [ ] Consent-Aware-Tracking (analytics, marketing) - TODO: Consent-Banner
+- [ ] Sentry-Integration (Error-Tracking) - TODO
+- [ ] Heatmaps + Session-Recording (Consent-gated) - TODO: PostHog-Config

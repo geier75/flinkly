@@ -10,6 +10,7 @@ import { userRouter } from "./routers/user";
 import { messagesRouter } from "./routers/messages";
 import { verificationRouter } from "./routers/verification";
 import { adminRouter } from "./routers/admin";
+import { similarGigsRouter } from "./routers/similarGigs";
 
 export const appRouter = router({
   system: systemRouter,
@@ -17,6 +18,7 @@ export const appRouter = router({
   messages: messagesRouter,
   verification: verificationRouter,
   admin: adminRouter,
+  similarGigs: similarGigsRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
