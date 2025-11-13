@@ -95,7 +95,7 @@ export default function GigDetail() {
             description: gig.description,
             price: Number(gig.price) * 100, // Convert to cents
             imageUrl: gig.imageUrl || undefined,
-            seller: { name: gig.seller?.name || "Seller" },
+            seller: { name: "Seller" }, // TODO: Add seller relation to gig query
             rating: gig.averageRating ? Number(gig.averageRating) : undefined,
             reviewCount: gig.completedOrders || 0,
           }),

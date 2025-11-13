@@ -2,6 +2,9 @@ import "dotenv/config";
 import express from "express";
 import { createServer } from "http";
 import net from "net";
+import helmet from "helmet";
+import cors from "cors";
+import { authRateLimiter, anonRateLimiter } from "./rateLimiter";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
@@ -47,6 +50,31 @@ async function startServer() {
     webhookHandler
   );
   
+  // Security headers (Helmet)
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Allow inline scripts for Vite HMR
+          styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+          fontSrc: ["'self'", "https://fonts.gstatic.com"],
+          imgSrc: ["'self'", "data:", "https:", "blob:"],
+          connectSrc: ["'self'", "wss:", "ws:"],
+          frameSrc: ["'self'", "https://js.stripe.com"],
+        },
+      },
+      crossOriginEmbedderPolicy: false, // Disable for Stripe
+    })
+  );
+
+  // CORS
+  app.use(cors({ origin: true, credentials: true }));
+
+  // Rate limiting (before body parser to protect against large payloads)
+  app.use("/api", authRateLimiter);
+  app.use("/api", anonRateLimiter);
+
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));

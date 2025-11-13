@@ -674,3 +674,48 @@
 **Server:** ✅ Läuft stabil mit Socket.io
 **TypeScript:** ✅ Keine Fehler
 **Next:** SEO & Performance-Optimierung
+
+
+---
+
+## 🔒 SECURITY & RATE-LIMITING (In Arbeit)
+
+### Phase 1: Rate-Limiting (4h)
+- [x] express-rate-limit installiert
+- [x] Rate-Limiter für Auth-Routes (100 req/min)
+- [x] Rate-Limiter für Anon-Routes (20 req/min)
+- [x] Rate-Limiter für tRPC-Procedures
+- [x] IPv6-Support implementiert
+- [ ] Redis-Store für verteilte Rate-Limits (optional)
+
+### Phase 2: CSRF-Protection (4h)
+- [ ] csurf Middleware installieren
+- [ ] CSRF-Token-Generation
+- [ ] CSRF-Token-Validation
+- [ ] Frontend CSRF-Token-Handling
+
+### Phase 3: Content-Security-Policy (4h)
+- [x] helmet installiert
+- [x] CSP-Header konfiguriert (Stripe-kompatibel)
+- [x] XSS-Protection-Header
+- [x] CORS konfiguriert
+
+### Phase 4: Zod-Validation (8h)
+- [ ] Zod-Schemas für alle tRPC-Procedures
+- [ ] Input-Validation mit z.object()
+- [ ] Custom Error-Messages
+- [ ] Type-Safety überprüfen
+
+### Phase 5: Input-Sanitization (4h)
+- [ ] DOMPurify für HTML-Content
+- [ ] SQL-Injection-Prevention (Drizzle ORM)
+- [ ] Path-Traversal-Prevention
+- [ ] Command-Injection-Prevention
+
+### Phase 6: File-Upload-Validation (4h)
+- [ ] MIME-Type-Validation
+- [ ] File-Size-Limits (10MB)
+- [ ] Malware-Scanning (ClamAV optional)
+- [ ] File-Extension-Whitelist
+
+**Total:** 28h (~1 Woche)
