@@ -22,6 +22,7 @@ import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Impressum from "./pages/Impressum";
+import Widerruf from "./pages/Widerruf";
 import OrderDetail from "./pages/OrderDetail";
 import Settings from "./pages/Settings";
 import Checkout from "./pages/Checkout";
@@ -53,6 +54,7 @@ function Router() {
       <Route path={"/terms"} component={Terms} />
       <Route path={"/privacy"} component={Privacy} />
       <Route path={"/impressum"} component={Impressum} />
+      <Route path={"/widerruf"} component={Widerruf} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

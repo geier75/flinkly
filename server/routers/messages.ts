@@ -5,6 +5,7 @@
 import { router, protectedProcedure } from "../_core/trpc";
 import { z } from "zod";
 import * as db from "../db";
+import { sanitizeMessage } from "@shared/sanitize";
 import { storagePut } from "../storage";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
@@ -133,7 +134,7 @@ export const messagesRouter = router({
       await db.createMessage({
         conversationId: input.conversationId,
         senderId: userId,
-        content: input.content,
+        content: sanitizeMessage(input.content),
         type: input.type,
         fileUrl: input.fileUrl,
         fileName: input.fileName,

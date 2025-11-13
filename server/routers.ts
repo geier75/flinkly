@@ -5,6 +5,7 @@ import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import * as v from "./validation";
+import { sanitizeHTML, sanitizeText } from "@shared/sanitize";
 import { userRouter } from "./routers/user";
 import { messagesRouter } from "./routers/messages";
 
@@ -57,8 +58,8 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await db.createGig({
           sellerId: ctx.user.id,
-          title: input.title,
-          description: input.description,
+          title: sanitizeText(input.title),
+          description: sanitizeHTML(input.description),
           category: input.category,
           price: input.price,
           deliveryDays: input.deliveryDays,
@@ -104,8 +105,8 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         await db.createGig({
           sellerId: ctx.user.id,
-          title: input.title,
-          description: input.description,
+          title: sanitizeText(input.title),
+          description: sanitizeHTML(input.description),
           category: input.category,
           price: input.price,
           deliveryDays: input.deliveryDays,

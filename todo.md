@@ -720,3 +720,20 @@
 - [ ] File-Extension-Whitelist
 
 **Total:** 28h (~1 Woche)
+
+
+---
+
+## 🔴 KRITISCHE TASKS (Sofort)
+
+- [x] **AGB & Widerrufsbelehrung erstellt** (rechtlich kritisch)
+  - [x] AGB-Seite mit DACH-konformen Klauseln (Terms.tsx aktualisiert)
+  - [x] Widerrufsbelehrung (14-Tage-Frist, EU-Recht, Widerruf.tsx erstellt)
+  - [x] In App.tsx verlinkt (/widerruf Route)
+  
+- [x] **Input-Sanitization implementiert** (Security kritisch)
+  - [x] isomorphic-dompurify installiert
+  - [x] HTML-Content in Gig-Beschreibungen sanitizen (sanitizeHTML)
+  - [x] Message-Content sanitizen (sanitizeMessage)
+  - [x] Zentrale Sanitization-Utility (shared/sanitize.ts)
+  - [x] In server/routers.ts und messages.ts integriert
