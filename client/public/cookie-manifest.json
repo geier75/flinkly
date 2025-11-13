@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2025-01-13",
+  "categories": [
+    {
+      "id": "essential",
+      "name": "Essentiell",
+      "description": "Diese Cookies sind für die Grundfunktionen der Website erforderlich.",
+      "required": true,
+      "cookies": [
+        {
+          "name": "flinkly_session",
+          "purpose": "Authentifizierung und Session-Management",
+          "duration": "30 Tage",
+          "type": "first-party"
+        },
+        {
+          "name": "flinkly_consent_state",
+          "purpose": "Speichert Ihre Cookie-Einstellungen",
+          "duration": "12 Monate",
+          "type": "first-party"
+        }
+      ]
+    },
+    {
+      "id": "statistics",
+      "name": "Statistik",
+      "description": "Helfen uns zu verstehen, wie Besucher mit der Website interagieren.",
+      "required": false,
+      "cookies": [
+        {
+          "name": "_ga",
+          "purpose": "Google Analytics - Besucher-Tracking",
+          "duration": "2 Jahre",
+          "type": "third-party",
+          "provider": "Google LLC"
+        },
+        {
+          "name": "_gid",
+          "purpose": "Google Analytics - Session-Tracking",
+          "duration": "24 Stunden",
+          "type": "third-party",
+          "provider": "Google LLC"
+        }
+      ]
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "description": "Ermöglichen personalisierte Werbung und Tracking über Drittanbieter.",
+      "required": false,
+      "cookies": [
+        {
+          "name": "_fbp",
+          "purpose": "Facebook Pixel - Conversion-Tracking",
+          "duration": "3 Monate",
+          "type": "third-party",
+          "provider": "Meta Platforms Inc."
+        }
+      ]
+    },
+    {
+      "id": "personalization",
+      "name": "Personalisierung",
+      "description": "Speichern Ihre Präferenzen für ein besseres Nutzererlebnis.",
+      "required": false,
+      "cookies": [
+        {
+          "name": "flinkly_theme",
+          "purpose": "Speichert Ihre Theme-Präferenz (Light/Dark)",
+          "duration": "12 Monate",
+          "type": "first-party"
+        },
+        {
+          "name": "flinkly_lang",
+          "purpose": "Speichert Ihre Sprachpräferenz",
+          "duration": "12 Monate",
+          "type": "first-party"
+        }
+      ]
+    }
+  ]
+}

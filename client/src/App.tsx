@@ -29,6 +29,7 @@ import Checkout from "./pages/Checkout";
 import SellerDashboard from "./pages/SellerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Messages from "./pages/Messages";
+import DataExportDashboard from "./pages/DataExportDashboard";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -47,6 +48,7 @@ function Router() {
       <Route path={"/order/:id"} component={OrderDetail} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/messages"} component={Messages} />
+      <Route path={"data-export-dashboard"} component={DataExportDashboard} />
       <Route path={"/about"} component={About} />
       <Route path={"/how-it-works"} component={HowItWorks} />
       <Route path={"/faq"} component={FAQ} />

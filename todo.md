@@ -750,3 +750,47 @@
   - [x] Zentrale Validation-Schemas in validation.ts vorhanden
   - [x] Alle .input() Calls mit Zod-Schemas erweitert
   - [x] Procedures ohne Input-Parameter benötigen keine Validation
+
+
+---
+
+## 🔒 DSGVO++ 2025-STANDARD (Better-than-Best-Practice)
+
+### Phase 1: Cookie-Consent perfektionieren
+- [ ] Granulares Opt-in (Essentiell, Statistik, Marketing, Personalisierung)
+- [ ] Contextual Consent (erst bei Cookie-relevanten Requests)
+- [ ] Real-Time Consent API (JSON-Versionierung)
+- [ ] Revocable Consent Center (Footer-Link)
+- [ ] Proof-of-Consent Logging (Consent-ID + Timestamp + Hash, 12-Monate-Retention)
+- [ ] Geo-Aware Banner (nur EU/EEA)
+- [ ] Accessibility (Tastaturnavigation, Fokus-Traps, Light/Dark-Theme, DE/EN)
+- [ ] Cookie-Policy JSON (/cookie-manifest.json)
+
+### Phase 2: Datenschutzerklärung erweitern
+- [ ] Automatisch aktualisiert durch Datenschutz-Manifest (JSON-Source)
+- [ ] Maschinenlesbar (JSON-LD)
+- [ ] Versionierung & Change-Log (effective_date)
+- [ ] DSAR-Formular (Art. 15–22) eingebettet
+- [ ] AI-Assisted Plain-Language Layer
+- [ ] Legal-Seal (SHA-256-Checksumme)
+
+### Phase 3: Datenexport-Dashboard
+- [ ] Self-Service Export Dashboard (JSON + CSV + PDF)
+- [ ] One-Click API-Export (/api/user/data-export, 48h-Links)
+- [ ] Selective Export (Checkboxen pro Datenkategorie)
+- [ ] Encryption-at-Rest (AES-256)
+- [ ] Audit Trail (data_export_logs-Tabelle)
+
+### Phase 4: Account-Löschung mit Grace-Period
+- [ ] 2-Stufiger Prozess (Deaktivierung + 30-Tage-Wartezeit)
+- [ ] Automatisierte Scheduler-Task (DELETE nach 30 Tagen)
+- [ ] Pseudonymisierung sensibler Daten in Logs
+- [ ] E-Mail-Bestätigung + Hash-Token
+- [ ] Retention Policy Dashboard (Admin-Übersicht)
+
+### Phase 5: Trust & Transparency Layer
+- [ ] Live Privacy Dashboard (welche Daten aktiv sind)
+- [ ] Machine-Readable Consent Receipt (ISO 27560)
+- [ ] Privacy Score (UX-Gamification, Badge)
+- [ ] Quarterly External Audit (Trust Transparency Report)
+- [ ] Zero-Knowledge Encryption-Mode (optional, client-seitig)

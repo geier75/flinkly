@@ -118,4 +118,40 @@ export const userRouter = router({
       message: "Die Account-Löschung wurde erfolgreich widerrufen.",
     };
   }),
+
+  /**
+   * Log consent for DSGVO compliance (Proof-of-Consent)
+   */
+  logConsent: protectedProcedure
+    .input(
+      z.object({
+        consentId: z.string().uuid(),
+        timestamp: z.string(),
+        version: z.string(),
+        essential: z.boolean(),
+        statistics: z.boolean(),
+        marketing: z.boolean(),
+        personalization: z.boolean(),
+        hash: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      // In production: store in consent_logs table with 12-month retention
+      console.log(`[Consent-Log] User ${ctx.user.id} - Consent ${input.consentId} - Hash: ${input.hash}`);
+      
+      // TODO: Implement consent_logs table and store consent
+      // await db.createConsentLog({
+      //   userId: ctx.user.id,
+      //   consentId: input.consentId,
+      //   timestamp: input.timestamp,
+      //   version: input.version,
+      //   essential: input.essential,
+      //   statistics: input.statistics,
+      //   marketing: input.marketing,
+      //   personalization: input.personalization,
+      //   hash: input.hash,
+      // });
+      
+      return { success: true };
+    }),
 });
