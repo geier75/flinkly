@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { CheckoutSkeleton } from "@/components/SkeletonUI";
 import ProgressIndicator from "@/components/ProgressIndicator";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import {
   CheckCircle,
   Upload,
@@ -134,18 +135,15 @@ export default function Checkout() {
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-slate-600 mb-6">
-          <button onClick={() => setLocation("/marketplace")} className="hover:text-blue-600">
-            Marktplatz
-          </button>
-          <ChevronRight className="h-4 w-4" />
-          <button onClick={() => setLocation(`/gig/${gig.id}`)} className="hover:text-blue-600">
-            {gig.title}
-          </button>
-          <ChevronRight className="h-4 w-4" />
-          <span className="text-slate-900 font-medium">Checkout</span>
-        </div>
+        {/* Breadcrumbs (H3: User-Kontrolle & Freiheit) */}
+        <Breadcrumbs
+          items={[
+            { label: 'Marktplatz', href: '/marketplace' },
+            { label: gig.title, href: `/gig/${gig.id}` },
+            { label: 'Checkout', href: `/checkout/${gig.id}` },
+          ]}
+          className="mb-6"
+        />
 
         {/* Progress Indicator (H1: System-Status sichtbar machen) */}
         <Card className="mb-6">

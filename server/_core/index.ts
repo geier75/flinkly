@@ -33,13 +33,17 @@ async function startServer() {
   
   // IMPORTANT: Stripe webhook MUST use express.raw() BEFORE express.json()
   // This is required for signature verification
+  const webhookHandler = async (req: any, res: any) => {
+    const { handleStripeWebhook } = await import('../webhooks/stripe');
+    return handleStripeWebhook(req, res);
+  };
+  
+  // Register for both GET (Stripe verification) and POST (actual webhooks)
+  app.get('/api/stripe/webhook', webhookHandler);
   app.post(
     '/api/stripe/webhook',
     express.raw({ type: 'application/json' }),
-    async (req, res) => {
-      const { handleStripeWebhook } = await import('../webhooks/stripe');
-      return handleStripeWebhook(req, res);
-    }
+    webhookHandler
   );
   
   // Configure body parser with larger size limit for file uploads

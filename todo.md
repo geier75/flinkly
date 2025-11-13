@@ -566,3 +566,8 @@
   - [x] Asynchrone Event-Verarbeitung
 
 ---
+
+- [x] **Webhook-Route 404-Fehler behoben** (1h)
+  - [x] Route-Registrierung für GET + POST
+  - [x] Server-Logs analysiert
+  - [x] Endpoint getestet (200 OK + JSON)
