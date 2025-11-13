@@ -122,11 +122,11 @@ export default function Checkout() {
   const isStepComplete = (step: number) => {
     switch (step) {
       case 1:
-        return briefing.projectName && briefing.description;
+        return briefing.projectName.length >= 5 && briefing.description.length >= 20;
       case 2:
         return payment.acceptEscrow;
       case 3:
-        return legal.acceptTerms;
+        return legal.acceptTerms && (!legal.needsAVV || (legal.companyName && legal.dataProcessing));
       default:
         return false;
     }
@@ -181,7 +181,14 @@ export default function Checkout() {
                       onChange={(e) =>
                         setBriefing({ ...briefing, projectName: e.target.value })
                       }
+                      className={briefing.projectName.length > 0 && briefing.projectName.length < 5 ? "border-red-500 focus:ring-red-500" : ""}
                     />
+                    {briefing.projectName.length > 0 && briefing.projectName.length < 5 && (
+                      <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        Projektname muss mindestens 5 Zeichen lang sein
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -196,10 +203,19 @@ export default function Checkout() {
                       onChange={(e) =>
                         setBriefing({ ...briefing, description: e.target.value })
                       }
+                      className={briefing.description.length > 0 && briefing.description.length < 20 ? "border-red-500 focus:ring-red-500" : ""}
                     />
-                    <p className="text-xs text-slate-500 mt-1">
-                      Je detaillierter, desto besser das Ergebnis
-                    </p>
+                    {briefing.description.length > 0 && briefing.description.length < 20 ? (
+                      <p className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                        <AlertCircle className="h-3 w-3" />
+                        Beschreibung muss mindestens 20 Zeichen lang sein ({briefing.description.length}/20)
+                      </p>
+                    ) : (
+                      <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
+                        <CheckCircle className="h-3 w-3 text-green-600" />
+                        Je detaillierter, desto besser das Ergebnis
+                      </p>
+                    )}
                   </div>
 
                   <div>

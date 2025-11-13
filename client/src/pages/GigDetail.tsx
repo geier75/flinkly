@@ -319,6 +319,78 @@ export default function GigDetail() {
                 )}
               </CardContent>
             </Card>
+
+            {/* FAQ Section - SOTA 2025 */}
+            <Card className="border-slate-200">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5 text-blue-600" />
+                  Häufig gestellte Fragen
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {/* FAQ Item 1 */}
+                  <div className="border-b border-slate-200 pb-4 last:border-0">
+                    <p className="font-semibold text-slate-900 mb-2">
+                      Wie funktioniert der Bestellprozess?
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Nach der Bestellung füllst du ein kurzes Briefing aus. Der Seller startet dann mit der Arbeit und liefert innerhalb der angegebenen Zeit. Du kannst Revisionen anfordern, bis du zufrieden bist.
+                    </p>
+                  </div>
+
+                  {/* FAQ Item 2 */}
+                  <div className="border-b border-slate-200 pb-4 last:border-0">
+                    <p className="font-semibold text-slate-900 mb-2">
+                      Was passiert, wenn ich nicht zufrieden bin?
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Du kannst unbegrenzt Revisionen anfordern. Falls keine Einigung möglich ist, kannst du innerhalb von 14 Tagen eine Dispute-Anfrage stellen. Unser Support-Team hilft dann bei der Lösung.
+                    </p>
+                  </div>
+
+                  {/* FAQ Item 3 */}
+                  <div className="border-b border-slate-200 pb-4 last:border-0">
+                    <p className="font-semibold text-slate-900 mb-2">
+                      Wann wird der Seller bezahlt?
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Deine Zahlung wird sicher im Escrow-System verwahrt. Der Seller erhält das Geld erst, wenn du die Lieferung akzeptiert hast. So bist du maximal geschützt.
+                    </p>
+                  </div>
+
+                  {/* FAQ Item 4 */}
+                  <div className="pb-4 last:border-0">
+                    <p className="font-semibold text-slate-900 mb-2">
+                      Kann ich den Seller vorher kontaktieren?
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      Ja! Klicke auf \"Frage stellen\" um dem Seller eine Nachricht zu schicken. So kannst du Details klären, bevor du bestellst.
+                    </p>
+                  </div>
+                </div>
+
+                {/* CTA: More Questions */}
+                <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm font-semibold text-blue-900 mb-2">
+                    Weitere Fragen?
+                  </p>
+                  <p className="text-sm text-blue-800 mb-3">
+                    Unser Support-Team hilft dir gerne weiter.
+                  </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full border-blue-400 text-blue-700 hover:bg-blue-100"
+                    onClick={() => setLocation("/contact")}
+                  >
+                    <MessageSquare className="h-4 w-4 mr-2" />
+                    Support kontaktieren
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Sidebar (Sticky on Desktop) */}

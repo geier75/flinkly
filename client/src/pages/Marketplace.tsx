@@ -324,15 +324,49 @@ export default function Marketplace() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <Search className="h-16 w-16 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-900 mb-2">
+          <div className="max-w-md mx-auto text-center py-16">
+            <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center">
+              <Search className="h-16 w-16 text-blue-300" />
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-3">
               Keine Gigs gefunden
             </h3>
-            <p className="text-slate-600 mb-6">
-              Versuche andere Suchbegriffe oder Filter
+            <p className="text-slate-600 mb-8 text-lg">
+              Versuche andere Suchbegriffe oder passe deine Filter an, um mehr Ergebnisse zu sehen.
             </p>
-            <Button onClick={clearFilters}>Filter zurücksetzen</Button>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Button 
+                onClick={clearFilters}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+              >
+                <X className="h-5 w-5 mr-2" />
+                Filter zurücksetzen
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => setSearchQuery("")}
+                className="border-2 border-slate-200 hover:border-blue-400 font-semibold px-6 py-3 rounded-xl transition-all"
+              >
+                Suche löschen
+              </Button>
+            </div>
+            
+            {/* Trust-Element: Beliebte Kategorien als Fallback */}
+            <div className="mt-12 pt-8 border-t border-slate-200">
+              <p className="text-sm font-medium text-slate-700 mb-4">Beliebte Kategorien:</p>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {["Logo Design", "Social Media", "Content Writing", "Video Editing", "Web Development"].map((cat) => (
+                  <Badge
+                    key={cat}
+                    variant="outline"
+                    className="cursor-pointer px-4 py-2 text-sm font-medium hover:bg-blue-50 hover:border-blue-400 transition-all"
+                    onClick={() => setCategory(cat)}
+                  >
+                    {cat}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
         )}
       </div>

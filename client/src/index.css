@@ -245,3 +245,130 @@
     }
   }
 }
+/* ============================================
+   UX-Heuristik H10: Accessibility & Inklusion
+   ============================================ */
+
+/* Focus-States (WCAG 2.2 AA) - Deutlich sichtbar */
+@layer base {
+  /* Enhanced Focus-Ring für alle interaktiven Elemente */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="button"]:focus-visible,
+  [tabindex]:focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+
+  /* Extra-Visible Focus für Primary-CTAs */
+  button.bg-blue-600:focus-visible,
+  button.bg-primary:focus-visible {
+    @apply outline-4 outline-blue-400 ring-4 ring-blue-200;
+  }
+}
+
+/* Reduced-Motion-Support (WCAG 2.2 AA) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Kontrast-Fixes (WCAG 2.2 AA - 4.5:1 Minimum) */
+@layer components {
+  /* Ensure text-slate-600 has sufficient contrast on white bg */
+  .text-slate-600 {
+    color: oklch(0.45 0.015 285.938); /* Darkened from 0.552 to 0.45 for 4.5:1 contrast */
+  }
+
+  /* Ensure muted-foreground has sufficient contrast */
+  .text-muted-foreground {
+    color: oklch(0.45 0.016 285.938); /* Darkened for better contrast */
+  }
+
+  /* Placeholder text contrast */
+  input::placeholder,
+  textarea::placeholder {
+    color: oklch(0.5 0.016 285.938); /* Sufficient contrast for placeholders */
+  }
+}
+
+/* ============================================
+   UX-Heuristik H8: Ästhetik & Minimalismus
+   ============================================ */
+
+/* Motion-Hierarchy - Wichtige Elemente hervorheben */
+@layer components {
+  /* Primary-CTA Hover-Animation */
+  .btn-primary-hover {
+    @apply transition-all duration-200 hover:scale-105 hover:shadow-xl;
+  }
+
+  /* Card Hover-Animation */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+  }
+
+  /* Focus-State-Animation */
+  .focus-animate:focus-visible {
+    @apply animate-pulse;
+  }
+}
+
+/* Whitespace-Optimierung */
+@layer components {
+  /* Consistent Spacing-System */
+  .section-spacing {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+
+  .card-spacing {
+    @apply p-4 md:p-6 lg:p-8;
+  }
+
+  .content-spacing {
+    @apply space-y-4 md:space-y-6 lg:space-y-8;
+  }
+}
+
+/* ============================================
+   UX-Heuristik H9: Hilfestellung bei Fehlern
+   ============================================ */
+
+/* Error-Animations (Shake, Highlight) */
+@layer components {
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+    20%, 40%, 60%, 80% { transform: translateX(8px); }
+  }
+
+  .error-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes highlight {
+    0%, 100% { background-color: transparent; }
+    50% { background-color: oklch(0.95 0.05 27.325); } /* Light red highlight */
+  }
+
+  .error-highlight {
+    animation: highlight 1s ease-in-out;
+  }
+}
+
+/* ============================================
+   Price Display Utility
+   ============================================ */
+@layer components {
+  .price-display-small {
+    @apply text-lg font-bold text-blue-600;
+  }
+}
