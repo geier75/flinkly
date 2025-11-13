@@ -136,22 +136,29 @@ export const userRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      // In production: store in consent_logs table with 12-month retention
+      // Store consent in consent_logs table with 12-month retention
       console.log(`[Consent-Log] User ${ctx.user.id} - Consent ${input.consentId} - Hash: ${input.hash}`);
       
-      // TODO: Implement consent_logs table and store consent
-      // await db.createConsentLog({
-      //   userId: ctx.user.id,
-      //   consentId: input.consentId,
-      //   timestamp: input.timestamp,
-      //   version: input.version,
-      //   essential: input.essential,
-      //   statistics: input.statistics,
-      //   marketing: input.marketing,
-      //   personalization: input.personalization,
-      //   hash: input.hash,
-      // });
+      await db.createConsentLog({
+        userId: ctx.user.id,
+        consentId: input.consentId,
+        timestamp: new Date(input.timestamp),
+        version: input.version,
+        essential: input.essential,
+        statistics: input.statistics,
+        marketing: input.marketing,
+        personalization: input.personalization,
+        hash: input.hash,
+      });
       
       return { success: true };
     }),
+
+  /**
+   * Get account deletion status
+   */
+  getAccountDeletionStatus: protectedProcedure.query(async ({ ctx }) => {
+    const request = await db.getAccountDeletionRequest(ctx.user.id);
+    return request || null;
+  }),
 });

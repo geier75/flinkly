@@ -1,9 +1,10 @@
-import { eq, or, and, desc, ne, isNull, inArray } from "drizzle-orm";
+import { eq, or, and, desc, ne, isNull, inArray, lte } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, users, gigs, orders, reviews, transactions, payouts, invoices,
   InsertGig, InsertOrder, InsertReview, InsertTransaction, InsertPayout, InsertInvoice,
-  conversations, messages, InsertConversation, InsertMessage
+  conversations, messages, InsertConversation, InsertMessage,
+  consentLogs, InsertConsentLog, accountDeletionRequests, InsertAccountDeletionRequest
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -520,47 +521,6 @@ export async function getActiveOrdersByUserId(userId: number) {
 }
 
 /**
- * Schedule account deletion (30 days grace period)
- */
-export async function scheduleAccountDeletion(userId: number, reason: string) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  // Add deletionScheduledAt field to users table (needs migration)
-  // For now, we'll just mark the user as inactive
-  await db
-    .update(users)
-    .set({ 
-      updatedAt: new Date(),
-      // deletionScheduledAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-    })
-    .where(eq(users.id, userId));
-  
-  // TODO: Create scheduled job to delete account after 30 days
-  console.log(`[DSGVO] Account deletion scheduled for user ${userId}. Reason: ${reason}`);
-}
-
-/**
- * Cancel account deletion
- */
-export async function cancelAccountDeletion(userId: number) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  
-  // Remove deletionScheduledAt field
-  await db
-    .update(users)
-    .set({ 
-      updatedAt: new Date(),
-      // deletionScheduledAt: null
-    })
-    .where(eq(users.id, userId));
-  
-  console.log(`[DSGVO] Account deletion cancelled for user ${userId}`);
-}
-
-
-/**
  * Get orders by buyer ID
  */
 export async function getOrdersByBuyerId(userId: number) {
@@ -633,4 +593,135 @@ export async function getReviewsByGigSellerId(sellerId: number) {
     .orderBy(desc(reviews.createdAt));
   
   return result;
+}
+
+
+// ============================================
+// DSGVO++ FUNCTIONS (Consent Logs, Account Deletion)
+// ============================================
+
+/**
+ * Create consent log (Proof-of-Consent)
+ */
+export async function createConsentLog(log: InsertConsentLog): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.insert(consentLogs).values(log);
+}
+
+/**
+ * Get consent logs by user ID
+ */
+export async function getConsentLogsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return db.select().from(consentLogs)
+    .where(eq(consentLogs.userId, userId))
+    .orderBy(desc(consentLogs.timestamp));
+}
+
+/**
+ * Schedule account deletion (30-day grace period)
+ */
+export async function scheduleAccountDeletion(userId: number, reason?: string): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const scheduledDeletionAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
+  
+  await db.insert(accountDeletionRequests).values({
+    userId,
+    requestedAt: new Date(),
+    scheduledDeletionAt,
+    reason: reason || null,
+    status: "pending",
+  });
+  
+  console.log(`[DSGVO] Account deletion scheduled for user ${userId} at ${scheduledDeletionAt}`);
+}
+
+/**
+ * Cancel account deletion
+ */
+export async function cancelAccountDeletion(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db
+    .update(accountDeletionRequests)
+    .set({
+      status: "cancelled",
+      cancelledAt: new Date(),
+    })
+    .where(eq(accountDeletionRequests.userId, userId));
+  
+  console.log(`[DSGVO] Account deletion cancelled for user ${userId}`);
+}
+
+/**
+ * Get pending account deletion requests (for automated cleanup)
+ */
+export async function getPendingAccountDeletions() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  const now = new Date();
+  return db
+    .select()
+    .from(accountDeletionRequests)
+    .where(
+      and(
+        eq(accountDeletionRequests.status, "pending"),
+        lte(accountDeletionRequests.scheduledDeletionAt, now)
+      )
+    );
+}
+
+/**
+ * Get account deletion request by user ID
+ */
+export async function getAccountDeletionRequest(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  
+  const result = await db
+    .select()
+    .from(accountDeletionRequests)
+    .where(eq(accountDeletionRequests.userId, userId))
+    .limit(1);
+  
+  return result.length > 0 ? result[0] : undefined;
+}
+
+/**
+ * Complete account deletion (pseudonymize data)
+ */
+export async function completeAccountDeletion(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Pseudonymize user data (keep for legal/accounting purposes, but remove personal info)
+  await db
+    .update(users)
+    .set({
+      name: "DELETED_USER",
+      email: null,
+      bio: null,
+      avatarUrl: null,
+      openId: `deleted_${userId}_${Date.now()}`,
+    })
+    .where(eq(users.id, userId));
+  
+  // Mark deletion as completed
+  await db
+    .update(accountDeletionRequests)
+    .set({
+      status: "completed",
+      completedAt: new Date(),
+    })
+    .where(eq(accountDeletionRequests.userId, userId));
+  
+  console.log(`[DSGVO] Account deletion completed for user ${userId}`);
 }

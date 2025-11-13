@@ -178,3 +178,40 @@ export const messages = mysqlTable("messages", {
 
 export type Message = typeof messages.$inferSelect;
 export type InsertMessage = typeof messages.$inferInsert;
+
+/**
+ * Consent Logs (DSGVO Proof-of-Consent, 12-Monate-Retention)
+ */
+export const consentLogs = mysqlTable("consent_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  consentId: varchar("consentId", { length: 64 }).notNull().unique(),
+  timestamp: timestamp("timestamp").notNull(),
+  version: varchar("version", { length: 16 }).notNull(),
+  essential: boolean("essential").notNull().default(true),
+  statistics: boolean("statistics").notNull().default(false),
+  marketing: boolean("marketing").notNull().default(false),
+  personalization: boolean("personalization").notNull().default(false),
+  hash: varchar("hash", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ConsentLog = typeof consentLogs.$inferSelect;
+export type InsertConsentLog = typeof consentLogs.$inferInsert;
+
+/**
+ * Account Deletion Requests (30-Tage-Grace-Period)
+ */
+export const accountDeletionRequests = mysqlTable("account_deletion_requests", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  requestedAt: timestamp("requestedAt").defaultNow().notNull(),
+  scheduledDeletionAt: timestamp("scheduledDeletionAt").notNull(),
+  reason: text("reason"),
+  status: mysqlEnum("status", ["pending", "cancelled", "completed"]).notNull().default("pending"),
+  cancelledAt: timestamp("cancelledAt"),
+  completedAt: timestamp("completedAt"),
+});
+
+export type AccountDeletionRequest = typeof accountDeletionRequests.$inferSelect;
+export type InsertAccountDeletionRequest = typeof accountDeletionRequests.$inferInsert;
