@@ -627,3 +627,50 @@
 - [ ] In-App-Notifications (Badge, Toast)
 - [ ] Push-Notifications (Browser)
 - [ ] Manus Built-in Notification API Integration
+
+
+---
+
+## 💬 MESSAGING-SYSTEM (Abgeschlossen)
+
+### Phase 1: Datenbank-Schema (4h)
+- [x] Schema in drizzle/schema.ts hinzugefügt (conversations, messages)
+- [x] pnpm db:push ausgeführt
+- [x] DB-Helper in server/db.ts erstellt (createConversation, getMessages, markAsRead, etc.)
+
+### Phase 2: Backend-API (tRPC) (8h)
+- [x] server/routers/messages.ts erstellt
+- [x] tRPC-Procedures implementiert (getConversations, getMessages, sendMessage, markAsRead, uploadFile, getUnreadCount)
+- [x] user-Router und messages-Router in routers.ts registriert
+- [x] Alle TypeScript-Fehler behoben
+
+### Phase 3: Socket.io-Integration (12h)
+- [x] server/_core/socket.ts erstellt
+- [x] Authentication Middleware (sdk.authenticateRequest)
+- [x] Event-Handler (join_conversation, typing_start, message_sent, message_read)
+- [x] Room-Management (user rooms + conversation rooms)
+- [x] In server/_core/index.ts integriert
+- [x] Server erfolgreich gestartet mit Socket.io
+
+### Phase 4: File-Sharing (8h)
+- [x] File-Upload-UI in Messages.tsx (Paperclip-Button, File-Select, Preview)
+- [x] File-Preview (Images inline, PDFs/Docs als Download-Link)
+- [x] Download-Links (target="_blank")
+- [x] File-Type-Validation (Images, PDF, DOCX, XLSX, ZIP)
+- [x] Size-Limit (10MB)
+- [x] S3-Upload mit storagePut
+- [x] TypeScript-Fehler behoben
+
+### Phase 5: Frontend-UI (12h)
+- [x] Messages.tsx mit vollständiger Chat-UI
+- [x] Conversation-List mit Unread-Count
+- [x] Message-Thread mit Auto-Scroll
+- [x] Typing-Indicators (useSocket-Hook)
+- [x] File-Upload mit Preview
+- [x] Responsive Design (Mobile + Desktop)
+- [x] Real-time Updates (Socket.io-Client)
+
+**Status:** ✅ Vollständig implementiert und getestet
+**Server:** ✅ Läuft stabil mit Socket.io
+**TypeScript:** ✅ Keine Fehler
+**Next:** SEO & Performance-Optimierung

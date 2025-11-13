@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
-import MetaTags from "@/components/MetaTags";
+import { SEO, generateProductSchema, generateBreadcrumbSchema } from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -83,12 +83,28 @@ export default function GigDetail() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <MetaTags 
+      <SEO
         title={gig.title}
-        description={gig.description}
+        description={gig.description.substring(0, 160)}
         image={gig.imageUrl || undefined}
         type="product"
-        price={Number(gig.price)}
+        schema={{
+          ...generateProductSchema({
+            id: gig.id,
+            title: gig.title,
+            description: gig.description,
+            price: Number(gig.price) * 100, // Convert to cents
+            imageUrl: gig.imageUrl || undefined,
+            seller: { name: gig.seller?.name || "Seller" },
+            rating: gig.averageRating ? Number(gig.averageRating) : undefined,
+            reviewCount: gig.completedOrders || 0,
+          }),
+          ...generateBreadcrumbSchema([
+            { name: "Marktplatz", url: "https://flinkly.com/marketplace" },
+            { name: gig.category, url: `https://flinkly.com/marketplace?category=${gig.category}` },
+            { name: gig.title, url: `https://flinkly.com/gigs/${gig.id}` },
+          ]),
+        }}
       />
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Send, Paperclip, ArrowLeft } from "lucide-react";
+import { Send, Paperclip, ArrowLeft, FileText, Image as ImageIcon, X } from "lucide-react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
@@ -19,6 +19,9 @@ export default function Messages() {
   const { user, loading } = useAuth();
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
   const [messageText, setMessageText] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { data: conversations, refetch: refetchConversations } = trpc.messages.getConversations.useQuery(
@@ -30,6 +33,8 @@ export default function Messages() {
     { conversationId: selectedConversationId!, limit: 100, offset: 0 },
     { enabled: !!selectedConversationId }
   );
+
+  const uploadFileMutation = trpc.messages.uploadFile.useMutation();
 
   const sendMessageMutation = trpc.messages.sendMessage.useMutation({
     onSuccess: () => {
@@ -68,17 +73,81 @@ export default function Messages() {
     };
   }, [selectedConversationId, refetchMessages, refetchConversations]);
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check file size (10MB max)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Datei zu groß (max. 10MB)");
+      return;
+    }
+
+    setSelectedFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSendMessage = async () => {
-    if (!messageText.trim() || !selectedConversationId) return;
+    if ((!messageText.trim() && !selectedFile) || !selectedConversationId) return;
 
     try {
-      await sendMessageMutation.mutateAsync({
-        conversationId: selectedConversationId,
-        content: messageText,
-        type: "text",
-      });
+      setIsUploading(true);
+
+      if (selectedFile) {
+        // Upload file first
+        const reader = new FileReader();
+        reader.readAsDataURL(selectedFile);
+        
+        await new Promise((resolve) => {
+          reader.onload = async () => {
+            const base64 = reader.result as string;
+            const base64Data = base64.split(",")[1];
+
+            const uploadResult = await uploadFileMutation.mutateAsync({
+              conversationId: selectedConversationId,
+              fileData: base64Data,
+              fileName: selectedFile.name,
+              fileMimeType: selectedFile.type,
+              fileSize: selectedFile.size,
+            });
+
+            // Send message with file
+            await sendMessageMutation.mutateAsync({
+              conversationId: selectedConversationId,
+              content: messageText.trim() || selectedFile.name,
+              type: "file",
+              fileUrl: uploadResult.fileUrl,
+              fileName: uploadResult.fileName,
+              fileSize: uploadResult.fileSize,
+              fileMimeType: uploadResult.fileMimeType,
+            });
+
+            resolve(true);
+          };
+        });
+
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      } else {
+        // Send text message
+        await sendMessageMutation.mutateAsync({
+          conversationId: selectedConversationId,
+          content: messageText,
+          type: "text",
+        });
+      }
     } catch (error) {
       // Error handled by onError
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -208,6 +277,8 @@ export default function Messages() {
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages?.map((msg) => {
                   const isOwnMessage = msg.senderId === user.id;
+                  const isFile = msg.type === "file" && msg.fileUrl;
+                  const isImage = isFile && msg.fileMimeType?.startsWith("image/");
 
                   return (
                     <div
@@ -221,7 +292,40 @@ export default function Messages() {
                             : "bg-muted"
                         }`}
                       >
-                        <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                        {isFile && (
+                          <div className="mb-2">
+                            {isImage ? (
+                              <a href={msg.fileUrl!} target="_blank" rel="noopener noreferrer">
+                                <img
+                                  src={msg.fileUrl!}
+                                  alt={msg.fileName || "Image"}
+                                  className="max-w-full rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
+                                  style={{ maxHeight: "300px" }}
+                                />
+                              </a>
+                            ) : (
+                              <a
+                                href={msg.fileUrl!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 p-2 bg-background/10 rounded hover:bg-background/20 transition-colors"
+                              >
+                                <FileText className="h-5 w-5" />
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium truncate">{msg.fileName || "Datei"}</p>
+                                  {msg.fileSize && (
+                                    <p className="text-xs opacity-70">
+                                      {(msg.fileSize / 1024).toFixed(1)} KB
+                                    </p>
+                                  )}
+                                </div>
+                              </a>
+                            )}
+                          </div>
+                        )}
+                        {msg.content && (
+                          <p className="text-sm whitespace-pre-wrap break-words">{msg.content}</p>
+                        )}
                         <p className="text-xs opacity-70 mt-1">
                           {formatDistanceToNow(new Date(msg.createdAt), {
                             addSuffix: true,
@@ -237,10 +341,43 @@ export default function Messages() {
 
               {/* Message Input */}
               <div className="p-4 border-t">
+                {selectedFile && (
+                  <div className="mb-2 flex items-center gap-2 p-2 bg-muted rounded-lg">
+                    {selectedFile.type.startsWith("image/") ? (
+                      <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <FileText className="h-5 w-5 text-muted-foreground" />
+                    )}
+                    <span className="text-sm flex-1 truncate">{selectedFile.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {(selectedFile.size / 1024).toFixed(1)} KB
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6"
+                      onClick={handleRemoveFile}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" disabled>
-                    <Paperclip className="h-5 w-5" />
-                  </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileSelect}
+                  accept="image/*,.pdf,.docx,.xlsx,.zip"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  <Paperclip className="h-5 w-5" />
+                </Button>
 
                   <Input
                     value={messageText}
@@ -253,7 +390,7 @@ export default function Messages() {
 
                   <Button
                     onClick={handleSendMessage}
-                    disabled={!messageText.trim() || sendMessageMutation.isPending}
+                    disabled={(!messageText.trim() && !selectedFile) || sendMessageMutation.isPending || isUploading}
                   >
                     <Send className="h-5 w-5" />
                   </Button>
