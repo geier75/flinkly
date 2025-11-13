@@ -552,3 +552,17 @@
   - [ ] Motion-Design-Richtlinien
 
 ---
+
+
+---
+
+## 🔴 BUGFIXES (Kritisch)
+
+- [x] **Stripe-Webhook-Endpoint repariert** (2h)
+  - [x] JSON-Response mit {"verified": true} zurückgeben
+  - [x] express.raw() BEFORE express.json() registrieren
+  - [x] Signature-Verification mit stripe.webhooks.constructEvent()
+  - [x] Immer 200 OK zurückgeben (auch bei Fehler)
+  - [x] Asynchrone Event-Verarbeitung
+
+---

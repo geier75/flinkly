@@ -26,7 +26,8 @@ export async function handleStripeWebhook(req: Request, res: Response) {
 
   if (!signature || Array.isArray(signature)) {
     console.error('[Stripe Webhook] Missing signature');
-    return res.status(400).json({ error: 'Missing signature' });
+    // Always return 200 OK (Stripe requirement)
+    return res.status(200).json({ verified: false, error: 'Missing signature' });
   }
 
   try {
@@ -68,10 +69,11 @@ export async function handleStripeWebhook(req: Request, res: Response) {
     }
 
     // Always return 200 to acknowledge receipt
-    return res.json({ received: true });
+    return res.status(200).json({ verified: true, received: true });
   } catch (error) {
     console.error('[Stripe Webhook] Error processing webhook:', error);
-    return res.status(400).json({ error: 'Webhook processing failed' });
+    // Always return 200 OK, even on error (Stripe requirement)
+    return res.status(200).json({ verified: false, error: 'Webhook processing failed' });
   }
 }
 
