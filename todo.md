@@ -737,3 +737,16 @@
   - [x] Message-Content sanitizen (sanitizeMessage)
   - [x] Zentrale Sanitization-Utility (shared/sanitize.ts)
   - [x] In server/routers.ts und messages.ts integriert
+
+
+---
+
+## 🔒 ZOD-VALIDATION AUDIT
+
+- [x] **Alle tRPC-Procedures mit Zod-Validation abgesichert**
+  - [x] server/routers.ts auditiert (alle Procedures mit Input-Parametern haben Zod-Schemas)
+  - [x] server/routers/messages.ts auditiert (alle Procedures mit Zod abgesichert)
+  - [x] server/routers/user.ts auditiert (alle Procedures mit Zod abgesichert)
+  - [x] Zentrale Validation-Schemas in validation.ts vorhanden
+  - [x] Alle .input() Calls mit Zod-Schemas erweitert
+  - [x] Procedures ohne Input-Parameter benötigen keine Validation
