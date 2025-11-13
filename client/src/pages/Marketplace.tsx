@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
+import { GigCardSkeleton } from "@/components/SkeletonUI";
 
 export default function Marketplace() {
   const [location] = useLocation();
@@ -28,6 +29,34 @@ export default function Marketplace() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: gigs, isLoading } = trpc.gigs.list.useQuery({});
+
+  // Skeleton Loading State
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-slate-50">
+        <MetaTags 
+          title="Gig-Marktplatz - Digitale Dienstleistungen finden"
+          description="Durchsuche über 500 digitale Dienstleistungen von verifizierten Freelancern. Design, Programmierung, Texte, Marketing und mehr ab 1€."
+          type="website"
+        />
+        <div className="container mx-auto px-4 py-8">
+          <div className="mb-10">
+            <h1 className="text-5xl font-black text-slate-900 mb-4">
+              🔍 Gig-Marktplatz
+            </h1>
+            <p className="text-xl text-slate-700 font-semibold">
+              <span className="text-blue-600 font-bold">Lädt...</span>
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <GigCardSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Filter and sort gigs client-side
   const filteredGigs = gigs

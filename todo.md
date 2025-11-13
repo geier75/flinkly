@@ -419,3 +419,136 @@
 - [ ] Lighthouse Score ≥90 (alle Kategorien)
 
 ---
+
+
+---
+
+## 🧠 COGNITIVE WALKTHROUGH 2.0 (Erweitert - UX-Heuristiken + PDCA)
+
+**Methodik:** Nielsen & Norman 10 UX-Heuristiken (2025 Update) + PDCA-Zyklus  
+**Zeitrahmen:** 3-4 Wochen | **Aufwand:** 180h | **Kosten:** €14,400
+
+### PDCA PLAN: UX-Heuristik-Matrix & Metriken
+
+- [ ] **UX-Heuristik-Matrix erstellen** (8h)
+  - [ ] Alle 10 Heuristiken pro Route mappen
+  - [ ] Severity-Scoring-System definieren
+  - [ ] Impact-Berechnung (Severity × Frequency × Conversion Weight)
+
+- [ ] **Baseline-Metriken erfassen** (4h)
+  - [ ] Conversion Rate (aktuell: 1.7%)
+  - [ ] Trust Score (aktuell: 81/100)
+  - [ ] LCP (aktuell: 2.8s)
+  - [ ] WCAG Score (aktuell: 85/100)
+
+### PDCA DO: Käuferfluss (10 Heuristiken + Motion Design)
+
+- [x] **H1: System-Status sichtbar machen** (12h)
+  - [x] Loading States mit Skeleton-UI
+  - [x] Progress-Indicators im Checkout
+  - [x] Success/Error-Animations (Framer Motion)
+
+- [ ] **H2: Match System & Realität** (8h)
+  - [ ] Microcopy-Optimierung (DACH-Sprache)
+  - [ ] Metaphern & Icons (vertraut)
+
+- [ ] **H3: User-Kontrolle & Freiheit** (10h)
+  - [ ] Undo-Funktionen (Gig-Erstellung)
+  - [ ] Back-Navigation (Breadcrumbs)
+  - [ ] Opt-Out-Möglichkeiten (Cookie-Consent)
+
+- [ ] **H4: Konsistenz & Standards** (8h)
+  - [ ] Design-Token-System (Farben, Spacing)
+  - [ ] UI-Pattern-Library
+
+- [ ] **H5: Fehlerprävention** (12h)
+  - [ ] Zod-Validation (alle Forms)
+  - [ ] Inline-Validation mit Feedback
+  - [ ] Confirmation-Dialogs (kritische Aktionen)
+
+- [ ] **H6: Erkennung statt Erinnerung** (8h)
+  - [ ] Icon-Labels (immer sichtbar)
+  - [ ] Contextual Hints (Tooltips)
+  - [ ] Auto-Save (Gig-Erstellung)
+
+- [ ] **H7: Flexibilität & Effizienz** (10h)
+  - [ ] Smart Defaults (Forms)
+  - [ ] Keyboard-Shortcuts
+  - [ ] Bulk-Actions (Seller-Dashboard)
+
+- [ ] **H8: Ästhetik & Minimalismus** (12h)
+  - [ ] Motion-Hierarchy (wichtige Elemente hervorheben)
+  - [ ] Focus-States (deutlich sichtbar)
+  - [ ] Whitespace-Optimierung
+
+- [ ] **H9: Hilfestellung bei Fehlern** (10h)
+  - [ ] Snackbar-System (Sonner)
+  - [ ] Error-Animations (Shake, Highlight)
+  - [ ] Re-try-Buttons
+
+- [ ] **H10: Zugänglichkeit & Inklusion** (12h)
+  - [ ] WCAG 2.2 AA Compliance (100%)
+  - [ ] Reduced-Motion-Support
+  - [ ] Kontrast-Fixes (4.5:1 Minimum)
+
+### PDCA DO: Verkäuferfluss (10 Heuristiken)
+
+- [ ] **Seller-Dashboard Optimierung** (20h)
+  - [ ] KPI-Übersicht mit Motion-Feedback
+  - [ ] Onboarding-Checklist (Progress-Bar)
+  - [ ] Quick-Actions (Keyboard-Shortcuts)
+
+- [ ] **Gig-Erstellung UX** (24h)
+  - [ ] Live-Vorschau (Split-Screen)
+  - [ ] Auto-Save (alle 30s)
+  - [ ] SEO-Score-Widget
+  - [ ] Templates (10 pro Kategorie)
+
+- [ ] **Payout-Flow** (12h)
+  - [ ] Earnings-Dashboard (Charts)
+  - [ ] Stripe-Onboarding-Flow
+  - [ ] Tax-Info-Wizard
+
+### PDCA DO: Systemfluss (10 Heuristiken)
+
+- [ ] **Authentication UX** (8h)
+  - [ ] OAuth-Flow-Optimierung
+  - [ ] Error-States (klare Messages)
+  - [ ] Redirect-Handling
+
+- [ ] **Messaging-System** (32h)
+  - [ ] Real-time Chat UI
+  - [ ] File-Sharing (Drag & Drop)
+  - [ ] Notifications (Push + In-App)
+  - [ ] Read-Receipts
+
+- [ ] **Seller-Verifizierung** (16h)
+  - [ ] Verification-Flow (Multi-Step)
+  - [ ] Badge-System
+  - [ ] Admin-Queue
+
+### PDCA CHECK: Impact Heatmap Dashboard
+
+- [ ] **UX Severity Heatmap generieren** (12h)
+  - [ ] JSON-Datenstruktur (Severity, Heuristik, Page, Impact%)
+  - [ ] HTML/SVG-Visualisierung
+  - [ ] Impact-Score-Berechnung
+
+- [ ] **Motion-Map erstellen** (8h)
+  - [ ] Alle Animations-Trigger dokumentieren
+  - [ ] Performance-Metriken (FPS, GPU-Usage)
+
+### PDCA ACT: Guidelines & Dokumentation
+
+- [ ] **PDCA-Log erstellen** (8h)
+  - [ ] Plan-Phase dokumentieren
+  - [ ] Do-Phase (alle Implementierungen)
+  - [ ] Check-Phase (Metriken vorher/nachher)
+  - [ ] Act-Phase (Learnings & Guidelines)
+
+- [ ] **UX-Guidelines aktualisieren** (8h)
+  - [ ] Design-Tokens dokumentieren
+  - [ ] Pattern-Library erweitern
+  - [ ] Motion-Design-Richtlinien
+
+---

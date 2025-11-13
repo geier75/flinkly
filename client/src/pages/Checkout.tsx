@@ -11,6 +11,8 @@ import { useParams, useLocation } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { CheckoutSkeleton } from "@/components/SkeletonUI";
+import ProgressIndicator from "@/components/ProgressIndicator";
 import {
   CheckCircle,
   Upload,
@@ -92,11 +94,7 @@ export default function Checkout() {
   }
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    );
+    return <CheckoutSkeleton />;
   }
 
   if (!gig) {
@@ -115,9 +113,9 @@ export default function Checkout() {
   }
 
   const steps = [
-    { id: 1, title: "Briefing", icon: FileText },
-    { id: 2, title: "Zahlung", icon: CreditCard },
-    { id: 3, title: "Rechtliches", icon: Shield },
+    { id: 1, title: "Briefing", description: "Projektdetails & Anforderungen" },
+    { id: 2, title: "Zahlung", description: "Zahlungsmethode wählen" },
+    { id: 3, title: "Rechtliches", description: "AGB & Datenschutz" },
   ];
 
   const isStepComplete = (step: number) => {
@@ -149,50 +147,15 @@ export default function Checkout() {
           <span className="text-slate-900 font-medium">Checkout</span>
         </div>
 
-        {/* Progress Stepper */}
+        {/* Progress Indicator (H1: System-Status sichtbar machen) */}
         <Card className="mb-6">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center flex-1">
-                  <div className="flex flex-col items-center flex-1">
-                    <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-colors ${
-                        currentStep === step.id
-                          ? "border-blue-600 bg-blue-600 text-white"
-                          : isStepComplete(step.id)
-                          ? "border-green-600 bg-green-600 text-white"
-                          : "border-slate-300 bg-white text-slate-400"
-                      }`}
-                    >
-                      {isStepComplete(step.id) ? (
-                        <CheckCircle className="h-6 w-6" />
-                      ) : (
-                        <step.icon className="h-6 w-6" />
-                      )}
-                    </div>
-                    <span
-                      className={`mt-2 text-sm font-medium ${
-                        currentStep === step.id
-                          ? "text-blue-600"
-                          : isStepComplete(step.id)
-                          ? "text-green-600"
-                          : "text-slate-400"
-                      }`}
-                    >
-                      {step.title}
-                    </span>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div
-                      className={`h-0.5 flex-1 mx-4 ${
-                        isStepComplete(step.id) ? "bg-green-600" : "bg-slate-300"
-                      }`}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+            <ProgressIndicator
+              steps={steps}
+              currentStep={currentStep}
+              onStepClick={(stepId) => setCurrentStep(stepId)}
+              allowClickPrevious={true}
+            />
           </CardContent>
         </Card>
 
