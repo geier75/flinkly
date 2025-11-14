@@ -181,70 +181,97 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section with Video Background */}
+      {/* Testimonials Section with FLINKLY Video Background */}
       <section className="relative py-32 overflow-hidden">
-        {/* Video Background */}
+        {/* FLINKLY Video Background (HELLER!) */}
         <div className="absolute inset-0 z-0">
           <VideoScene
-            videoSrc="/videos/testimonials-success.mp4"
+            videoSrc="/videos/testimonials-flinkly.mp4"
             blendMode="overlay"
-            opacity={0.15}
-            className="w-full h-full"
+            opacity={0.25}
+            brightness={1.4}
+            contrast={1.15}
+            saturation={1.25}
+            className="w-full h-full scale-110"
           />
         </div>
 
+        {/* Gradient Overlay for better readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/60 to-slate-950/80 z-[1]" />
+
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-black text-white mb-6">
-              ERFOLGSGESCHICHTEN
+            {/* Beta Badge */}
+            <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/30 px-6 py-3 rounded-full mb-8 backdrop-blur-sm">
+              <span className="text-2xl">🚀</span>
+              <span className="text-teal-400 font-bold">Beta-Phase - Sei dabei von Anfang an!</span>
+            </div>
+            
+            <h2 className="text-5xl md:text-6xl font-black text-white mb-6" style={{
+              textShadow: '0 0 40px rgba(20, 184, 166, 0.3), 0 0 80px rgba(20, 184, 166, 0.2)'
+            }}>
+              WARUM FLINKLY
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 to-emerald-400">
-                UNSERER KUNDEN
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-teal-400">
+                ANDERS IST
               </span>
             </h2>
             <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-              Über 2.000 erfolgreiche Projekte. Höre, was unsere Kunden sagen.
+              Ehrlich, transparent und fair - das sind unsere Werte von Tag 1.
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {[
               {
-                name: "Sarah M.",
-                role: "Gründerin, TechStart GmbH",
-                text: "Flinkly hat uns geholfen, innerhalb von 2 Wochen einen professionellen Webauftritt zu launchen. Die Qualität war hervorragend!",
-                rating: 5
+                icon: "💰",
+                title: "Faire Gebühren",
+                text: "Nur 15% Provision statt 20% wie bei Fiverr. Mehr Geld für deine Arbeit.",
+                highlight: "15% statt 20%"
               },
               {
-                name: "Michael K.",
-                role: "Marketing Manager, E-Commerce",
-                text: "Die Auswahl an Experten ist beeindruckend. Wir haben schnell den perfekten Social Media Manager gefunden.",
-                rating: 5
+                icon: "🇩🇪",
+                title: "DACH-Fokus",
+                text: "Deutsch, Qualität, DSGVO-konform. Für den deutschsprachigen Markt gebaut.",
+                highlight: "Made in Germany"
               },
               {
-                name: "Lisa W.",
-                role: "Freelance Designerin",
-                text: "Als Seller liebe ich die Plattform. Faire Gebühren, schnelle Auszahlungen und tolle Kunden.",
-                rating: 5
+                icon: "🔍",
+                title: "Transparenz",
+                text: "Keine versteckten Kosten, ehrliche Kommunikation. Was du siehst, ist was du bekommst.",
+                highlight: "100% Ehrlich"
               }
-            ].map((testimonial, index) => (
+            ].map((value, index) => (
               <Card 
                 key={index}
-                className="bg-slate-900/70 border-slate-800 backdrop-blur-md hover:border-teal-500/50 transition-all duration-300"
+                className="relative bg-slate-900/40 border-2 border-slate-700/50 hover:border-teal-500/80 backdrop-blur-xl group overflow-hidden shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(20,184,166,0.5),0_0_100px_rgba(20,184,166,0.3)] cursor-pointer transition-all duration-500 hover:scale-105 hover:-translate-y-2"
               >
-                <CardContent className="p-8">
-                  <div className="flex gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-teal-400 text-teal-400" />
-                    ))}
+                {/* Animated Gradient Border Glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-teal-500/20 via-emerald-500/20 to-teal-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+                
+                {/* Shimmer Effect */}
+                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                
+                <CardContent className="p-8 relative z-10">
+                  {/* Icon */}
+                  <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    {value.icon}
                   </div>
-                  <p className="text-slate-300 mb-6 leading-relaxed italic">
-                    "{testimonial.text}"
+                  
+                  {/* Title */}
+                  <h3 className="text-2xl font-extrabold text-white mb-4 tracking-tight group-hover:text-teal-400 transition-colors duration-300">
+                    {value.title}
+                  </h3>
+                  
+                  {/* Highlight Badge */}
+                  <div className="inline-block bg-teal-500/20 border border-teal-500/40 px-4 py-2 rounded-full mb-4">
+                    <span className="text-teal-400 font-bold text-sm">{value.highlight}</span>
+                  </div>
+                  
+                  {/* Text */}
+                  <p className="text-slate-300 text-base leading-relaxed group-hover:text-slate-200 transition-colors duration-300">
+                    {value.text}
                   </p>
-                  <div>
-                    <p className="font-bold text-white">{testimonial.name}</p>
-                    <p className="text-sm text-slate-400">{testimonial.role}</p>
-                  </div>
                 </CardContent>
               </Card>
             ))}

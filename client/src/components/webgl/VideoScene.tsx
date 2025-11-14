@@ -6,6 +6,9 @@ interface VideoSceneProps {
   className?: string;
   blendMode?: 'normal' | 'multiply' | 'screen' | 'overlay';
   opacity?: number;
+  brightness?: number; // 1.0 = normal, >1.0 = brighter
+  contrast?: number;   // 1.0 = normal, >1.0 = more contrast
+  saturation?: number; // 1.0 = normal, >1.0 = more saturated
 }
 
 export function VideoScene({
@@ -13,6 +16,9 @@ export function VideoScene({
   className = '',
   blendMode = 'normal',
   opacity = 0.8,
+  brightness = 1.3,
+  contrast = 1.1,
+  saturation = 1.2,
 }: VideoSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<{
@@ -71,6 +77,9 @@ export function VideoScene({
       uniform sampler2D videoTexture;
       uniform float opacity;
       uniform int blendMode;
+      uniform float brightness;
+      uniform float contrast;
+      uniform float saturation;
       varying vec2 vUv;
 
       vec3 blendMultiply(vec3 base, vec3 blend) {
@@ -89,16 +98,36 @@ export function VideoScene({
         );
       }
 
+      vec3 adjustBrightness(vec3 color, float brightness) {
+        return color * brightness;
+      }
+
+      vec3 adjustContrast(vec3 color, float contrast) {
+        return (color - 0.5) * contrast + 0.5;
+      }
+
+      vec3 adjustSaturation(vec3 color, float saturation) {
+        float gray = dot(color, vec3(0.299, 0.587, 0.114));
+        return mix(vec3(gray), color, saturation);
+      }
+
       void main() {
         vec4 videoColor = texture2D(videoTexture, vUv);
         
         vec3 finalColor = videoColor.rgb;
+        
+        // Apply color adjustments
+        finalColor = adjustBrightness(finalColor, brightness);
+        finalColor = adjustContrast(finalColor, contrast);
+        finalColor = adjustSaturation(finalColor, saturation);
+        
+        // Apply blend mode
         if (blendMode == 1) { // multiply
-          finalColor = blendMultiply(vec3(0.1, 0.2, 0.3), videoColor.rgb);
+          finalColor = blendMultiply(vec3(0.1, 0.2, 0.3), finalColor);
         } else if (blendMode == 2) { // screen
-          finalColor = blendScreen(vec3(0.1, 0.2, 0.3), videoColor.rgb);
+          finalColor = blendScreen(vec3(0.1, 0.2, 0.3), finalColor);
         } else if (blendMode == 3) { // overlay
-          finalColor = blendOverlay(vec3(0.1, 0.2, 0.3), videoColor.rgb);
+          finalColor = blendOverlay(vec3(0.1, 0.2, 0.3), finalColor);
         }
 
         gl_FragColor = vec4(finalColor, videoColor.a * opacity);
@@ -117,6 +146,9 @@ export function VideoScene({
         videoTexture: { value: videoTexture },
         opacity: { value: opacity },
         blendMode: { value: blendModeMap[blendMode] },
+        brightness: { value: brightness },
+        contrast: { value: contrast },
+        saturation: { value: saturation },
       },
       vertexShader,
       fragmentShader,
@@ -160,7 +192,7 @@ export function VideoScene({
         }
       }
     };
-  }, [videoSrc, blendMode, opacity]);
+  }, [videoSrc, blendMode, opacity, brightness, contrast, saturation]);
 
   return <div ref={containerRef} className={`w-full h-full ${className}`} />;
 }
