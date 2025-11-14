@@ -59,9 +59,11 @@ function HeroSection() {
       >
         <div className="max-w-5xl mx-auto">
           <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight tracking-tighter">
-            DIGITALE EXPERTISE.
+            <span className="animated-gradient-text">
+              DIGITALE EXPERTISE.
+            </span>
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-green-400 animate-gradient">
+            <span className="animated-gradient-text">
               SOFORT VERFÜGBAR.
             </span>
           </h1>

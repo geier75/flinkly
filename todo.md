@@ -1707,3 +1707,26 @@
 - [x] Beta-Badge: border-teal-500/30 → border-primary/30
 - [x] Trust-Bar DSGVO-Icon: text-success (Gold)
 - [x] Alle Success-States auf Gold-Farbe
+
+
+---
+
+## 🌈 HERO-TEXT: ANIMATED GRADIENT
+
+**Ziel:** Farbverlauf-Animation durch "DIGITALE EXPERTISE. SOFORT VERFÜGBAR."  
+**Farben:** Orange → Grün → Orange (Loop)  
+**Zeitrahmen:** 20min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: CSS Gradient-Animation ✅
+- [x] Keyframes erstellt (gradient-flow Animation)
+- [x] Gradient: Orange (#ff6b35) → Grün (#10b981) → Orange → Grün → Orange
+- [x] background-clip: text + -webkit-background-clip: text
+- [x] -webkit-text-fill-color: transparent
+- [x] background-size: 200% 100% (für smooth Loop)
+- [x] Animation: 4s linear infinite
+
+### Phase 2: Hero-Integration ✅
+- [x] "DIGITALE EXPERTISE." mit .animated-gradient-text
+- [x] "SOFORT VERFÜGBAR." mit .animated-gradient-text
+- [x] Smooth Loop ohne Sprünge (background-position 0% → 200%)
+- [x] Beide Zeilen animiert (nicht nur zweite)

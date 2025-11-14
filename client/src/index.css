@@ -506,3 +506,35 @@ input:focus, textarea:focus, select:focus {
     border: 1px solid hsl(var(--border) / 0.3);
   }
 }
+
+
+/* ============================================
+   Animated Gradient Text - Hero Headline
+   ============================================ */
+
+@layer components {
+  .animated-gradient-text {
+    background: linear-gradient(
+      90deg,
+      #ff6b35 0%,    /* Orange */
+      #10b981 25%,   /* Grün */
+      #ff6b35 50%,   /* Orange */
+      #10b981 75%,   /* Grün */
+      #ff6b35 100%   /* Orange */
+    );
+    background-size: 200% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradient-flow 4s linear infinite;
+  }
+
+  @keyframes gradient-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    100% {
+      background-position: 200% 50%;
+    }
+  }
+}
