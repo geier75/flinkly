@@ -33,7 +33,6 @@ import Messages from "./pages/Messages";
 import DataExportDashboard from "./pages/DataExportDashboard";
 import PrivacyDashboard from "./pages/PrivacyDashboard";
 import SellerVerification from "./pages/SellerVerification";
-import CustomCursor from "./components/cursor/CustomCursor";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -78,7 +77,6 @@ function App() {
         // switchable
       >
         <TooltipProvider>
-          <CustomCursor />
           <Toaster />
           <GlobalHeader />
           <Onboarding />

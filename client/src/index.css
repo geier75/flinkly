@@ -372,3 +372,54 @@
     @apply text-lg font-bold text-blue-600;
   }
 }
+
+/* ===== SOTA 2025 Subtle Hover Effects ===== */
+
+/* Smooth transitions for all interactive elements */
+a, button, [role="button"] {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+/* Subtle lift on hover */
+a:hover:not(.no-hover), 
+button:hover:not(:disabled):not(.no-hover), 
+[role="button"]:hover:not([aria-disabled="true"]):not(.no-hover) {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* Card hover with shadow */
+[class*="Card"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Button hover glow */
+button:not(:disabled):hover {
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.25);
+}
+
+/* Link underline animation */
+a:not(.no-underline):not([class*="Button"]) {
+  position: relative;
+}
+
+a:not(.no-underline):not([class*="Button"])::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.3s ease;
+}
+
+a:not(.no-underline):not([class*="Button"]):hover::after {
+  width: 100%;
+}
+
+/* Input focus glow */
+input:focus, textarea:focus, select:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
