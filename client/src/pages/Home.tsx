@@ -7,6 +7,105 @@ import { Star, CheckCircle, ArrowRight, Play } from "lucide-react";
 import MetaTags from "@/components/MetaTags";
 import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/SchemaOrg";
 import { VideoScene } from "@/components/webgl/VideoScene";
+import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScroll";
+import { motion } from "framer-motion";
+
+function HeroSection() {
+  const { ref, scrollYProgress } = useParallaxScroll();
+  const parallax = useMultiLayerParallax(scrollYProgress);
+
+  return (
+    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* WebGL Video Background Layer (Slowest Parallax) */}
+      <motion.div 
+        className="absolute inset-0 z-0"
+        style={{
+          y: parallax.background.y,
+          opacity: parallax.background.opacity,
+          willChange: 'transform, opacity',
+        }}
+      >
+        <VideoScene
+          videoSrc="/videos/hero-collaboration.mp4"
+          blendMode="overlay"
+          opacity={0.25}
+          className="w-full h-full scale-110"
+        />
+      </motion.div>
+
+      {/* Gradient Overlay Layer (Medium Parallax) */}
+      <motion.div 
+        className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/60 to-slate-950/90 z-0"
+        style={{
+          y: parallax.middle.y,
+          opacity: parallax.middle.opacity,
+          willChange: 'transform, opacity',
+        }}
+      />
+
+      {/* Content Layer (Fastest Parallax) */}
+      <motion.div 
+        className="container mx-auto px-4 relative z-10 text-center"
+        style={{
+          y: parallax.foreground.y,
+          opacity: parallax.foreground.opacity,
+          scale: parallax.foreground.scale,
+          willChange: 'transform, opacity',
+        }}
+      >
+        <div className="max-w-5xl mx-auto">
+          <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight tracking-tighter">
+            DIGITALE EXPERTISE.
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-green-400 animate-gradient">
+              SOFORT VERFÜGBAR.
+            </span>
+          </h1>
+          <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Verbinde dich mit <span className="font-bold text-teal-400">verifizierten Experten</span> für digitale Dienstleistungen. 
+            Von Webdesign bis Social Media Marketing – <span className="font-bold text-emerald-400">schnell, sicher, transparent</span>.
+          </p>
+          <div className="flex gap-6 justify-center flex-wrap">
+            <Link href="/marketplace">
+              <Button 
+                size="lg"
+                className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-teal-500/20 hover:shadow-teal-500/40 transition-all duration-300 font-bold"
+              >
+                Jetzt Experten finden
+                <ArrowRight className="ml-3 h-6 w-6" />
+              </Button>
+            </Link>
+            <a href={getLoginUrl()}>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="text-lg px-12 py-8 rounded-2xl border-2 border-slate-700 hover:border-teal-500 hover:bg-teal-500/10 text-white transition-all duration-300 font-bold backdrop-blur-sm"
+              >
+                Als Experte registrieren
+              </Button>
+            </a>
+          </div>
+
+          {/* Trust Bar */}
+          <div className="mt-16 flex justify-center items-center gap-12 text-slate-400 flex-wrap">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="h-6 w-6 text-teal-400" />
+              <span className="text-base">2.000+ erfolgreiche Projekte</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Star className="h-6 w-6 text-teal-400 fill-teal-400" />
+              <span className="text-base">4.8/5 Durchschnittsbewertung</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <CheckCircle className="h-6 w-6 text-teal-400" />
+              <span className="text-base">DSGVO-konform & sicher</span>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </section>
+  );
+}
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -35,73 +134,8 @@ export default function Home() {
         description="Finde qualifizierte Experten für digitale Dienstleistungen. Von Webdesign bis Social Media Marketing. Schnell, sicher, transparent."
       />
 
-      {/* Hero Section with WebGL Video Background */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* WebGL Video Background */}
-        <div className="absolute inset-0 z-0">
-          <VideoScene
-            videoSrc="/videos/hero-collaboration.mp4"
-            blendMode="overlay"
-            opacity={0.2}
-            className="w-full h-full"
-          />
-        </div>
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/60 to-slate-950/90 z-0" />
-
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="max-w-5xl mx-auto">
-            <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight tracking-tighter">
-              DIGITALE EXPERTISE.
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-emerald-400 to-green-400 animate-gradient">
-                SOFORT VERFÜGBAR.
-              </span>
-            </h1>
-            <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Verbinde dich mit <span className="font-bold text-teal-400">verifizierten Experten</span> für digitale Dienstleistungen. 
-              Von Webdesign bis Social Media Marketing – <span className="font-bold text-emerald-400">schnell, sicher, transparent</span>.
-            </p>
-            <div className="flex gap-6 justify-center flex-wrap">
-              <Link href="/marketplace">
-                <Button 
-                  size="lg"
-                  className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-teal-500/20 hover:shadow-teal-500/40 transition-all duration-300 font-bold"
-                >
-                  Jetzt Experten finden
-                  <ArrowRight className="ml-3 h-6 w-6" />
-                </Button>
-              </Link>
-              <a href={getLoginUrl()}>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-12 py-8 rounded-2xl border-2 border-slate-700 hover:border-teal-500 hover:bg-teal-500/10 text-white transition-all duration-300 font-bold backdrop-blur-sm"
-                >
-                  Als Experte registrieren
-                </Button>
-              </a>
-            </div>
-
-            {/* Trust Bar */}
-            <div className="mt-16 flex justify-center items-center gap-12 text-slate-400 flex-wrap">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-6 w-6 text-teal-400" />
-                <span className="text-base">2.000+ erfolgreiche Projekte</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Star className="h-6 w-6 text-teal-400 fill-teal-400" />
-                <span className="text-base">4.8/5 Durchschnittsbewertung</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-6 w-6 text-teal-400" />
-                <span className="text-base">DSGVO-konform & sicher</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Section with WebGL Video Background + Parallax */}
+      <HeroSection />
 
       {/* Services Section with WebGL Video Background */}
       <section className="relative py-32 overflow-hidden">

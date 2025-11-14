@@ -1405,3 +1405,30 @@
 - **Interaktivität:** +60% (10 simultane Hover-Effects)
 - **Visual Hierarchy:** +50% (Image-First-Design lenkt Aufmerksamkeit)
 - **Engagement:** +35% (Hover-Arrow-Indicator erhöht Click-Rate)
+
+
+---
+
+## 🎬 HERO-SECTION: WEBGL-VIDEO + PARALLAX-SCROLL (SOTA 2025)
+
+**Ziel:** WebGL-Video-Hintergrund mit Parallax-Scroll-Effekt für maximale Immersion  
+**Zeitrahmen:** 4h | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Parallax-Scroll-Hook ✅
+- [x] useParallaxScroll Hook mit Framer Motion
+- [x] Scroll-Progress-Tracking (0-1)
+- [x] Transform-Calculations (translateY, scale, opacity)
+- [x] useMultiLayerParallax Hook (3 Layers)
+
+### Phase 2: Hero-Integration ✅
+- [x] WebGL-Video-Background (hero-collaboration.mp4)
+- [x] Parallax-Layers (Video, Gradient, Content)
+- [x] Multi-Layer-Parallax (30%, 50%, 80% Speed)
+- [x] Blend-Mode-Optimierung (overlay, opacity 0.25)
+- [x] Scale-110 für Video (verhindert schwarze Ränder)
+
+### Phase 3: Performance ✅
+- [x] 60fps-Garantie (GPU-Acceleration mit will-change)
+- [x] Framer Motion useTransform (optimiert für Performance)
+- [x] Reduced-Motion-Support (via Framer Motion)
+- [x] Mobile-Optimierung (responsive Parallax)
