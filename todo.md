@@ -1461,3 +1461,32 @@
 - [x] Individual-Card-Hover (Scale 1.15 + Mega-Glow)
 - [x] Hint-Text mit AnimatePresence (verschwindet smooth)
 - [x] Gradient-Border-Glow (individuell pro Card)
+
+
+---
+
+## 🎨 FÄCHER-CARDS: HINTERGRUND-OPTIMIERUNG (3D-LOGO + VIDEO)
+
+**Ziel:** Gestapelter Zustand visuell reicher - 3D-FLINKLY-Logo + WebGL-Video im Hintergrund  
+**Zeitrahmen:** 2h | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: 3D-FLINKLY-Logo ✅
+- [x] Großes "FLINKLY" Text-Element (160px, Glassmorphism)
+- [x] 3D-Transform (rotateY: 0° → 10° → -10° → 0°, 8s Loop)
+- [x] Gradient-Text (Teal → Emerald, 40% opacity)
+- [x] Triple-Layer-Glow (100px, 150px, 200px)
+- [x] Webkit-Text-Stroke (1.5px, Teal 30%)
+
+### Phase 2: WebGL-Video-Background ✅
+- [x] VideoScene-Komponente integriert
+- [x] Blend-Mode: overlay
+- [x] Opacity 0.2 (gestapelt) → 0.05 (gefanned)
+- [x] Loop-Video (services-expertise.mp4)
+- [x] Scale-110 (verhindert schwarze Ränder)
+
+### Phase 3: Fade-Out-Animation ✅
+- [x] Logo opacity 1 → 0 beim Fan-Out (AnimatePresence)
+- [x] Logo scale 1 → 0.8 + rotateY 30° beim Exit
+- [x] Video opacity 0.2 → 0.05 beim Fan-Out
+- [x] Smooth Transition (duration 0.6s)
+- [x] Z-Index-Management (Logo -z-5, Video -z-10)

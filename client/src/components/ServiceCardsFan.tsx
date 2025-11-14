@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
+import { VideoScene } from "@/components/webgl/VideoScene";
 
 const services = [
   {
@@ -92,6 +93,56 @@ export function ServiceCardsFan() {
         setHoveredCard(null);
       }}
     >
+      {/* WebGL Video Background (visible when stacked) */}
+      <motion.div 
+        className="absolute inset-0 -z-10 rounded-3xl overflow-hidden"
+        animate={{
+          opacity: isFanned ? 0.05 : 0.2,
+        }}
+        transition={{ duration: 0.6 }}
+      >
+        <VideoScene
+          videoSrc="/videos/services-expertise.mp4"
+          blendMode="overlay"
+          opacity={0.3}
+          className="w-full h-full scale-110"
+        />
+      </motion.div>
+
+      {/* 3D FLINKLY Logo Background (visible when stacked) */}
+      <AnimatePresence>
+        {!isFanned && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, rotateY: -30 }}
+            animate={{ 
+              opacity: 1, 
+              scale: 1,
+              rotateY: [0, 10, -10, 0],
+            }}
+            exit={{ opacity: 0, scale: 0.8, rotateY: 30 }}
+            transition={{ 
+              opacity: { duration: 0.6 },
+              scale: { duration: 0.6 },
+              rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" }
+            }}
+            className="absolute inset-0 flex items-center justify-center -z-5 pointer-events-none"
+            style={{
+              perspective: '1000px',
+            }}
+          >
+            <div 
+              className="text-[160px] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-teal-400/40 via-emerald-400/40 to-teal-400/40 backdrop-blur-3xl"
+              style={{
+                textShadow: '0 0 100px rgba(20, 184, 166, 0.5), 0 0 150px rgba(20, 184, 166, 0.3), 0 0 200px rgba(20, 184, 166, 0.2)',
+                WebkitTextStroke: '1.5px rgba(20, 184, 166, 0.3)',
+              }}
+            >
+              FLINKLY
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Hint Text */}
       <AnimatePresence>
         {!isFanned && (
@@ -100,7 +151,7 @@ export function ServiceCardsFan() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 text-teal-400 text-base font-bold flex items-center gap-2 bg-slate-900/80 px-6 py-3 rounded-full border border-teal-500/30 backdrop-blur-sm"
+            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 text-teal-400 text-base font-bold flex items-center gap-2 bg-slate-900/80 px-6 py-3 rounded-full border border-teal-500/30 backdrop-blur-sm z-10"
           >
             <span>Bewege die Maus über die Cards</span>
             <motion.div
