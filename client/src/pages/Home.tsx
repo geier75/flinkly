@@ -29,17 +29,17 @@ function HeroSection() {
         <VideoScene
           videoSrc="/videos/hero-collaboration.mp4"
           blendMode="overlay"
-          opacity={0.4}
-          brightness={1.2}
-          contrast={1.1}
-          saturation={1.15}
+          opacity={0.45}
+          brightness={1.35}
+          contrast={1.12}
+          saturation={1.2}
           className="w-full h-full scale-110"
         />
       </motion.div>
 
       {/* Gradient Overlay Layer (Medium Parallax) */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-900/40 to-slate-950/70 z-0"
+        className="absolute inset-0 bg-gradient-to-b from-slate-950/50 via-slate-900/30 to-slate-950/60 z-0"
         style={{
           y: parallax.middle.y,
           opacity: parallax.middle.opacity,

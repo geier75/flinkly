@@ -1595,3 +1595,21 @@
 - [x] Contrast reduziert (1.15 → 1.1)
 - [x] Saturation reduziert (1.25 → 1.15)
 - [x] Gradient-Overlay heller (from-slate-950/60 via-slate-900/40)
+
+
+---
+
+## 🔆 HERO-VIDEO: NOCH HELLER
+
+**Ziel:** Hero-Video noch heller machen  
+**Zeitrahmen:** 10min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Brightness-Boost ✅
+- [x] Brightness erhöht (1.2 → 1.35, +12.5%)
+- [x] Opacity erhöht (0.4 → 0.45, +12.5%)
+- [x] Contrast erhöht (1.1 → 1.12, +1.8%)
+- [x] Saturation erhöht (1.15 → 1.2, +4.3%)
+- [x] Gradient-Overlay transparenter:
+  - from: slate-950/60 → slate-950/50 (-16.7%)
+  - via: slate-900/40 → slate-900/30 (-25%)
+  - to: slate-950/70 → slate-950/60 (-14.3%)
