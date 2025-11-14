@@ -9,6 +9,7 @@ import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/comp
 import { VideoScene } from "@/components/webgl/VideoScene";
 import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScroll";
 import { motion } from "framer-motion";
+import { ServiceCardsFan } from "@/components/ServiceCardsFan";
 
 function HeroSection() {
   const { ref, scrollYProgress } = useParallaxScroll();
@@ -163,85 +164,8 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {[
-              {
-                image: "/images/service-design.jpg",
-                title: "Design & Kreation",
-                description: "Logo-Design, Branding, UI/UX, Illustration, Video-Editing"
-              },
-              {
-                image: "/images/service-development.jpg",
-                title: "Development",
-                description: "Web-Development, App-Development, WordPress, Shopify"
-              },
-              {
-                image: "/images/service-marketing.jpg",
-                title: "Marketing",
-                description: "Social Media, SEO, Content-Marketing, Google Ads"
-              },
-              {
-                image: "/images/service-content.jpg",
-                title: "Content & Text",
-                description: "Copywriting, Blog-Artikel, Übersetzungen, Lektorat"
-              },
-              {
-                image: "/images/service-business.jpg",
-                title: "Business",
-                description: "Virtuelle Assistenz, Buchhaltung, Projektmanagement"
-              },
-              {
-                image: "/images/service-technology.jpg",
-                title: "Technologie",
-                description: "Data Science, AI/ML, Blockchain, Cloud-Services"
-              }
-            ].map((service, index) => (
-              <Card 
-                key={index}
-                className="relative bg-slate-900/30 border-2 border-slate-700/50 hover:border-teal-500/50 transition-all duration-500 ease-out hover:scale-[1.03] hover:-translate-y-2 backdrop-blur-xl group overflow-hidden shadow-[0_4px_6px_rgba(0,0,0,0.1),0_10px_15px_rgba(0,0,0,0.2),0_20px_25px_rgba(0,0,0,0.15),0_0_40px_rgba(20,184,166,0.1)] hover:shadow-[0_12px_20px_rgba(0,0,0,0.2),0_30px_40px_rgba(0,0,0,0.3),0_50px_60px_rgba(0,0,0,0.25),0_0_80px_rgba(20,184,166,0.4)] cursor-pointer"
-              >
-                {/* Animated Gradient Border Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 group-hover:from-teal-500/30 group-hover:via-emerald-500/30 group-hover:to-teal-500/30 transition-all duration-700 -z-10 animate-pulse" />
-                
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1200 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                
-                {/* Radial Glow on Hover */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(20, 184, 166, 0.1) 0%, transparent 70%)' }} />
-                
-                <CardContent className="p-0 relative z-10">
-                  {/* Image Container with Advanced Ken Burns + 3D Tilt Effect */}
-                  <div className="relative aspect-video overflow-hidden">
-                    <img 
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.15] group-hover:brightness-[1.15] group-hover:contrast-[1.05] group-hover:saturate-[1.1]"
-                      style={{
-                        transformOrigin: 'center center'
-                      }}
-                    />
-                    {/* Dynamic Overlay Gradient with Color Shift */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-70 group-hover:opacity-30 group-hover:from-teal-900/50 group-hover:via-slate-900/40 transition-all duration-700" />
-                    
-                    {/* Glowing Edge Effect */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 shadow-[inset_0_0_60px_rgba(20,184,166,0.3)]" />
-                  </div>
-                  
-                  {/* Content with Staggered Animation */}
-                  <div className="p-8">
-                    <h3 className="text-3xl font-extrabold text-white mb-4 tracking-tight group-hover:text-teal-400 group-hover:translate-x-1 transition-all duration-300">{service.title}</h3>
-                    <p className="text-slate-300 text-lg leading-relaxed group-hover:text-slate-200 transition-all duration-300 delay-75">{service.description}</p>
-                    
-                    {/* Hover Arrow Indicator */}
-                    <div className="mt-6 flex items-center gap-2 text-teal-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300 delay-100">
-                      <span className="text-sm font-bold">Mehr erfahren</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <ServiceCardsFan />
+
 
           <div className="text-center mt-16">
             <Link href="/marketplace">

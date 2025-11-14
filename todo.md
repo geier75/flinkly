@@ -1432,3 +1432,32 @@
 - [x] Framer Motion useTransform (optimiert für Performance)
 - [x] Reduced-Motion-Support (via Framer Motion)
 - [x] Mobile-Optimierung (responsive Parallax)
+
+
+---
+
+## 🎴 SERVICE-CARDS: FÄCHER-EFFEKT (FAN-OUT-ANIMATION)
+
+**Ziel:** Cards gestapelt → beim Hover radial auffächern wie ein Peacock-Tail  
+**Zeitrahmen:** 3h | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Fächer-Layout-Logik ✅
+- [x] Stacked-Layout (Cards übereinander mit Depth-Offset)
+- [x] Radial-Transform-Calculations (Rotation, TranslateX/Y)
+- [x] 6 Cards → 200° Fächer-Spread (-100° bis +100°)
+- [x] Z-Index-Management (Hovered Card on Top)
+
+### Phase 2: Fan-Out-Animation ✅
+- [x] Framer Motion Spring-Animation (stiffness 260, damping 20)
+- [x] Rotation-Animation (angle * 0.7 für dramatischen Effekt)
+- [x] TranslateY-Animation (Arc-Höhe 180px)
+- [x] Scale-Animation (1.15x beim Individual-Hover)
+- [x] Radius 350px für großen Spread
+
+### Phase 3: Hover-Interaktion ✅
+- [x] Container-Hover-Trigger (onMouseEnter/Leave)
+- [x] Stagger-Animation (0.05s delay pro Card)
+- [x] Smooth Spring-Transitions (type: spring)
+- [x] Individual-Card-Hover (Scale 1.15 + Mega-Glow)
+- [x] Hint-Text mit AnimatePresence (verschwindet smooth)
+- [x] Gradient-Border-Glow (individuell pro Card)
