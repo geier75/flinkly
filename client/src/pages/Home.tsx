@@ -54,48 +54,48 @@ export default function Home() {
       {/* WebGL Hero Background */}
       <HeroScene />
 
-      {/* Hero Section - BOLD & LARGE */}
-      <section className="container mx-auto px-4 py-32 text-center bg-gradient-to-b from-blue-50/80 to-white/80 backdrop-blur-sm relative z-10">
+      {/* Hero Section - Professional & Trust-Focused */}
+      <section className="container mx-auto px-4 py-32 text-center relative z-10">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-7xl font-black text-slate-900 mb-8 leading-tight">
+          <h1 className="text-6xl md:text-7xl font-black text-foreground mb-8 leading-tight">
             <KineticText type="word" stagger={0.05}>
-              Kleine Gigs, große Wirkung
+              Deutschlands Marktplatz für digitale Expertise
             </KineticText>
           </h1>
-          <p className="text-2xl text-slate-700 mb-12 leading-relaxed max-w-3xl mx-auto">
-            Dein Marktplatz für schnelle, kreative & digitale Mikrodienstleistungen in der DACH-Region. Vertrauen, Einfachheit, Rechtssicherheit.
+          <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-3xl mx-auto">
+            Professionelle digitale Dienstleistungen von verifizierten Experten. Sicher, transparent, DSGVO-konform.
           </p>
           <div className="flex gap-6 justify-center flex-wrap">
             <Link href="/marketplace">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-10 py-7 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95">
-                🔍 Gig finden
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground text-lg px-10 py-7 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95">
+                Experten finden
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
             <a href={getLoginUrl()}>
-              <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl border-2 border-slate-300 hover:border-green-600 hover:bg-green-50 transition-all duration-200">
-                ⭐ Gig anbieten
+              <Button size="lg" variant="outline" className="text-lg px-10 py-7 rounded-xl border-2 hover:border-accent hover:bg-accent/10 transition-all duration-200">
+                Als Experte verdienen
               </Button>
             </a>
           </div>
         </div>
       </section>
 
-      {/* Trust Bar - Social Proof */}
-      <section className="bg-blue-600 py-6">
+      {/* Trust Bar - Subtle & Professional */}
+      <section className="bg-muted/30 py-6 border-y border-border">
         <div className="container mx-auto px-4">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-white">
+          <div className="flex flex-wrap items-center justify-center gap-8 text-muted-foreground">
             <div className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              <span className="font-semibold">500+ Gigs</span>
+              <CheckCircle className="h-5 w-5 text-accent" />
+              <span className="font-medium">Verifizierte Experten</span>
             </div>
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              <span className="font-semibold">1.000+ zufriedene Kunden</span>
+              <Users className="h-5 w-5 text-accent" />
+              <span className="font-medium">DACH-Region</span>
             </div>
             <div className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              <span className="font-semibold">DSGVO-konform</span>
+              <Shield className="h-5 w-5 text-accent" />
+              <span className="font-medium">DSGVO-konform</span>
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="h-5 w-5" />
@@ -105,41 +105,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Problem & Solution - LARGER TEXT */}
-      <section className="bg-gradient-to-r from-slate-900 to-slate-800 py-24 text-white">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-16">
-            <div>
-              <h2 className="text-5xl font-black mb-10">Das Problem</h2>
-              <div className="space-y-6 text-lg text-slate-200 leading-relaxed">
-                <p>
-                  <strong className="text-white text-xl">Kleine Unternehmen & Start-ups</strong> benötigen oft schnell digitale Unterstützung, haben aber weder Budget noch Zeit für Agenturen.
-                </p>
-                <p>
-                  <strong className="text-white text-xl">Talentierte Kreative</strong> suchen nach flexiblen Möglichkeiten, ihre Fähigkeiten nebenbei zu monetarisieren.
-                </p>
-                <p>
-                  Bestehende globale Plattformen sind unpersönlich, komplex und nicht auf lokale rechtliche Gegebenheiten (DSGVO, Steuern) ausgelegt.
-                </p>
-              </div>
-            </div>
-            <div>
-              <h2 className="text-5xl font-black mb-10">Die Lösung: Flinkly</h2>
-              <div className="space-y-6 text-lg text-slate-200 leading-relaxed">
-                <p>
-                  Ein hyper-fokussierter Online-Marktplatz, der den An- und Verkauf von digitalen Mikrodienstleistungen radikal vereinfacht.
-                </p>
-                <p>
-                  Wir bringen lokale Nachfrage und lokales Talent auf einer vertrauenswürdigen, benutzerfreundlichen und rechtssicheren Plattform zusammen.
-                </p>
-                <p className="font-bold text-blue-300 text-xl border-l-4 border-blue-400 pl-4">
-                  Jedem die Möglichkeit geben, digitale Aufgaben schnell erledigen zu lassen und jedem Talent einen unkomplizierten Weg zu Nebeneinkommen zu bieten.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
 
       {/* Features - BOLD CARDS WITH HOVER */}
       <section className="container mx-auto px-4 py-24">
