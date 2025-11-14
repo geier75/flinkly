@@ -30,6 +30,9 @@ function HeroSection() {
           videoSrc="/videos/hero-collaboration.mp4"
           blendMode="overlay"
           opacity={0.25}
+          brightness={1.4}
+          contrast={1.15}
+          saturation={1.25}
           className="w-full h-full scale-110"
         />
       </motion.div>

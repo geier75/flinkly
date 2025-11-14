@@ -109,40 +109,6 @@ export function ServiceCardsFan() {
         />
       </motion.div>
 
-      {/* 3D FLINKLY Logo Background (visible when stacked) */}
-      <AnimatePresence>
-        {!isFanned && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotateY: -30 }}
-            animate={{ 
-              opacity: 1, 
-              scale: 1,
-              rotateY: [0, 10, -10, 0],
-            }}
-            exit={{ opacity: 0, scale: 0.8, rotateY: 30 }}
-            transition={{ 
-              opacity: { duration: 0.6 },
-              scale: { duration: 0.6 },
-              rotateY: { duration: 8, repeat: Infinity, ease: "easeInOut" }
-            }}
-            className="absolute inset-0 flex items-center justify-center -z-5 pointer-events-none"
-            style={{
-              perspective: '1000px',
-            }}
-          >
-            <div 
-              className="text-[160px] font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-teal-400/40 via-emerald-400/40 to-teal-400/40 backdrop-blur-3xl"
-              style={{
-                textShadow: '0 0 100px rgba(20, 184, 166, 0.5), 0 0 150px rgba(20, 184, 166, 0.3), 0 0 200px rgba(20, 184, 166, 0.2)',
-                WebkitTextStroke: '1.5px rgba(20, 184, 166, 0.3)',
-              }}
-            >
-              FLINKLY
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Hint Text */}
       <AnimatePresence>
         {!isFanned && (

@@ -1560,3 +1560,22 @@
 - [x] Shimmer-Effect + Gradient-Border-Glow
 - [x] Hover-Animations (scale-105, -translate-y-2)
 - [x] Highlight-Badges (Teal-Background, Border)
+
+
+---
+
+## 🎨 QUICK-FIXES: FÄCHER-LOGO + HERO-VIDEO
+
+**Problem 1:** FLINKLY-Logo im Fächer-Hintergrund sieht nicht gut aus  
+**Problem 2:** Hero-Video ("DIGITALE EXPERTISE") zu dunkel  
+**Zeitrahmen:** 30min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Fächer-Logo entfernen ✅
+- [x] 3D-FLINKLY-Logo aus ServiceCardsFan.tsx entfernt
+- [x] Video-Background behalten (sieht gut aus)
+- [x] Hint-Text behalten
+
+### Phase 2: Hero-Video heller ✅
+- [x] Hero-Section VideoScene gefunden (hero-collaboration.mp4)
+- [x] brightness, contrast, saturation Props hinzugefügt
+- [x] Werte: brightness 1.4, contrast 1.15, saturation 1.25
