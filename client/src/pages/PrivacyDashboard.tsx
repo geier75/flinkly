@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Download, Trash2, Shield, Eye, FileText, CheckCircle2, XCircle, Clock } from "lucide-react";
 import { toast } from "sonner";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 
 export default function PrivacyDashboard() {
   const [, setLocation] = useLocation();
@@ -108,6 +108,14 @@ export default function PrivacyDashboard() {
         <p className="text-muted-foreground">
           Verwalten Sie Ihre persönlichen Daten und Datenschutzeinstellungen gemäß DSGVO
         </p>
+        <div className="mt-4">
+          <Link href="/privacy">
+            <Button variant="outline" size="sm" className="gap-2">
+              <FileText className="h-4 w-4" />
+              Vollständige Datenschutzerklärung lesen
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Account Deletion Warning */}

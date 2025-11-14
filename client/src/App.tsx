@@ -8,6 +8,7 @@ import Onboarding from "./components/Onboarding";
 import GlobalHeader from "./components/GlobalHeader";
 import MobileActionBar from "./components/MobileActionBar";
 import CookieConsent from "./components/CookieConsent";
+import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import Dashboard from "./pages/Dashboard";
@@ -80,6 +81,7 @@ function App() {
           <GlobalHeader />
           <Onboarding />
           <Router />
+          <Footer />
           <MobileActionBar />
           <CookieConsent />
         </TooltipProvider>
