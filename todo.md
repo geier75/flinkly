@@ -1668,3 +1668,42 @@
 - [x] Höhere Sättigung (Saturation 1.3, +3.8%)
 - [x] Opacity 0.7 (70% Sichtbarkeit!)
 - [x] Gradient MINIMAL (via nur 15% statt 20%)
+
+
+---
+
+## 🎨 FARB-KONSISTENZ-FIXES (Kritische Selbst-Bewertung)
+
+**Problem:** Teal-Reste überall, CTAs nicht optimiert, Trust-Bar fake  
+**Ziel:** 100% Farb-Psychologie-Konsistenz  
+**Zeitrahmen:** 45min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Teal → Orange ✅
+- [x] "SOFORT VERFÜGBAR" text-teal-400 → text-accent
+- [x] "verifizierten Experten" text-teal-400 → text-accent
+- [x] "schnell, sicher, transparent" text-emerald-400 → text-accent
+- [x] Alle Teal-Icons → Primary/Secondary/Success/Accent
+- [x] Value-Cards Hover text-teal-400 → text-accent
+- [x] Value-Cards Badges bg-teal-500/20 → bg-accent/20
+
+### Phase 2: CTAs optimieren ✅
+- [x] "Jetzt Experten finden" → bg-accent (Orange)
+- [x] Shadow: shadow-teal-500/20 → shadow-accent/30
+- [x] Hover: hover:shadow-teal-500/40 → hover:shadow-accent/50
+- [x] "Als Experte registrieren" → border-primary/50 (Violett)
+- [x] Hover: hover:border-teal-500 → hover:border-primary
+- [x] Hover-BG: hover:bg-teal-500/10 → hover:bg-primary/20
+
+### Phase 3: Trust-Bar ehrlich ✅
+- [x] "2.000+ erfolgreiche Projekte" → "🚀 Beta-Phase - Sei einer der Ersten!"
+- [x] Icon: CheckCircle → Sparkles (Violett)
+- [x] "4.8/5 Durchschnittsbewertung" → "100% DSGVO-konform"
+- [x] Icon: Star (Teal) → CheckCircle (Gold)
+- [x] "DSGVO-konform & sicher" → "Made in Germany 🇩🇪"
+- [x] Icon: CheckCircle (Teal) → CheckCircle (Blau)
+
+### Phase 4: Success-Badges Gold ✅
+- [x] Beta-Badge: bg-teal-500/10 → bg-primary/10 (Violett)
+- [x] Beta-Badge: border-teal-500/30 → border-primary/30
+- [x] Trust-Bar DSGVO-Icon: text-success (Gold)
+- [x] Alle Success-States auf Gold-Farbe

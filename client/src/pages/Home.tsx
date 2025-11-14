@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { APP_TITLE, getLoginUrl } from "@/const";
 import { Link } from "wouter";
-import { Star, CheckCircle, ArrowRight, Play } from "lucide-react";
+import { Star, CheckCircle, ArrowRight, Play, Sparkles } from "lucide-react";
 import MetaTags from "@/components/MetaTags";
 import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/SchemaOrg";
 import { VideoScene } from "@/components/webgl/VideoScene";
@@ -66,14 +66,14 @@ function HeroSection() {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-slate-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Verbinde dich mit <span className="font-bold text-teal-400">verifizierten Experten</span> für digitale Dienstleistungen. 
-            Von Webdesign bis Social Media Marketing – <span className="font-bold text-emerald-400">schnell, sicher, transparent</span>.
+            Verbinde dich mit <span className="font-bold text-accent">verifizierten Experten</span> für digitale Dienstleistungen. 
+            Von Webdesign bis Social Media Marketing – <span className="font-bold text-accent">schnell, sicher, transparent</span>.
           </p>
           <div className="flex gap-6 justify-center flex-wrap">
             <Link href="/marketplace">
               <Button 
                 size="lg"
-                className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-teal-500/20 hover:shadow-teal-500/40 transition-all duration-300 font-bold"
+                className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
               >
                 Jetzt Experten finden
                 <ArrowRight className="ml-3 h-6 w-6" />
@@ -83,7 +83,7 @@ function HeroSection() {
               <Button 
                 size="lg"
                 variant="outline"
-                className="text-lg px-12 py-8 rounded-2xl border-2 border-slate-700 hover:border-teal-500 hover:bg-teal-500/10 text-white transition-all duration-300 font-bold backdrop-blur-sm"
+                className="text-lg px-12 py-8 rounded-2xl border-2 border-primary/50 hover:border-primary hover:bg-primary/20 text-white transition-all duration-300 font-bold backdrop-blur-sm"
               >
                 Als Experte registrieren
               </Button>
@@ -93,16 +93,16 @@ function HeroSection() {
           {/* Trust Bar */}
           <div className="mt-16 flex justify-center items-center gap-12 text-slate-400 flex-wrap">
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-6 w-6 text-teal-400" />
-              <span className="text-base">2.000+ erfolgreiche Projekte</span>
+              <Sparkles className="h-6 w-6 text-primary" />
+              <span className="text-base">🚀 Beta-Phase - Sei einer der Ersten!</span>
             </div>
             <div className="flex items-center gap-3">
-              <Star className="h-6 w-6 text-teal-400 fill-teal-400" />
-              <span className="text-base">4.8/5 Durchschnittsbewertung</span>
+              <CheckCircle className="h-6 w-6 text-success fill-success" />
+              <span className="text-base">100% DSGVO-konform</span>
             </div>
             <div className="flex items-center gap-3">
-              <CheckCircle className="h-6 w-6 text-teal-400" />
-              <span className="text-base">DSGVO-konform & sicher</span>
+              <CheckCircle className="h-6 w-6 text-secondary" />
+              <span className="text-base">Made in Germany 🇩🇪</span>
             </div>
           </div>
         </div>
@@ -205,9 +205,9 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
             {/* Beta Badge */}
-            <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/30 px-6 py-3 rounded-full mb-8 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 px-6 py-3 rounded-full mb-8 backdrop-blur-sm">
               <span className="text-2xl">🚀</span>
-              <span className="text-teal-400 font-bold">Beta-Phase - Sei dabei von Anfang an!</span>
+              <span className="text-primary font-bold">Beta-Phase - Sei dabei von Anfang an!</span>
             </div>
             
             <h2 className="text-5xl md:text-6xl font-black text-white mb-6" style={{
@@ -262,13 +262,13 @@ export default function Home() {
                   </div>
                   
                   {/* Title */}
-                  <h3 className="text-2xl font-extrabold text-white mb-4 tracking-tight group-hover:text-teal-400 transition-colors duration-300">
+                  <h3 className="text-2xl font-extrabold text-white mb-4 tracking-tight group-hover:text-accent transition-colors duration-300">
                     {value.title}
                   </h3>
                   
                   {/* Highlight Badge */}
-                  <div className="inline-block bg-teal-500/20 border border-teal-500/40 px-4 py-2 rounded-full mb-4">
-                    <span className="text-teal-400 font-bold text-sm">{value.highlight}</span>
+                  <div className="inline-block bg-accent/20 border border-accent/40 px-4 py-2 rounded-full mb-4">
+                    <span className="text-accent font-bold text-sm">{value.highlight}</span>
                   </div>
                   
                   {/* Text */}
@@ -297,7 +297,7 @@ export default function Home() {
               <Link href="/marketplace">
                 <Button 
                   size="lg"
-                  className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-teal-500/20 hover:shadow-teal-500/40 transition-all duration-300 font-bold"
+                  className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
                 >
                   Jetzt Experten finden
                   <ArrowRight className="ml-3 h-6 w-6" />
@@ -307,7 +307,7 @@ export default function Home() {
                 <Button 
                   size="lg"
                   variant="outline"
-                  className="text-lg px-12 py-8 rounded-2xl border-2 border-slate-700 hover:border-teal-500 hover:bg-teal-500/10 text-white transition-all duration-300 font-bold backdrop-blur-sm"
+                  className="text-lg px-12 py-8 rounded-2xl border-2 border-primary/50 hover:border-primary hover:bg-primary/20 text-white transition-all duration-300 font-bold backdrop-blur-sm"
                 >
                   Als Experte registrieren
                 </Button>
