@@ -1579,3 +1579,19 @@
 - [x] Hero-Section VideoScene gefunden (hero-collaboration.mp4)
 - [x] brightness, contrast, saturation Props hinzugefügt
 - [x] Werte: brightness 1.4, contrast 1.15, saturation 1.25
+
+
+---
+
+## 🎬 HERO-VIDEO: SICHTBARKEIT-FIX
+
+**Problem:** Hero-Video zu hell geworden - nicht mehr erkennbar  
+**Ziel:** Erkennbar aber heller als vorher (Balance finden)  
+**Zeitrahmen:** 15min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Parameter-Anpassung ✅
+- [x] Opacity erhöht (0.25 → 0.4 für mehr Sichtbarkeit)
+- [x] Brightness reduziert (1.4 → 1.2 für Balance)
+- [x] Contrast reduziert (1.15 → 1.1)
+- [x] Saturation reduziert (1.25 → 1.15)
+- [x] Gradient-Overlay heller (from-slate-950/60 via-slate-900/40)
