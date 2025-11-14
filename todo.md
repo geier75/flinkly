@@ -1613,3 +1613,22 @@
   - from: slate-950/60 → slate-950/50 (-16.7%)
   - via: slate-900/40 → slate-900/30 (-25%)
   - to: slate-950/70 → slate-950/60 (-14.3%)
+
+
+---
+
+## 💡 HERO-VIDEO: MAXIMALE HELLIGKEIT
+
+**Problem:** Video kaum erkennbar - muss VIEL HELLER sein  
+**Ziel:** Maximale Helligkeit (Brightness 1.6+, Gradient minimal)  
+**Zeitrahmen:** 10min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Maximale Helligkeit ✅
+- [x] Brightness 1.6 (statt 1.35, +18.5%)
+- [x] Opacity 0.6 (statt 0.45, +33.3%)
+- [x] Contrast 1.15 (statt 1.12, +2.7%)
+- [x] Saturation 1.25 (statt 1.2, +4.2%)
+- [x] Gradient MINIMAL:
+  - from: slate-950/50 → slate-950/30 (-40%)
+  - via: slate-900/30 → slate-900/20 (-33.3%)
+  - to: slate-950/60 → slate-950/40 (-33.3%)
