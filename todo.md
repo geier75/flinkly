@@ -1170,3 +1170,39 @@
     - Verbesserungspotenzial: Inhaltsverzeichnis, Versionierung, DSB-Erwähnung
     - Risiken: Unvollständige Beschreibung zukünftiger Features, keine Versionierung
     - 6 offene Legal-Fragen für Rechtsanwalt/DSB dokumentiert
+
+
+## 🔄 Verbleibende TODOs (Nächste Schritte)
+
+### 1. Inhaltsverzeichnis für Datenschutzerklärung
+- [x] TableOfContents-Komponente erstellt (Sticky Sidebar Desktop, Collapsible Mobile)
+- [x] Sprungmarken mit id-Attributen bereits vorhanden in Privacy.tsx
+- [x] Smooth-Scroll-Behavior implementiert (scrollIntoView mit behavior: 'smooth')
+- [x] Active-Section-Highlighting implementiert (Intersection Observer)
+
+### 2. PostHog-Integration finalisieren
+- [x] PostHog in client/src/main.tsx initialisiert
+  - EU-Instance (https://eu.i.posthog.com) für GDPR-Compliance
+  - Opt-out by default (nur mit Consent aktiv)
+  - Autocapture disabled (manuelle Events)
+  - Person-Profiles nur für identifizierte User
+- [x] Consent-Aware-Tracking implementiert (Cookie-Consent-Integration)
+- [x] Analytics.ts bereits vollständig mit PostHog integriert
+- [ ] Feature Flags für A/B-Testing konfigurieren - TODO: PostHog-Dashboard
+- [ ] Heatmaps + Session-Recording aktivieren - TODO: PostHog-Dashboard
+
+### 3. Stripe-Discount-Codes
+- [x] createDiscount()-Function im Backend implementiert (Stripe Coupons API)
+  - discountRouter mit createExitIntentDiscount + validateDiscountCode
+  - 5€ fixed discount, single-use, 24h expiration
+  - Unique codes (EXIT5-RANDOM)
+- [x] Exit-Intent-Modal mit Discount-Code verbunden
+  - Discount-Code-Erstellung bei Accept
+  - SessionStorage-Speicherung für Checkout
+- [ ] Checkout-Integration (Discount-Code-Anwendung) - TODO: Stripe Checkout Session
+- [ ] Telemetrie (discount.created, discount.applied) - TODO: Analytics
+
+### 4. Final Testing + Checkpoint
+- [ ] Alle Features testen
+- [ ] Checkpoint erstellen
+- [ ] Delivery

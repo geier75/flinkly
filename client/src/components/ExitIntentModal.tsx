@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useExitIntent } from "@/hooks/useExitIntent";
 import { Gift, X } from "lucide-react";
 import { A } from "@/lib/analytics";
+import { trpc } from "@/lib/trpc";
 
 interface ExitIntentModalProps {
   inCheckout: boolean;
@@ -24,6 +25,10 @@ interface ExitIntentModalProps {
 export function ExitIntentModal({ inCheckout, onContinue }: ExitIntentModalProps) {
   const [open, setOpen] = useState(false);
   const [variant] = useState<"control" | "discount">("discount"); // TODO: A/B testing with feature flags
+  const [discountCode, setDiscountCode] = useState<string | null>(null);
+  const [isCreatingDiscount, setIsCreatingDiscount] = useState(false);
+
+  const createDiscountMutation = trpc.discount.createExitIntentDiscount.useMutation();
 
   useExitIntent(
     inCheckout && sessionStorage.getItem("exit_intent_done") !== "1",
@@ -45,14 +50,31 @@ export function ExitIntentModal({ inCheckout, onContinue }: ExitIntentModalProps
     }
   }, [open, variant]);
 
-  const handleAccept = () => {
+  const handleAccept = async () => {
     // Track exit intent accepted
     A.exitIntentAccepted({ v: 1, variant, hasCode: variant === "discount" });
     
-    if (variant === "discount") {
-      // TODO: Apply discount code to checkout
-      // const code = await createDiscount({ amountOffCents: 500 });
-      console.log("[Exit Intent] Discount accepted (5€ off)");
+    if (variant === "discount" && !discountCode) {
+      // Create discount code
+      setIsCreatingDiscount(true);
+      try {
+        const result = await createDiscountMutation.mutateAsync({
+          gigId: 0, // TODO: Pass actual gigId from Checkout
+          gigPrice: 0, // TODO: Pass actual gigPrice from Checkout
+        });
+        
+        setDiscountCode(result.code);
+        
+        // Store discount code in sessionStorage for Checkout
+        sessionStorage.setItem("exit_intent_discount_code", result.code);
+        
+        console.log("[Exit Intent] Discount code created:", result.code);
+      } catch (error) {
+        console.error("[Exit Intent] Failed to create discount code:", error);
+      } finally {
+        setIsCreatingDiscount(false);
+      }
+      return; // Don't close modal yet, show discount code first
     }
     
     setOpen(false);

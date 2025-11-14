@@ -1,7 +1,31 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import TableOfContents from "@/components/TableOfContents";
 
 export default function Privacy() {
+  // Table of Contents data
+  const tocItems = [
+    { id: "verantwortlicher", title: "1. Verantwortlicher", level: 2 },
+    { id: "begriffsbestimmungen", title: "2. Begriffsbestimmungen", level: 2 },
+    { id: "hosting", title: "3. Hosting & Server-Logs", level: 2 },
+    { id: "registrierung", title: "4. Registrierung & Nutzerkonten", level: 2 },
+    { id: "marktplatz", title: "5. Marktplatz-Funktion", level: 2 },
+    { id: "zahlungsabwicklung", title: "6. Zahlungsabwicklung (Stripe)", level: 2 },
+    { id: "messaging", title: "7. Messaging-System", level: 2 },
+    { id: "seller-verification", title: "8. Seller-Verifizierung", level: 2 },
+    { id: "cookies", title: "9. Cookies & Cookie-Consent", level: 2 },
+    { id: "analytics", title: "10. Web-Analytics", level: 2 },
+    { id: "exit-intent", title: "11. Exit-Intent-Modal", level: 2 },
+    { id: "similar-gigs", title: "12. \"\u00c4hnliche Gigs\"-Algorithmus", level: 2 },
+    { id: "dsgvo-features", title: "13. DSGVO++ Features", level: 2 },
+    { id: "speicherdauer", title: "14. Speicherdauer", level: 2 },
+    { id: "betroffenenrechte", title: "15. Ihre Rechte als betroffene Person", level: 2 },
+    { id: "rechtsgrundlagen", title: "16. Rechtsgrundlagen der Verarbeitung", level: 2 },
+    { id: "drittland", title: "17. Daten\u00fcbermittlung in Drittl\u00e4nder", level: 2 },
+    { id: "sicherheit", title: "18. Datensicherheit", level: 2 },
+    { id: "aenderungen", title: "19. \u00c4nderungen dieser Datenschutzerkl\u00e4rung", level: 2 },
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Header */}
@@ -18,7 +42,15 @@ export default function Privacy() {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 py-16 max-w-4xl">
+      <div className="container mx-auto px-4 py-16">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* TOC Sidebar */}
+          <aside className="lg:col-span-1">
+            <TableOfContents items={tocItems} />
+          </aside>
+
+          {/* Main Content */}
+          <div className="lg:col-span-3 max-w-4xl">
         <div className="prose prose-slate max-w-none">
           
           {/* 1. Einleitung & Verantwortlicher */}
@@ -726,6 +758,8 @@ export default function Privacy() {
             </p>
           </section>
 
+        </div>
+          </div>
         </div>
       </div>
     </div>
