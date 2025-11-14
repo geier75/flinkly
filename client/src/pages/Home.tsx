@@ -7,12 +7,15 @@ import { Star, Zap, Shield, Users, TrendingUp, CheckCircle, ArrowRight } from "l
 import MetaTags from "@/components/MetaTags";
 import Testimonials from "@/components/Testimonials";
 import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/SchemaOrg";
+import HeroScene from "@/components/webgl/HeroScene";
+import AnimatedSection from "@/components/motion/AnimatedSection";
+import KineticText from "@/components/motion/KineticText";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col bg-white relative">
       {/* Schema.org Structured Data */}
       <OrganizationSchema
         name="Flinkly"
@@ -48,11 +51,16 @@ export default function Home() {
         type="website"
       />
 
+      {/* WebGL Hero Background */}
+      <HeroScene />
+
       {/* Hero Section - BOLD & LARGE */}
-      <section className="container mx-auto px-4 py-32 text-center bg-gradient-to-b from-blue-50 to-white">
+      <section className="container mx-auto px-4 py-32 text-center bg-gradient-to-b from-blue-50/80 to-white/80 backdrop-blur-sm relative z-10">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-7xl font-black text-slate-900 mb-8 leading-tight">
-            Kleine Gigs, <span className="text-blue-600">große Wirkung</span>
+            <KineticText type="word" stagger={0.05}>
+              Kleine Gigs, große Wirkung
+            </KineticText>
           </h1>
           <p className="text-2xl text-slate-700 mb-12 leading-relaxed max-w-3xl mx-auto">
             Dein Marktplatz für schnelle, kreative & digitale Mikrodienstleistungen in der DACH-Region. Vertrauen, Einfachheit, Rechtssicherheit.
@@ -135,9 +143,12 @@ export default function Home() {
 
       {/* Features - BOLD CARDS WITH HOVER */}
       <section className="container mx-auto px-4 py-24">
-        <h2 className="text-5xl font-black text-center text-slate-900 mb-20">Warum Flinkly?</h2>
+        <AnimatedSection>
+          <h2 className="text-5xl font-black text-center text-slate-900 mb-20">Warum Flinkly?</h2>
+        </AnimatedSection>
         <div className="grid md:grid-cols-3 gap-8">
-          <Card className="border-2 border-slate-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
+          <AnimatedSection delay={0.1}>
+            <Card className="border-2 border-slate-200 hover:border-blue-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
             <CardHeader className="bg-gradient-to-br from-blue-50 to-white pb-6">
               <div className="h-16 w-16 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
                 <Zap className="h-8 w-8 text-blue-600" />
@@ -150,7 +161,9 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
+          </AnimatedSection>
 
+          <AnimatedSection delay={0.2}>
           <Card className="border-2 border-slate-200 hover:border-green-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
             <CardHeader className="bg-gradient-to-br from-green-50 to-white pb-6">
               <div className="h-16 w-16 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
@@ -164,7 +177,9 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
+          </AnimatedSection>
 
+          <AnimatedSection delay={0.3}>
           <Card className="border-2 border-slate-200 hover:border-purple-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
             <CardHeader className="bg-gradient-to-br from-purple-50 to-white pb-6">
               <div className="h-16 w-16 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-purple-200 transition-colors">
@@ -178,7 +193,9 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
+          </AnimatedSection>
 
+          <AnimatedSection delay={0.4}>
           <Card className="border-2 border-slate-200 hover:border-orange-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
             <CardHeader className="bg-gradient-to-br from-orange-50 to-white pb-6">
               <div className="h-16 w-16 bg-orange-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
@@ -192,7 +209,9 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
+          </AnimatedSection>
 
+          <AnimatedSection delay={0.5}>
           <Card className="border-2 border-slate-200 hover:border-yellow-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
             <CardHeader className="bg-gradient-to-br from-yellow-50 to-white pb-6">
               <div className="h-16 w-16 bg-yellow-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-yellow-200 transition-colors">
@@ -206,7 +225,9 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
+          </AnimatedSection>
 
+          <AnimatedSection delay={0.6}>
           <Card className="border-2 border-slate-200 hover:border-red-500 hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
             <CardHeader className="bg-gradient-to-br from-red-50 to-white pb-6">
               <div className="h-16 w-16 bg-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 transition-colors">
@@ -220,6 +241,7 @@ export default function Home() {
               </p>
             </CardContent>
           </Card>
+          </AnimatedSection>
         </div>
       </section>
 
