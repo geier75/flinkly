@@ -1632,3 +1632,39 @@
   - from: slate-950/50 → slate-950/30 (-40%)
   - via: slate-900/30 → slate-900/20 (-33.3%)
   - to: slate-950/60 → slate-950/40 (-33.3%)
+
+
+---
+
+## 🎨 FARB-PSYCHOLOGIE-TRANSFORMATION
+
+**Ziel:** Farben die Kunden langfristig binden (20 Experten-Perspektiven)  
+**Zeitrahmen:** 60min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Experten-Analyse ✅
+- [x] 20 Experten-Perspektiven analysiert
+- [x] Farb-Strategie entwickelt (COLOR_PSYCHOLOGY_STRATEGY.md)
+- [x] Neue Farbpalette definiert:
+  - **Primary:** Violett (#8b5cf6) - Kreativität + Premium
+  - **Secondary:** Blau (#3b82f6) - Vertrauen + Stabilität
+  - **Accent:** Orange (#ff6b35) - Action + Energie
+  - **Success:** Gold (#fbbf24) - Erfolg + Belohnung
+  - **Background:** Dunkel-Violett (#0f0c1f) - Tiefe + Fokus
+
+### Phase 2: Implementierung ✅
+- [x] index.css - Neue Farbvariablen implementiert
+- [x] Primary: Violett (#8b5cf6) - oklch(0.68 0.18 290)
+- [x] Secondary: Blau (#3b82f6) - oklch(0.65 0.19 265)
+- [x] Accent: Orange (#ff6b35) - oklch(0.70 0.20 35)
+- [x] Success: Gold (#fbbf24) - oklch(0.75 0.15 90)
+- [x] Background Dark: Dunkel-Violett (#0f0c1f) - oklch(0.12 0.02 290)
+- [x] Card Dark: Violett-Grau (#1a1633) - oklch(0.18 0.03 290)
+- [x] Border Dark: Violett-Grau (#2d2640) - oklch(0.28 0.03 290)
+
+### Phase 3: Hero-Video besser erkennbar ✅
+- [x] Violett-Overlay statt Grau-Overlay (from-violet-950/25)
+- [x] MAXIMALE Helligkeit (Brightness 1.8, +12.5%)
+- [x] Höherer Kontrast (Contrast 1.25, +8.7%)
+- [x] Höhere Sättigung (Saturation 1.3, +3.8%)
+- [x] Opacity 0.7 (70% Sichtbarkeit!)
+- [x] Gradient MINIMAL (via nur 15% statt 20%)
