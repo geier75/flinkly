@@ -232,19 +232,34 @@ export default function Home() {
                 icon: "💰",
                 title: "Faire Gebühren",
                 text: "Nur 15% Provision statt 20% wie bei Fiverr. Mehr Geld für deine Arbeit.",
-                highlight: "15% statt 20%"
+                highlight: "15% statt 20%",
+                images: [
+                  "/images/value-fair-fees-1.jpg",
+                  "/images/value-fair-fees-2.jpg",
+                  "/images/value-fair-fees-3.jpg"
+                ]
               },
               {
                 icon: "🇩🇪",
                 title: "DACH-Fokus",
                 text: "Deutsch, Qualität, DSGVO-konform. Für den deutschsprachigen Markt gebaut.",
-                highlight: "Made in Germany"
+                highlight: "Made in Germany",
+                images: [
+                  "/images/value-dach-focus-1.jpg",
+                  "/images/value-dach-focus-2.jpg",
+                  "/images/value-dach-focus-3.jpg"
+                ]
               },
               {
                 icon: "🔍",
                 title: "Transparenz",
                 text: "Keine versteckten Kosten, ehrliche Kommunikation. Was du siehst, ist was du bekommst.",
-                highlight: "100% Ehrlich"
+                highlight: "100% Ehrlich",
+                images: [
+                  "/images/value-transparency-1.jpg",
+                  "/images/value-transparency-2.jpg",
+                  "/images/value-transparency-3.jpg"
+                ]
               }
             ].map((value, index) => (
               <Card 
@@ -257,11 +272,25 @@ export default function Home() {
                 {/* Shimmer Effect */}
                 <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                 
-                <CardContent className="p-8 relative z-10">
-                  {/* Icon */}
-                  <div className="text-6xl mb-6 group-hover:scale-110 transition-transform duration-300">
-                    {value.icon}
+                <CardContent className="p-0 relative z-10 overflow-hidden">
+                  {/* Image Carousel */}
+                  <div className="relative aspect-[16/9] overflow-hidden">
+                    <img 
+                      src={value.images[0]}
+                      alt={value.title}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+                    
+                    {/* Icon Overlay */}
+                    <div className="absolute top-4 left-4 text-5xl opacity-90 group-hover:scale-110 transition-transform duration-300">
+                      {value.icon}
+                    </div>
                   </div>
+                  
+                  {/* Content */}
+                  <div className="p-8">
                   
                   {/* Title */}
                   <h3 className="text-2xl font-extrabold text-white mb-4 tracking-tight group-hover:text-accent transition-colors duration-300">
@@ -277,6 +306,7 @@ export default function Home() {
                   <p className="text-slate-300 text-base leading-relaxed group-hover:text-slate-200 transition-colors duration-300">
                     {value.text}
                   </p>
+                  </div>
                 </CardContent>
               </Card>
             ))}

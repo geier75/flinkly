@@ -1730,3 +1730,38 @@
 - [x] "SOFORT VERFÜGBAR." mit .animated-gradient-text
 - [x] Smooth Loop ohne Sprünge (background-position 0% → 200%)
 - [x] Beide Zeilen animiert (nicht nur zweite)
+
+
+---
+
+## 📸 VALUE-CARDS: 9 PERFEKTE FOTOS
+
+**Ziel:** 3 Bilder pro Segment für "WARUM FLINKLY ANDERS IST"  
+**Fotografen-Team:** Professionelle Bildauswahl  
+**Zeitrahmen:** 60min | **Status:** 🔄 IN PROGRESS
+
+### Phase 1: Gradient-Geschwindigkeit ✅
+- [x] Animation-Duration: 4s → 5s (etwas langsamer)
+
+### Phase 2: Faire Gebühren (3 Bilder) ✅
+- [x] Bild 1: Freelancer zählt Euro-Scheine mit Taschenrechner
+- [x] Bild 2: Handshake mit 50€ Geldschein
+- [x] Bild 3: Goldenes Sparschwein mit Euro-Münzen
+
+### Phase 3: DACH-Fokus (3 Bilder) ✅
+- [x] Bild 1: Deutschland-Flagge mit Laptop (Remote Work)
+- [x] Bild 2: Berlin TV Tower Skyline mit Freelancer
+- [x] Bild 3: Handschlag vor Brandenburger Tor
+
+### Phase 4: Transparenz (3 Bilder) ✅
+- [x] Bild 1: Vertrag mit Lupe "NO HIDDEN COSTS"
+- [x] Bild 2: Laptop mit "CLEAR PRICING" Dashboard
+- [x] Bild 3: Zwei Personen im ehrlichen Gespräch
+
+### Phase 5: Integration ✅
+- [x] Bilder in Value-Cards eingebunden
+- [x] Image-First-Design (16:9 Aspect Ratio)
+- [x] Gradient-Overlay (from-slate-900 via-slate-900/60)
+- [x] Icon-Overlay (top-left, opacity 90%)
+- [x] Hover-Zoom (scale-110, duration 700ms)
+- [x] 9 Bilder total (3 pro Card)

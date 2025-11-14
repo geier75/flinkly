@@ -526,7 +526,7 @@ input:focus, textarea:focus, select:focus {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gradient-flow 4s linear infinite;
+    animation: gradient-flow 5s linear infinite;
   }
 
   @keyframes gradient-flow {
