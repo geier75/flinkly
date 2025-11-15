@@ -234,3 +234,83 @@ export const favorites = mysqlTable("favorites", {
 
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = typeof favorites.$inferInsert;
+
+
+/**
+ * Disputes table - 3-stage dispute resolution process
+ * Stages: open → mediation → resolved
+ */
+export const disputes = mysqlTable("disputes", {
+  id: int("id").autoincrement().primaryKey(),
+  orderId: int("orderId").notNull(),
+  buyerId: int("buyerId").notNull(),
+  sellerId: int("sellerId").notNull(),
+  gigId: int("gigId").notNull(),
+  
+  // Dispute details
+  reason: mysqlEnum("reason", [
+    "not_delivered",
+    "poor_quality",
+    "wrong_service",
+    "communication_issue",
+    "other"
+  ]).notNull(),
+  description: text("description").notNull(),
+  
+  // Status tracking
+  status: mysqlEnum("status", ["open", "mediation", "resolved", "closed"]).default("open").notNull(),
+  resolution: mysqlEnum("resolution", [
+    "pending",
+    "refund_full",
+    "refund_partial",
+    "revision_requested",
+    "buyer_favor",
+    "seller_favor",
+    "no_action"
+  ]).default("pending"),
+  
+  // Evidence uploads
+  buyerEvidence: text("buyerEvidence"), // JSON array of file URLs
+  sellerEvidence: text("sellerEvidence"), // JSON array of file URLs
+  
+  // Admin mediation
+  adminId: int("adminId"), // Admin who handled the dispute
+  adminNotes: text("adminNotes"),
+  mediationStartedAt: timestamp("mediationStartedAt"),
+  resolvedAt: timestamp("resolvedAt"),
+  
+  // Refund details (if applicable)
+  refundAmount: int("refundAmount"), // in cents
+  refundReason: text("refundReason"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Dispute = typeof disputes.$inferSelect;
+export type InsertDispute = typeof disputes.$inferInsert;
+
+/**
+ * Fraud alerts table - Stores fraud detection alerts for admin review
+ */
+export const fraudAlerts = mysqlTable("fraudAlerts", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId"),
+  type: mysqlEnum("type", [
+    "rapid_creation",
+    "unusual_orders",
+    "price_manipulation",
+    "review_bombing",
+    "suspicious_device"
+  ]).notNull(),
+  severity: mysqlEnum("severity", ["low", "medium", "high", "critical"]).notNull(),
+  description: text("description").notNull(),
+  metadata: text("metadata"), // JSON object with additional details
+  status: mysqlEnum("status", ["pending", "reviewed", "resolved", "false_positive"]).default("pending").notNull(),
+  reviewedBy: int("reviewedBy"), // Admin ID who reviewed the alert
+  reviewedAt: timestamp("reviewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type FraudAlert = typeof fraudAlerts.$inferSelect;
+export type InsertFraudAlert = typeof fraudAlerts.$inferInsert;

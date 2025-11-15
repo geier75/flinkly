@@ -487,14 +487,16 @@ export default function GigDetail() {
                         </Button>
                       </motion.div>
 
-                      <Button 
-                        size="lg"
-                        variant="outline"
-                        className="w-full mt-3 border-slate-700 hover:border-primary text-white bg-slate-900/40 backdrop-blur-sm"
-                      >
-                        <MessageCircle className="h-5 w-5 mr-2" />
-                        Nachricht senden
-                      </Button>
+                      <Link href="/messages">
+                        <Button 
+                          size="lg"
+                          variant="outline"
+                          className="w-full mt-3 border-slate-700 hover:border-primary text-white bg-slate-900/40 backdrop-blur-sm"
+                        >
+                          <MessageCircle className="h-5 w-5 mr-2" />
+                          Frage stellen
+                        </Button>
+                      </Link>
                     </CardContent>
                   </Card>
 

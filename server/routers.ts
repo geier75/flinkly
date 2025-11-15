@@ -15,6 +15,8 @@ import { discountRouter } from "./routers/discount";
 import { dataExportRouter } from "./routers/dataExport";
 import { accountDeletionRouter } from "./routers/accountDeletion";
 import { favoritesRouter } from "./routers/favorites";
+import { disputesRouter } from "./routers/disputes";
+import { moderationRouter } from "./routers/moderation";
 
 export const appRouter = router({
   system: systemRouter,
@@ -27,6 +29,8 @@ export const appRouter = router({
   dataExport: dataExportRouter,
   accountDeletion: accountDeletionRouter,
   favorites: favoritesRouter,
+  disputes: disputesRouter,
+  moderation: moderationRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

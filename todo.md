@@ -2495,3 +2495,71 @@
 - [x] Impact: +30% Organic Traffic
 
 **TOTAL:** 22h (~3 Tage) → **Massive Impact**
+
+
+---
+
+## 🟡 PHASE 1: MVP LAUNCH (20 Elite Professoren | 156h | €12,480)
+
+### Trust & Safety (Professor #7 Lead)
+
+#### Fraud-Detection (32h)
+- [ ] Stripe Radar Integration (server/payment.ts)
+- [x] IP/Device-Fingerprinting (server/middleware/fingerprint.ts)
+- [x] Verhaltens-Anomalie-Detection (server/fraud-detection.ts)
+- [x] Admin-Dashboard für Fraud-Alerts
+
+#### Dispute-Resolution (40h)
+- [x] DB-Schema: disputes-Tabelle (drizzle/schema.ts)
+- [x] 3-Stufen-Prozess (Open → Mediation → Resolved)
+- [x] Evidence-Upload (Buyer + Seller können Files hochladen)
+- [ ] Admin-Mediation-Queue (AdminDashboard.tsx)
+- [x] tRPC-Procedures (disputes.create, disputes.update, disputes.resolve)
+
+#### Content-Moderation (32h)
+- [x] Keyword-Blacklist (server/moderation/keywords.ts)
+- [x] Image-Moderation via AWS Rekognition (server/moderation/images.ts)
+- [ ] Review-Queue für Admins (AdminDashboard.tsx)
+- [x] Auto-Reject bei kritischen Keywords
+- [x] Manual-Review-Workflow (moderationRouter)
+
+### UX Improvements (Professor #3 Lead)
+
+#### Favoriten/Wishlist (16h)
+- [x] Heart-Icon auf Gig-Cards (Marketplace.tsx)
+- [x] "Meine Favoriten" Seite (/favorites)
+- [ ] E-Mail-Reminder (Favorit-Gig Preis reduziert)
+
+#### Gig-Erstellung verbessern (24h)
+- [ ] Live-Vorschau verbessern (CreateGig.tsx - Real-time Preview)
+- [ ] 10 Templates pro Kategorie (server/templates.ts)
+- [ ] Pricing-Calculator (Empfohlener Preis basierend auf Kategorie)
+- [ ] SEO-Score-Indicator (Titel-Länge, Keywords, Beschreibung)
+
+#### Gig-Detail verbessern (20h)
+- [ ] "Frage stellen" Button → Direct Message (GigDetail.tsx)
+- [ ] "Ähnliche Gigs" Sektion (Similar-Gigs-Algorithm)
+- [ ] Portfolio-Sektion (Seller kann 3-5 Beispiele hochladen)
+- [x] Sticky Bottom Bar (Mobile) - bereits implementiert
+
+#### Checkout verbessern (16h)
+- [ ] Review-Schritt vor Zahlung (Checkout.tsx - Step 4)
+- [ ] Exit-Intent-Modal ("Möchtest du wirklich abbrechen?")
+- [ ] Zahlungsmethode speichern (Stripe Customer Portal)
+- [ ] AVV-Tooltip (Erklärung + Link zu Muster-AVV)
+
+### Mobile & Accessibility (Professor #9 + #11 Lead)
+
+#### Mobile-Optimierung (24h)
+- [x] Touch-Targets 44x44px (index.css)
+- [ ] Hamburger-Menü (Navigation.tsx)
+- [ ] List-View für Kanban (Mobile) (SellerDashboard.tsx)
+- [ ] Multi-Step-Forms optimieren (Mobile-friendly Steps)
+
+#### Accessibility (20h)
+- [ ] Keyboard-Navigation (Tab-Index, Focus-States)
+- [ ] ARIA-Labels für alle interaktiven Elemente
+- [ ] Skip-Links ("Zum Hauptinhalt springen")
+- [ ] Kontrast-Fixes (WCAG 2.1 AA - 4.5:1 Minimum)
+
+**TOTAL Phase 1:** 156h (~4 Wochen) → **MVP Launch Ready**
