@@ -26,6 +26,7 @@ import {
   Target,
   ChevronRight
 } from "lucide-react";
+import GigDetailSkeleton from "@/components/GigDetailSkeleton";
 
 export default function GigDetail() {
   const { id } = useParams();
@@ -150,11 +151,7 @@ export default function GigDetail() {
   ];
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-center">
-        <div className="animate-pulse text-2xl">Lädt...</div>
-      </div>
-    );
+    return <GigDetailSkeleton />;
   }
 
   if (!gig) {

@@ -2587,3 +2587,30 @@
 - [x] Sortierung (Neueste/Beste Bewertung)
 - [ ] Filter nach Sternen
 - [ ] Skeleton-Loading-States
+
+
+---
+
+## 🎨 SKELETON-LOADING-STATES (User-Request)
+
+### Skeleton-Components erstellen (4h)
+- [x] GigCardSkeleton.tsx - Skeleton für Marketplace-Gig-Cards
+- [x] GigDetailSkeleton.tsx - Skeleton für GigDetail-Page
+- [x] SimilarGigsSkeleton.tsx - Skeleton für Similar-Gigs-Section (in GigDetailSkeleton integriert)
+- [x] Custom Shimmer-Animation (Tailwind CSS)
+
+### Integration in Marketplace.tsx (2h)
+- [x] isLoading-State → GigCardSkeleton-Grid (6 Cards)
+- [x] Smooth Transition (Skeleton → Real Content)
+
+### Integration in GigDetail.tsx (3h)
+- [x] isLoading-State → GigDetailSkeleton
+- [x] Hero-Section-Skeleton
+- [x] Sidebar-Skeleton
+- [x] Reviews-Section-Skeleton
+- [x] Similar-Gigs-Skeleton
+
+### Testing (1h)
+- [ ] Slow-3G-Network-Throttling testen
+- [ ] Loading-State-Transitions prüfen
+- [ ] Mobile + Desktop testen

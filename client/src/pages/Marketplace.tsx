@@ -20,6 +20,7 @@ import { Link } from "wouter";
 import { ParticleSystem } from "@/components/3d/ParticleSystem";
 import { MagneticButton } from "@/components/3d/MagneticButton";
 import { TiltCard } from "@/components/3d/TiltCard";
+import GigCardSkeleton from "@/components/GigCardSkeleton";
 
 export default function Marketplace() {
   const [location] = useLocation();
@@ -252,9 +253,7 @@ export default function Marketplace() {
             {isLoading ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl h-96" />
-                  </div>
+                  <GigCardSkeleton key={i} />
                 ))}
               </div>
             ) : sortedGigs.length === 0 ? (
