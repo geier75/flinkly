@@ -238,7 +238,7 @@ export default function CreateGig() {
                       whileHover={{ scale: 1.05 }}
                       className={`w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 ${
                         isActive
-                          ? "bg-primary shadow-lg shadow-primary/30 border-2 border-primary"
+                          ? "bg-gradient-to-r from-accent to-primary shadow-lg shadow-accent/30 border-2 border-accent"
                           : isCompleted
                           ? "bg-success shadow-lg shadow-success/30 border-2 border-success"
                           : "bg-slate-800/50 border-2 border-slate-700/50"
@@ -304,7 +304,7 @@ export default function CreateGig() {
                             value={formData.title}
                             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                             placeholder="z.B. Ich erstelle ein professionelles Logo für dein Startup"
-                            className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                             maxLength={80}
                           />
                           <p className="text-sm text-slate-400">
@@ -322,7 +322,7 @@ export default function CreateGig() {
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             placeholder="Beschreibe dein Gig so detailliert wie möglich..."
-                            className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all min-h-[200px]"
+                            className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all min-h-[200px]"
                           />
                           <p className="text-sm text-slate-400">
                             Mindestens 20 Zeichen (aktuell: {formData.description.length})
@@ -338,7 +338,7 @@ export default function CreateGig() {
                             value={formData.category}
                             onValueChange={(value) => setFormData({ ...formData, category: value })}
                           >
-                            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:border-primary focus:ring-2 focus:ring-primary/20">
+                            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:border-accent focus:ring-2 focus:ring-accent/20">
                               <SelectValue placeholder="Wähle eine Kategorie" />
                             </SelectTrigger>
                             <SelectContent className="bg-slate-800 border-slate-700">
@@ -380,7 +380,7 @@ export default function CreateGig() {
                               value={formData.price}
                               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                               placeholder="299"
-                              className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all pl-8"
+                              className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all pl-8"
                               min="10"
                               max="250"
                             />
@@ -402,7 +402,7 @@ export default function CreateGig() {
                             value={formData.deliveryDays}
                             onValueChange={(value) => setFormData({ ...formData, deliveryDays: value })}
                           >
-                            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:border-primary focus:ring-2 focus:ring-primary/20">
+                            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:border-accent focus:ring-2 focus:ring-accent/20">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent className="bg-slate-800 border-slate-700">
@@ -415,7 +415,7 @@ export default function CreateGig() {
                         </div>
 
                         {/* Pricing Info Card */}
-                        <Card className="bg-primary/10 border-primary/30">
+                        <Card className="bg-accent/10 border-accent/30">
                           <CardContent className="p-4">
                             <div className="flex items-start gap-3">
                               <Sparkles className="w-5 h-5 text-primary mt-0.5" />
@@ -458,7 +458,7 @@ export default function CreateGig() {
                             value={formData.imageUrl}
                             onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                             placeholder="https://images.unsplash.com/..."
-                            className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                            className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
                           />
                           <p className="text-sm text-slate-400">
                             Füge ein Bild hinzu, um dein Gig attraktiver zu machen

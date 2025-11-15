@@ -162,7 +162,7 @@ export default function Marketplace() {
                 <Button
                   variant={!category ? "default" : "outline"}
                   onClick={() => setCategory("")}
-                  className={!category ? "bg-primary hover:bg-primary/90 text-white" : "border-slate-700 hover:border-primary text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
+                  className={!category ? "bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white shadow-lg shadow-accent/30" : "border-slate-700 hover:border-accent text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
                 >
                   Alle Kategorien
                 </Button>
@@ -177,7 +177,7 @@ export default function Marketplace() {
                   <Button
                     variant={category === cat.name ? "default" : "outline"}
                     onClick={() => setCategory(cat.name)}
-                    className={category === cat.name ? "bg-primary hover:bg-primary/90 text-white" : "border-slate-700 hover:border-primary text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
+                    className={category === cat.name ? "bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white shadow-lg shadow-accent/30" : "border-slate-700 hover:border-accent text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
                   >
                     <span className="mr-2">{cat.icon}</span>
                     {cat.name}
@@ -198,7 +198,7 @@ export default function Marketplace() {
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="border-slate-700 hover:border-primary text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"
+                  className="border-slate-700 hover:border-accent text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"
                 >
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
                   Filter
@@ -242,7 +242,7 @@ export default function Marketplace() {
                     setSearchQuery("");
                     setCategory("");
                   }}
-                  className="bg-primary hover:bg-primary/90 text-white"
+                  className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white shadow-lg shadow-accent/30 hover:scale-105 transition-all duration-300"
                 >
                   Filter zurücksetzen
                 </Button>
@@ -257,7 +257,7 @@ export default function Marketplace() {
                     transition={{ duration: 0.6, delay: 0.1 * index }}
                   >
                     <Link href={`/gig/${gig.id}`}>
-                    <Card className="group relative bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:-translate-y-2 shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(139,92,246,0.4),0_0_100px_rgba(139,92,246,0.2)]">
+                    <Card className="group relative bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:-translate-y-2 shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(255,107,53,0.4),0_0_100px_rgba(255,107,53,0.2)]">
                       {/* Gradient Border Glow */}
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
                       
@@ -275,7 +275,7 @@ export default function Marketplace() {
                           <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-70 group-hover:opacity-40 transition-opacity duration-500" />
                           
                           {/* Category Badge */}
-                          <Badge className="absolute top-4 left-4 bg-primary/90 text-white border-0 backdrop-blur-sm">
+                          <Badge className="absolute top-4 left-4 bg-gradient-to-r from-accent to-primary text-white border-0 backdrop-blur-sm shadow-lg shadow-accent/30">
                             {gig.category}
                           </Badge>
                         </div>

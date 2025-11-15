@@ -2207,3 +2207,15 @@
 - [ ] **5 rote Lichter** → alle aus → Grün
 - [ ] **Loop-fähig** - 10-15 Sekunden
 - [ ] **In CTASection integrieren**
+
+## 🎨 Admin & Dashboard Redesign (Einheitliches Cyberpunk-Design)
+
+**Ziel:** Alle Admin-Bereiche und Dashboards visuell einheitlich mit Startseite machen
+
+- [ ] Dashboard.tsx - Cyberpunk-Style (Dark BG, Orange/Teal Buttons, Glasmorphism Cards)
+- [ ] AdminDashboard.tsx - Einheitliche Farben und Typography
+- [ ] SellerDashboard.tsx - Cyberpunk-Style mit Neon-Glow
+- [ ] Messages.tsx - Konsistentes Design
+- [ ] Orders/Checkout - Orange/Teal Gradient Buttons
+- [ ] Alle Dashboards - Gleiche Schriftgrößen wie Homepage
+- [ ] Alle Admin-Bereiche - Accent-Color (Orange) statt Primary (Blau)

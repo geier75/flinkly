@@ -23,35 +23,35 @@ export default function Dashboard() {
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
-      pending: "bg-yellow-100 text-yellow-800",
-      in_progress: "bg-blue-100 text-blue-800",
-      completed: "bg-green-100 text-green-800",
-      cancelled: "bg-red-100 text-red-800",
-      disputed: "bg-orange-100 text-orange-800",
+      pending: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/40",
+      in_progress: "bg-accent/20 text-accent border border-accent/40",
+      completed: "bg-green-500/20 text-green-300 border border-green-500/40",
+      cancelled: "bg-red-500/20 text-red-300 border border-red-500/40",
+      disputed: "bg-orange-500/20 text-orange-300 border border-orange-500/40",
     };
-    return colors[status] || "bg-gray-100 text-gray-800";
+    return colors[status] || "bg-slate-700/50 text-slate-300 border border-slate-600";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* Header */}
-      <div className="bg-white border-b border-slate-200">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900">
+      {/* Header with Cyberpunk Neon Border */}
+      <div className="bg-slate-900/80 backdrop-blur-xl border-b-2 border-transparent bg-gradient-to-r from-accent via-primary to-purple-500 bg-clip-border" style={{backgroundClip: 'border-box', borderImage: 'linear-gradient(90deg, rgb(249 115 22), rgb(20 184 166), rgb(168 85 247)) 1'}}>
         <div className="container mx-auto px-4 py-8">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+              <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight" style={{textShadow: '0 0 20px rgba(249, 115, 22, 0.5)'}}>
                 Willkommen, {user?.name || "Nutzer"}!
               </h1>
-              <p className="text-slate-600">
+              <p className="text-slate-300 text-lg">
                 Verwalte deine Gigs, Bestellungen und Verdienste
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Link href="/profile">
-                <Button variant="outline">Profil</Button>
+                <Button variant="outline" className="border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">Profil</Button>
               </Link>
                 <Link href="/create-gig">
-                  <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+                  <Button className="gap-2 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30 border border-accent/50 transition-all hover:scale-105">
                     <Plus className="h-4 w-4" />
                     Neuer Gig
                   </Button>
@@ -64,84 +64,89 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="overview">Übersicht</TabsTrigger>
-            <TabsTrigger value="gigs">Meine Gigs</TabsTrigger>
-            <TabsTrigger value="orders">Bestellungen</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border border-slate-700">
+            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Übersicht</TabsTrigger>
+            <TabsTrigger value="gigs" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Meine Gigs</TabsTrigger>
+            <TabsTrigger value="orders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Bestellungen</TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid md:grid-cols-3 gap-6">
-              <PremiumCard>
+            <motion.div 
+              className="grid md:grid-cols-3 gap-6"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Card className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl group transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Aktive Gigs</CardTitle>
-                  <Package className="h-4 w-4 text-primary" />
+                  <CardTitle className="text-sm font-medium text-slate-300">Aktive Gigs</CardTitle>
+                  <Package className="h-5 w-5 text-accent" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">{myGigs?.length || 0}</div>
-                  <p className="text-xs text-slate-600">
+                  <div className="text-3xl font-bold text-white">{myGigs?.length || 0}</div>
+                  <p className="text-xs text-slate-400">
                     {myGigs?.filter((g) => g.active).length || 0} aktiv
                   </p>
                 </CardContent>
-              </PremiumCard>
+              </Card>
 
-              <PremiumCard>
+              <Card className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl group transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Bestellungen</CardTitle>
-                  <ShoppingCart className="h-4 w-4 text-green-600" />
+                  <CardTitle className="text-sm font-medium text-slate-300">Bestellungen</CardTitle>
+                  <ShoppingCart className="h-5 w-5 text-primary" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className="text-3xl font-bold text-white">
                     {(myPurchases?.length || 0) + (mySales?.length || 0)}
                   </div>
-                  <p className="text-xs text-slate-600">
+                  <p className="text-xs text-slate-400">
                     {myPurchases?.filter((o) => o.status === "completed").length || 0} abgeschlossen
                   </p>
                 </CardContent>
-              </PremiumCard>
+              </Card>
 
-              <PremiumCard>
+              <Card className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-yellow-500/80 backdrop-blur-xl group transition-all duration-300 hover:shadow-[0_0_30px_rgba(234,179,8,0.3)]">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Bewertung</CardTitle>
-                  <Star className="h-4 w-4 text-yellow-600" />
+                  <CardTitle className="text-sm font-medium text-slate-300">Bewertung</CardTitle>
+                  <Star className="h-5 w-5 text-yellow-500" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">4.8</div>
-                  <p className="text-xs text-slate-600">basierend auf 12 Bewertungen</p>
+                  <div className="text-3xl font-bold text-white">4.8</div>
+                  <p className="text-xs text-slate-400">basierend auf 12 Bewertungen</p>
                 </CardContent>
-              </PremiumCard>
-            </div>
+              </Card>
+            </motion.div>
 
             {/* Quick Actions */}
-            <PremiumCard>
+            <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
               <CardHeader>
-                <CardTitle>Schnellstart</CardTitle>
+                <CardTitle className="text-white">Schnellstart</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3 p-6 md:p-8 p-6 md:p-8">
+              <CardContent className="space-y-3">
                 <Link href="/marketplace">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">
                     Marketplace erkunden
                   </Button>
                 </Link>
                 <Link href="/create-gig">
-                  <Button variant="outline" className="w-full justify-start">
+                  <Button variant="outline" className="w-full justify-start border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">
                     Erstes Gig erstellen
                   </Button>
                 </Link>
-                <Button variant="outline" className="w-full justify-start">
+                <Button variant="outline" className="w-full justify-start border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">
                   Profil bearbeiten
                 </Button>
               </CardContent>
-            </PremiumCard>
+            </Card>
           </TabsContent>
 
           {/* Gigs Tab */}
           <TabsContent value="gigs" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-bold">Meine Gigs</h2>
+              <h2 className="text-2xl font-bold text-white">Meine Gigs</h2>
               <Link href="/create-gig">
-                <Button className="gap-2">
+                <Button className="gap-2 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30 border border-accent/50 transition-all hover:scale-105">
                   <Plus className="h-4 w-4" />
                   Neuer Gig
                 </Button>
@@ -149,36 +154,36 @@ export default function Dashboard() {
             </div>
 
             {!myGigs || myGigs.length === 0 ? (
-              <PremiumCard>
-                <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
-                  <p className="text-slate-600 mb-4">
+              <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                <CardContent className="pt-6 text-center">
+                  <p className="text-slate-300 mb-4">
                     Du hast noch keine Gigs erstellt
                   </p>
                   <Link href="/create-gig">
-                    <Button>Erstes Gig erstellen</Button>
+                    <Button className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30">Erstes Gig erstellen</Button>
                   </Link>
                 </CardContent>
-              </PremiumCard>
+              </Card>
             ) : (
               <div className="space-y-4">
                 {myGigs.map((gig) => (
-                  <PremiumCard key={gig.id}>
-                    <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
+                  <Card key={gig.id} className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]">
+                    <CardContent className="pt-6">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <h3 className="font-bold text-lg mb-1">{gig.title}</h3>
-                          <p className="text-sm text-slate-600 mb-3">
+                          <h3 className="font-bold text-xl mb-2 text-white">{gig.title}</h3>
+                          <p className="text-sm text-slate-400 mb-3">
                             {gig.description.substring(0, 100)}...
                           </p>
                           <div className="flex gap-4 text-sm">
-                            <span className="text-slate-600">
+                            <span className="text-accent font-semibold">
                               €{(gig.price / 100).toFixed(2)}
                             </span>
-                            <span className="text-slate-600">
+                            <span className="text-slate-400">
                               {gig.completedOrders} Bestellungen
                             </span>
                             {gig.averageRating && (
-                              <span className="text-slate-600">
+                              <span className="text-yellow-500">
                                 ⭐ {parseFloat(gig.averageRating.toString()).toFixed(1)}
                               </span>
                             )}
@@ -186,21 +191,21 @@ export default function Dashboard() {
                         </div>
                         <div className="flex gap-2">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            className={`px-3 py-1 rounded-full text-xs font-medium border ${
                               gig.active
-                                ? "bg-green-100 text-green-800"
-                                : "bg-gray-100 text-gray-800"
+                                ? "bg-green-500/20 text-green-300 border-green-500/40"
+                                : "bg-slate-700/50 text-slate-300 border-slate-600"
                             }`}
                           >
                             {gig.active ? "Aktiv" : "Inaktiv"}
                           </span>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="border-slate-600 text-white hover:border-accent hover:bg-accent/10">
                             Bearbeiten
                           </Button>
                         </div>
                       </div>
                     </CardContent>
-                  </PremiumCard>
+                  </Card>
                 ))}
               </div>
             )}
@@ -209,33 +214,33 @@ export default function Dashboard() {
           {/* Orders Tab */}
           <TabsContent value="orders" className="space-y-6">
             <Tabs defaultValue="purchases" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="purchases">Meine Käufe</TabsTrigger>
-                <TabsTrigger value="sales">Meine Verkäufe</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border border-slate-700">
+                <TabsTrigger value="purchases" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Meine Käufe</TabsTrigger>
+                <TabsTrigger value="sales" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Meine Verkäufe</TabsTrigger>
               </TabsList>
 
               {/* Purchases */}
               <TabsContent value="purchases" className="space-y-4 mt-6">
                 {!myPurchases || myPurchases.length === 0 ? (
-                  <PremiumCard>
-                    <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
-                      <p className="text-slate-600 mb-4">
+                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                    <CardContent className="pt-6 text-center">
+                      <p className="text-slate-300 mb-4">
                         Du hast noch keine Gigs gekauft
                       </p>
                       <Link href="/marketplace">
-                        <Button>Marketplace erkunden</Button>
+                        <Button className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30">Marketplace erkunden</Button>
                       </Link>
                     </CardContent>
-                  </PremiumCard>
+                  </Card>
                 ) : (
                   myPurchases.map((order) => (
-                    <PremiumCard key={order.id}>
-                      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
+                    <Card key={order.id} className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]">
+                      <CardContent className="pt-6">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h3 className="font-bold mb-2">Bestellung {order.id}</h3>
-                            <div className="space-y-1 text-sm text-slate-600">
-                              <p>€{(order.totalPrice / 100).toFixed(2)}</p>
+                            <h3 className="font-bold mb-2 text-white">Bestellung {order.id}</h3>
+                            <div className="space-y-1 text-sm text-slate-400">
+                              <p className="text-accent font-semibold">€{(order.totalPrice / 100).toFixed(2)}</p>
                               <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
                             </div>
                           </div>
@@ -248,7 +253,7 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </CardContent>
-                    </PremiumCard>
+                    </Card>
                   ))
                 )}
               </TabsContent>
@@ -256,25 +261,25 @@ export default function Dashboard() {
               {/* Sales */}
               <TabsContent value="sales" className="space-y-4 mt-6">
                 {!mySales || mySales.length === 0 ? (
-                  <PremiumCard>
-                    <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
-                      <p className="text-slate-600 mb-4">
+                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                    <CardContent className="pt-6 text-center">
+                      <p className="text-slate-300 mb-4">
                         Du hast noch keine Gigs verkauft
                       </p>
                       <Link href="/create-gig">
-                        <Button>Gig erstellen</Button>
+                        <Button className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30">Gig erstellen</Button>
                       </Link>
                     </CardContent>
-                  </PremiumCard>
+                  </Card>
                 ) : (
                   mySales.map((order) => (
-                    <PremiumCard key={order.id}>
-                      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
+                    <Card key={order.id} className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]">
+                      <CardContent className="pt-6">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h3 className="font-bold mb-2">Bestellung {order.id}</h3>
-                            <div className="space-y-1 text-sm text-slate-600">
-                              <p>€{(order.totalPrice / 100).toFixed(2)}</p>
+                            <h3 className="font-bold mb-2 text-white">Bestellung {order.id}</h3>
+                            <div className="space-y-1 text-sm text-slate-400">
+                              <p className="text-accent font-semibold">€{(order.totalPrice / 100).toFixed(2)}</p>
                               <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
                             </div>
                           </div>
@@ -287,7 +292,7 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </CardContent>
-                    </PremiumCard>
+                    </Card>
                   ))
                 )}
               </TabsContent>
@@ -298,4 +303,3 @@ export default function Dashboard() {
     </div>
   );
 }
-
