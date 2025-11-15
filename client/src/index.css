@@ -548,3 +548,13 @@ input:focus, textarea:focus, select:focus {
     }
   }
 }
+
+/* Shimmer Animation for Skeleton Screens */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}

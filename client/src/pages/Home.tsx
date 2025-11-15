@@ -10,8 +10,11 @@ import { VideoScene } from "@/components/webgl/VideoScene";
 import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScroll";
 import { motion } from "framer-motion";
 import ServiceCardsFan from "@/components/ServiceCardsFan";
+import ServiceCardsSkeleton from "@/components/ServiceCardsSkeleton";
 import { ValueCardCarousel } from "@/components/ValueCardCarousel";
+import TestimonialsSkeleton from "@/components/TestimonialsSkeleton";
 import F1RaceStart from "@/components/F1RaceStart";
+import { useState, useEffect } from "react";
 
 
 function HeroSection() {
@@ -120,6 +123,21 @@ function HeroSection() {
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
+  
+  // Loading States for Skeleton Screens
+  const [isServicesLoading, setIsServicesLoading] = useState(true);
+  const [isTestimonialsLoading, setIsTestimonialsLoading] = useState(true);
+  
+  // Simulate data loading (1.5s for Services, 2s for Testimonials)
+  useEffect(() => {
+    const servicesTimer = setTimeout(() => setIsServicesLoading(false), 1500);
+    const testimonialsTimer = setTimeout(() => setIsTestimonialsLoading(false), 2000);
+    
+    return () => {
+      clearTimeout(servicesTimer);
+      clearTimeout(testimonialsTimer);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
@@ -174,7 +192,18 @@ export default function Home() {
             </p>
           </div>
 
-          <ServiceCardsFan />
+          {/* Service Cards with Skeleton Loading */}
+          {isServicesLoading ? (
+            <ServiceCardsSkeleton />
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
+              <ServiceCardsFan />
+            </motion.div>
+          )}
 
           {/* "Alle Kategorien entdecken" Button */}
           <motion.div
@@ -234,7 +263,16 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+          {/* Testimonials/Value Cards with Skeleton Loading */}
+          {isTestimonialsLoading ? (
+            <TestimonialsSkeleton />
+          ) : (
+            <motion.div
+              className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6 }}
+            >
             {[
               {
                 icon: "",
@@ -309,7 +347,8 @@ export default function Home() {
                 </CardContent>
               </Card>
             ))}
-          </div>
+            </motion.div>
+          )}
         </div>
       </section>
 
