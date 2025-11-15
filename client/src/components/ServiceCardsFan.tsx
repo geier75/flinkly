@@ -149,10 +149,6 @@ export default function ServiceCardsFan() {
 
       <div 
         className="relative h-[550px] flex items-center justify-center z-10"
-        style={{
-          perspective: "1200px",
-          perspectiveOrigin: "50% 50%"
-        }}
       >
         <motion.div
           className="relative w-full h-full"
