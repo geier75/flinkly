@@ -17,6 +17,9 @@ import {
 import { Search, SlidersHorizontal, X, Star, Clock, TrendingUp, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
 import { Link } from "wouter";
+import { ParticleSystem } from "@/components/3d/ParticleSystem";
+import { MagneticButton } from "@/components/3d/MagneticButton";
+import { TiltCard } from "@/components/3d/TiltCard";
 
 export default function Marketplace() {
   const [location] = useLocation();
@@ -87,6 +90,13 @@ export default function Marketplace() {
       {/* Gradient Overlay */}
       <div className="fixed inset-0 bg-gradient-to-b from-violet-950/60 via-slate-900/80 to-slate-950/90 z-[1]" />
 
+      {/* Particle System */}
+      <ParticleSystem 
+        count={60} 
+        colors={["#8B5CF6", "#F97316", "#14B8A6"]} 
+        className="fixed inset-0 z-[2]"
+      />
+
       {/* Content */}
       <div className="relative z-10">
         {/* Hero Section */}
@@ -131,12 +141,12 @@ export default function Marketplace() {
                         className="border-0 bg-transparent text-white placeholder:text-slate-400 focus-visible:ring-0 text-lg"
                       />
                     </div>
-                    <Button 
-                      size="lg"
-                      className="bg-accent hover:bg-accent/90 text-white px-8 rounded-xl font-bold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
+                    <MagneticButton 
+                      intensity={0.4}
+                      className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 text-lg"
                     >
                       Suchen
-                    </Button>
+                    </MagneticButton>
                   </div>
                 </div>
               </div>
