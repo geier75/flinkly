@@ -35,8 +35,9 @@ import { PopOutLogo } from "@/components/3d/PopOutLogo";
 export default function CreateGig() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
-  const [currentStep, setCurrentStep] = useState(1);
+  const [currentStep, setCurrentStep] = useState(0); // Start at step 0 (Template selection)
 
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -46,6 +47,12 @@ export default function CreateGig() {
     imageUrl: "",
     imageAlt: "",
   });
+
+  // Fetch templates
+  const { data: templates } = trpc.templates.getByCategory.useQuery(
+    { category: formData.category },
+    { enabled: !!formData.category && currentStep === 0 }
+  );
 
   const createGigMutation = trpc.gigs.create.useMutation({
     onSuccess: () => {
