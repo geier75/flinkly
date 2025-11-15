@@ -14,6 +14,7 @@ import { similarGigsRouter } from "./routers/similarGigs";
 import { discountRouter } from "./routers/discount";
 import { dataExportRouter } from "./routers/dataExport";
 import { accountDeletionRouter } from "./routers/accountDeletion";
+import { favoritesRouter } from "./routers/favorites";
 
 export const appRouter = router({
   system: systemRouter,
@@ -25,6 +26,7 @@ export const appRouter = router({
   discount: discountRouter,
   dataExport: dataExportRouter,
   accountDeletion: accountDeletionRouter,
+  favorites: favoritesRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

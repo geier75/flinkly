@@ -221,3 +221,16 @@ export const accountDeletionRequests = mysqlTable("account_deletion_requests", {
 
 export type AccountDeletionRequest = typeof accountDeletionRequests.$inferSelect;
 export type InsertAccountDeletionRequest = typeof accountDeletionRequests.$inferInsert;
+
+/**
+ * Favorites/Wishlist - Users can save gigs to their wishlist
+ */
+export const favorites = mysqlTable("favorites", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  gigId: int("gigId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Favorite = typeof favorites.$inferSelect;
+export type InsertFavorite = typeof favorites.$inferInsert;

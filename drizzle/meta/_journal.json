@@ -43,6 +43,13 @@
       "when": 1763053052165,
       "tag": "0005_famous_the_executioner",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1763244896772,
+      "tag": "0006_unique_grandmaster",
+      "breakpoints": true
     }
   ]
 }

@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal, X, Star, Clock, TrendingUp, Sparkles } from "lucide-react";
+import { Search, SlidersHorizontal, X, Star, Clock, TrendingUp, Sparkles, Heart } from "lucide-react";
 import { useLocation } from "wouter";
 import { Link } from "wouter";
 import { ParticleSystem } from "@/components/3d/ParticleSystem";
@@ -32,6 +32,33 @@ export default function Marketplace() {
   const [showFilters, setShowFilters] = useState(false);
 
   const { data: gigs, isLoading } = trpc.gigs.list.useQuery({});
+  const utils = trpc.useUtils();
+
+  // Favorites
+  const addFavoriteMutation = trpc.favorites.add.useMutation({
+    onSuccess: () => {
+      utils.favorites.list.invalidate();
+    },
+  });
+
+  const removeFavoriteMutation = trpc.favorites.remove.useMutation({
+    onSuccess: () => {
+      utils.favorites.list.invalidate();
+    },
+  });
+
+  const { data: favoritesList } = trpc.favorites.list.useQuery();
+  const favoriteGigIds = new Set(favoritesList?.map(f => f.gigId) || []);
+
+  const toggleFavorite = (e: React.MouseEvent, gigId: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (favoriteGigIds.has(gigId)) {
+      removeFavoriteMutation.mutate({ gigId });
+    } else {
+      addFavoriteMutation.mutate({ gigId });
+    }
+  };
 
   const categories = [
     { name: "Design & Kreation", icon: "🎨", count: 124 },
@@ -278,6 +305,20 @@ export default function Marketplace() {
                           <Badge className="absolute top-4 left-4 bg-gradient-to-r from-accent to-primary text-white border-0 backdrop-blur-sm shadow-lg shadow-accent/30">
                             {gig.category}
                           </Badge>
+
+                          {/* Favorite Heart Icon */}
+                          <button
+                            onClick={(e) => toggleFavorite(e, gig.id)}
+                            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-full hover:border-accent hover:bg-accent/20 transition-all duration-300 hover:scale-110 z-10"
+                          >
+                            <Heart
+                              className={`h-5 w-5 transition-all duration-300 ${
+                                favoriteGigIds.has(gig.id)
+                                  ? "text-accent fill-accent"
+                                  : "text-slate-400 hover:text-accent"
+                              }`}
+                            />
+                          </button>
                         </div>
 
                         {/* Content */}

@@ -4,7 +4,8 @@ import {
   InsertUser, users, gigs, orders, reviews, transactions, payouts, invoices,
   InsertGig, InsertOrder, InsertReview, InsertTransaction, InsertPayout, InsertInvoice,
   conversations, messages, InsertConversation, InsertMessage,
-  consentLogs, InsertConsentLog, accountDeletionRequests, InsertAccountDeletionRequest
+  consentLogs, InsertConsentLog, accountDeletionRequests, InsertAccountDeletionRequest,
+  favorites
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1051,4 +1052,56 @@ export async function getSimilarGigs(gigId: number, k: number = 12, excludeSameS
     console.error("[Database] Failed to get similar gigs:", error);
     return [];
   }
+}
+
+/**
+ * ========================================
+ * FAVORITES/WISHLIST
+ * ========================================
+ */
+
+export async function addFavorite(userId: number, gigId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.insert(favorites).values({ userId, gigId });
+}
+
+export async function removeFavorite(userId: number, gigId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(favorites).where(and(eq(favorites.userId, userId), eq(favorites.gigId, gigId)));
+}
+
+export async function getFavoritesByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select({
+      id: favorites.id,
+      gigId: favorites.gigId,
+      createdAt: favorites.createdAt,
+      gig: gigs,
+    })
+    .from(favorites)
+    .leftJoin(gigs, eq(favorites.gigId, gigs.id))
+    .where(eq(favorites.userId, userId))
+    .orderBy(desc(favorites.createdAt));
+
+  return result;
+}
+
+export async function isFavorite(userId: number, gigId: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db
+    .select()
+    .from(favorites)
+    .where(and(eq(favorites.userId, userId), eq(favorites.gigId, gigId)))
+    .limit(1);
+
+  return result.length > 0;
 }

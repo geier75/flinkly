@@ -2403,3 +2403,53 @@
   - [ ] Versandkosten
 
 ---
+
+
+---
+
+## 🚀 USER-REQUESTS (Aktuell in Arbeit)
+
+### DSGVO-UI Integration (Priorität: HOCH)
+
+- [x] **DataExport-UI in Profile/Settings** (8h)
+  - [x] DataExportButton-Komponente erstellen
+  - [x] Download-Funktion für JSON/CSV
+  - [x] Loading-State während Export
+  - [x] Success-Toast nach Download
+
+- [x] **Account-Deletion-UI** (12h)
+  - [x] Account-Deletion-Request-Button in Settings
+  - [x] Confirmation-Modal mit Warnung
+  - [x] 30-Tage-Countdown-Display
+  - [x] Cancel-Deletion-Button
+  - [x] Status-Anzeige (Pending/Active)
+
+### Sitemap & SEO Testing (Priorität: HOCH)
+
+- [x] **Sitemap/Robots.txt Validierung** (2h)
+  - [x] /sitemap.xml im Browser testen
+  - [x] /robots.txt im Browser testen
+  - [x] Google Search Console Integration vorbereiten
+  - [x] Sitemap-URL in robots.txt verifizieren
+
+### Phase 1 MVP Launch Features (Priorität: MITTEL)
+
+- [x] **Favoriten/Wishlist-Feature** (16h)
+  - [x] DB-Schema erweitern (favorites-Tabelle)
+  - [x] tRPC-Procedures (addFavorite, removeFavorite, getFavorites)
+  - [x] Heart-Icon auf Gig-Cards (Toggle-Funktion)
+  - [ ] Favoriten-Page (/favorites) erstellen
+  - [x] Optimistic Updates für sofortiges Feedback
+
+- [ ] **Gig-Detail-Optimierung** (12h)
+  - [ ] Trust-Elements hinzufügen (Seller-Stats, Response-Time)
+  - [ ] FAQ-Section erweitern (Collapsible)
+  - [ ] Reviews-Section optimieren (Pagination, Sorting)
+  - [ ] Related-Gigs-Section (Similar-Gigs-Algorithm)
+
+- [ ] **Mobile-Touch-Optimierung** (8h)
+  - [ ] Touch-Targets auf 44x44px vergrößern (Buttons, Links)
+  - [ ] Mobile-Navigation optimieren (Hamburger-Menu)
+  - [ ] Swipe-Gestures für Service-Cards-Carousel
+  - [ ] Mobile-Keyboard-Handling (Input-Focus, Scroll-Behavior)
+

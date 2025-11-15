@@ -3,9 +3,11 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, User, Mail, MapPin, LogOut, Edit2, Save, X, Zap } from "lucide-react";
+import { AlertCircle, User, Mail, MapPin, LogOut, Edit2, Save, X, Zap, Download, Trash2, Shield, Clock } from "lucide-react";
 import { useLocation } from "wouter";
 import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 const COUNTRIES = [
   { code: "DE", name: "Deutschland" },
@@ -22,6 +24,80 @@ export default function Profile() {
     bio: "",
     country: "DE",
   });
+
+  // DSGVO: Data Export
+  const exportDataMutation = trpc.user.exportData.useMutation({
+    onSuccess: (data) => {
+      // Download JSON file
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `flinkly-datenexport-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      toast.success("Datenexport erfolgreich!", {
+        description: "Deine Daten wurden als JSON-Datei heruntergeladen.",
+      });
+    },
+    onError: (error) => {
+      toast.error("Datenexport fehlgeschlagen", {
+        description: error.message,
+      });
+    },
+  });
+
+  // DSGVO: Account Deletion
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deleteAccountMutation = trpc.user.deleteAccount.useMutation({
+    onSuccess: () => {
+      toast.success("Account-Löschung beantragt", {
+        description: "Dein Account wird in 30 Tagen gelöscht. Du kannst die Löschung jederzeit widerrufen.",
+      });
+      setShowDeleteConfirm(false);
+    },
+    onError: (error) => {
+      toast.error("Account-Löschung fehlgeschlagen", {
+        description: error.message,
+      });
+    },
+  });
+
+  const cancelDeletionMutation = trpc.user.cancelAccountDeletion.useMutation({
+    onSuccess: () => {
+      toast.success("Account-Löschung widerrufen", {
+        description: "Dein Account bleibt aktiv.",
+      });
+    },
+    onError: (error) => {
+      toast.error("Widerruf fehlgeschlagen", {
+        description: error.message,
+      });
+    },
+  });
+
+  const { data: deletionStatus } = trpc.user.getAccountDeletionStatus.useQuery();
+
+  const handleDataExport = () => {
+    exportDataMutation.mutate({
+      includeProfile: true,
+      includeGigs: true,
+      includeOrders: true,
+      includeMessages: true,
+      includeReviews: true,
+      includeTransactions: true,
+    });
+  };
+
+  const handleDeleteAccount = () => {
+    deleteAccountMutation.mutate({ reason: "User requested account deletion" });
+  };
+
+  const handleCancelDeletion = () => {
+    cancelDeletionMutation.mutate();
+  };
 
   if (!isAuthenticated || !user) {
     return (
@@ -234,6 +310,120 @@ export default function Profile() {
                   </div>
                 </>
               )}
+            </CardContent>
+          </Card>
+
+          {/* DSGVO: Data Export Card */}
+          <Card className="cyber-glass-card border-2 border-primary/40 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)] transition-all duration-500 mb-8">
+            <CardHeader className="pb-4 border-b border-slate-700/50">
+              <CardTitle className="text-3xl font-extrabold cyber-chrome-text flex items-center gap-3">
+                <Shield className="h-8 w-8 text-primary" />
+                Datenschutz (DSGVO)
+              </CardTitle>
+              <CardDescription className="text-slate-400 mt-2 text-lg font-medium">Deine Rechte nach Art. 20 DSGVO</CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 md:p-8 space-y-6">
+              {/* Data Export */}
+              <div className="p-6 bg-slate-900/60 rounded-xl border-2 border-primary/40 backdrop-blur-xl">
+                <div className="flex items-start gap-4 mb-4">
+                  <Download className="h-6 w-6 text-primary mt-1" />
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2">Datenexport</h3>
+                    <p className="text-slate-400 text-sm mb-4">
+                      Lade alle deine gespeicherten Daten als JSON-Datei herunter. Dies umfasst dein Profil, Bestellungen, Nachrichten und mehr.
+                    </p>
+                    <Button
+                      onClick={handleDataExport}
+                      disabled={exportDataMutation.isPending}
+                      className="cyber-neon-button text-white font-bold px-6 py-3"
+                    >
+                      {exportDataMutation.isPending ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                          Exportiere...
+                        </>
+                      ) : (
+                        <>
+                          <Download className="h-4 w-4 mr-2" />
+                          Daten exportieren
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Account Deletion */}
+              <div className="p-6 bg-slate-900/60 rounded-xl border-2 border-red-500/40 backdrop-blur-xl">
+                <div className="flex items-start gap-4 mb-4">
+                  <Trash2 className="h-6 w-6 text-red-500 mt-1" />
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-white mb-2">Account löschen</h3>
+                    {deletionStatus?.scheduledDeletionAt ? (
+                      <div className="space-y-4">
+                        <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Clock className="h-5 w-5 text-red-400" />
+                            <p className="text-red-400 font-bold">Account-Löschung geplant</p>
+                          </div>
+                          <p className="text-slate-300 text-sm">
+                            Dein Account wird am <span className="font-bold">{new Date(deletionStatus.scheduledDeletionAt).toLocaleDateString("de-DE")}</span> gelöscht.
+                          </p>
+                        </div>
+                        <Button
+                          onClick={handleCancelDeletion}
+                          disabled={cancelDeletionMutation.isPending}
+                          variant="outline"
+                          className="border-2 border-primary/30 hover:border-primary hover:bg-primary/10 text-primary font-bold"
+                        >
+                          {cancelDeletionMutation.isPending ? "Widerrufe..." : "Löschung widerrufen"}
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-slate-400 text-sm mb-4">
+                          Lösche deinen Account dauerhaft. Du hast 30 Tage Zeit, um die Löschung zu widerrufen.
+                        </p>
+                        {!showDeleteConfirm ? (
+                          <Button
+                            onClick={() => setShowDeleteConfirm(true)}
+                            variant="outline"
+                            className="border-2 border-red-500/30 hover:border-red-500 hover:bg-red-500/10 text-red-400 font-bold"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Account löschen
+                          </Button>
+                        ) : (
+                          <div className="space-y-4">
+                            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                              <p className="text-red-400 font-bold mb-2">⚠️ Bist du sicher?</p>
+                              <p className="text-slate-300 text-sm">
+                                Diese Aktion kann nicht rückgängig gemacht werden. Dein Account wird in 30 Tagen dauerhaft gelöscht.
+                              </p>
+                            </div>
+                            <div className="flex gap-3">
+                              <Button
+                                onClick={() => setShowDeleteConfirm(false)}
+                                variant="outline"
+                                className="flex-1 border-2 border-slate-600 text-white hover:border-slate-400"
+                              >
+                                Abbrechen
+                              </Button>
+                              <Button
+                                onClick={handleDeleteAccount}
+                                disabled={deleteAccountMutation.isPending}
+                                className="flex-1 bg-red-500 hover:bg-red-600 text-white font-bold"
+                              >
+                                {deleteAccountMutation.isPending ? "Lösche..." : "Jetzt löschen"}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
