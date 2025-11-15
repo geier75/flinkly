@@ -159,7 +159,7 @@ export const appRouter = router({
         const gig = await db.getGigById(input.gigId);
         if (!gig) throw new Error("Gig not found");
 
-        await db.createOrder({
+        const order = await db.createOrder({
           gigId: input.gigId,
           buyerId: ctx.user.id,
           sellerId: gig.sellerId,
@@ -167,7 +167,15 @@ export const appRouter = router({
           buyerMessage: input.buyerMessage,
           status: "pending",
         });
-        return { success: true };
+
+        // Create order-based conversation thread
+        await db.createConversation({
+          orderId: order!.id,
+          buyerId: ctx.user.id,
+          sellerId: gig.sellerId,
+        });
+
+        return { success: true, orderId: order!.id };
       }),
 
     updateStatus: protectedProcedure

@@ -15,6 +15,7 @@ import { Send, Paperclip, ArrowLeft, FileText, Image as ImageIcon, X } from "luc
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function Messages() {
   const { user, loading } = useAuth();
@@ -52,6 +53,8 @@ export default function Messages() {
     selectedConversationId
   );
 
+  const { permission, showNotification, requestPermission } = usePushNotifications();
+
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,11 +69,26 @@ export default function Messages() {
       refetchConversations();
     };
 
-    // TODO: Add socket event listeners here
-    // socket.on("message_received", handleNewMessage);
+    // Socket event listeners
+    const socket = (window as any).socket;
+    if (!socket) return;
+
+    socket.on("message_received", handleNewMessage);
+    socket.on("new_message", (data: any) => {
+      handleNewMessage();
+      
+      // Show push notification if permission granted
+      if (permission === "granted" && document.hidden) {
+        showNotification("Neue Nachricht", {
+          body: data.message.content || "Du hast eine neue Nachricht erhalten",
+          tag: `conversation-${data.conversationId}`,
+        });
+      }
+    });
 
     return () => {
-      // socket.off("message_received", handleNewMessage);
+      socket.off("message_received", handleNewMessage);
+      socket.off("new_message");
     };
   }, [selectedConversationId, refetchMessages, refetchConversations]);
 

@@ -187,7 +187,9 @@ export async function getOrderById(id: number) {
 export async function createOrder(order: InsertOrder) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  await db.insert(orders).values(order);
+  const result = await db.insert(orders).values(order);
+  const insertId = Number(result[0].insertId);
+  return await getOrderById(insertId);
 }
 
 export async function updateOrderStatus(id: number, status: string) {

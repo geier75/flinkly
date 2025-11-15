@@ -40,25 +40,25 @@
 
 ### Core Features (Woche 3-4)
 
-- [ ] **Messaging-System** (60h)
-  - [ ] Real-time Chat (Socket.io)
-  - [ ] Order-bezogene Threads
-  - [ ] File-Sharing
-  - [ ] Push-Notifications
-  - [ ] Read-Receipts
+- [x] **Messaging-System** (60h)
+  - [x] Real-time Chat (Socket.io)
+  - [x] Order-bezogene Threads
+  - [x] File-Sharing
+  - [x] Push-Notifications
+  - [x] Read-Receipts
 
-- [ ] **Seller-Verifizierung** (32h)
-  - [ ] E-Mail + Telefon-Verifizierung
-  - [ ] Verifizierungs-Badges
-  - [ ] Admin-Approval-Queue
+- [x] **Seller-Verifizierung** (32h)
+  - [x] E-Mail + Telefon-Verifizierung
+  - [x] Verifizierungs-Badges
+  - [x] Admin-Approval-Queue
   - [ ] ID-Verifizierung (IDnow) optional
 
-- [ ] **Input-Validation & Security** (24h)
-  - [ ] Zod-Schemas für alle tRPC-Procedures
-  - [ ] CSRF-Protection
-  - [ ] Rate-Limiting (100 req/min auth, 20 anon)
-  - [ ] Content-Security-Policy
-  - [ ] File-Upload-Validation
+- [x] **Input-Validation & Security** (24h)
+  - [x] Zod-Schemas für alle tRPC-Procedures
+  - [x] CSRF-Protection (Helmet.js)
+  - [x] Rate-Limiting (100 req/min auth, 20 anon)
+  - [x] Content-Security-Policy
+  - [x] File-Upload-Validation
 
 ### SEO & Analytics (Woche 5-6)
 
@@ -2269,25 +2269,25 @@
 
 ### Core Features (Woche 3-4)
 
-- [ ] **Messaging-System** (60h)
-  - [ ] Real-time Chat (Socket.io)
-  - [ ] Order-bezogene Threads
-  - [ ] File-Sharing
-  - [ ] Push-Notifications
-  - [ ] Read-Receipts
+- [x] **Messaging-System** (60h)
+  - [x] Real-time Chat (Socket.io)
+  - [x] Order-bezogene Threads
+  - [x] File-Sharing
+  - [x] Push-Notifications
+  - [x] Read-Receipts
 
-- [ ] **Seller-Verifizierung** (32h)
-  - [ ] E-Mail + Telefon-Verifizierung
-  - [ ] Verifizierungs-Badges
-  - [ ] Admin-Approval-Queue
+- [x] **Seller-Verifizierung** (32h)
+  - [x] E-Mail + Telefon-Verifizierung
+  - [x] Verifizierungs-Badges
+  - [x] Admin-Approval-Queue
   - [ ] ID-Verifizierung (IDnow) optional
 
-- [ ] **Input-Validation & Security** (24h)
-  - [ ] Zod-Schemas für alle tRPC-Procedures
-  - [ ] CSRF-Protection
-  - [ ] Rate-Limiting (100 req/min auth, 20 anon)
-  - [ ] Content-Security-Policy
-  - [ ] File-Upload-Validation
+- [x] **Input-Validation & Security** (24h)
+  - [x] Zod-Schemas für alle tRPC-Procedures
+  - [x] CSRF-Protection (Helmet.js)
+  - [x] Rate-Limiting (100 req/min auth, 20 anon)
+  - [x] Content-Security-Policy
+  - [x] File-Upload-Validation
 
 ### SEO & Analytics (Woche 5-6)
 
