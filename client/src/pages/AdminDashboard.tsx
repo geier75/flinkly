@@ -24,6 +24,7 @@ import {
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -45,7 +46,14 @@ export default function AdminDashboard() {
     ordersToday: 47,
   };
 
-  // Mock pending moderation items
+  // Fetch real data from tRPC
+  const { data: fraudAlerts } = trpc.moderation.getPendingAlerts.useQuery();
+  const { data: allDisputes } = trpc.disputes.all.useQuery();
+  const reviewAlertMutation = trpc.moderation.reviewAlert.useMutation({
+    onSuccess: () => toast.success("Alert reviewed"),
+  });
+
+  // Mock pending moderation items (TODO: Replace with real gig moderation)
   const [pendingGigs] = useState([
     {
       id: "1",
@@ -68,8 +76,9 @@ export default function AdminDashboard() {
     },
   ]);
 
-  // Mock disputes
-  const [disputes] = useState([
+  // Use real disputes from tRPC
+  const disputes = allDisputes || [];
+  const mockDisputes = [
     {
       id: "1",
       orderId: "ORD-123",
@@ -92,7 +101,9 @@ export default function AdminDashboard() {
       createdAt: new Date("2025-10-18"),
       priority: "medium",
     },
-  ]);
+  ];
+  // Merge mock with real disputes for demo
+  const allDisputesDisplay = disputes.length > 0 ? disputes : mockDisputes;
 
   // Mock compliance reports
   const [complianceReports] = useState([
@@ -116,17 +127,17 @@ export default function AdminDashboard() {
     },
   ]);
 
-  const handleApproveGig = (gigId: string) => {
+  const handleApproveGig = (gigId: string | number) => {
     toast.success("Gig genehmigt!");
     // TODO: Implement via tRPC
   };
 
-  const handleRejectGig = (gigId: string) => {
+  const handleRejectGig = (gigId: string | number) => {
     toast.error("Gig abgelehnt!");
     // TODO: Implement via tRPC
   };
 
-  const handleResolveDispute = (disputeId: string, resolution: string) => {
+  const handleResolveDispute = (disputeId: string | number, resolution: string) => {
     toast.success(`Streitfall gelöst: ${resolution}`);
     // TODO: Implement via tRPC
   };
@@ -437,14 +448,8 @@ export default function AdminDashboard() {
                           <div className="flex items-start justify-between mb-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-3 mb-2">
-                                <h3 className="text-xl font-bold text-white">{dispute.gigTitle}</h3>
-                                <Badge className={
-                                  dispute.priority === "high" 
-                                    ? "bg-red-500/20 text-red-400 border border-red-500/40" 
-                                    : "bg-orange-500/20 text-orange-400 border border-orange-500/40"
-                                }>
-                                  {dispute.priority === "high" ? "Hohe Priorität" : "Mittlere Priorität"}
-                                </Badge>
+                                <h3 className="text-xl font-bold text-white">Dispute #{dispute.id}</h3>
+                                {/* Priority removed - not in DB schema */}
                                 <Badge className={
                                   dispute.status === "open"
                                     ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/40"
@@ -457,7 +462,7 @@ export default function AdminDashboard() {
                                 Order-ID: <span className="text-emerald-400 font-mono">{dispute.orderId}</span>
                               </p>
                               <p className="text-slate-400 text-sm mb-1">
-                                Käufer: <span className="text-white font-semibold">{dispute.buyer}</span> vs. Seller: <span className="text-white font-semibold">{dispute.seller}</span>
+                                Käufer ID: <span className="text-white font-semibold">{dispute.buyerId}</span> vs. Seller ID: <span className="text-white font-semibold">{dispute.sellerId}</span>
                               </p>
                               <p className="text-slate-300 text-sm mt-3 bg-slate-800/50 px-4 py-3 rounded-lg border border-slate-700/50">
                                 <span className="text-orange-400 font-semibold">Grund:</span> {dispute.reason}
