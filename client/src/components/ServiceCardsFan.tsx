@@ -113,7 +113,7 @@ export function ServiceCardsFan() {
 
   return (
     <div 
-      className="relative flex items-center justify-center min-h-[600px] max-w-5xl mx-auto"
+      className="relative flex flex-col items-center justify-center min-h-[600px] max-w-5xl mx-auto"
       onMouseEnter={() => !isMobile && setIsFanned(true)}
       onMouseLeave={() => {
         if (!isMobile) {
@@ -234,22 +234,6 @@ export function ServiceCardsFan() {
           );
         })}
       </div>
-
-      {/* "Alle Kategorien entdecken" Button */}
-      <motion.div
-        className="mt-16 text-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.6 }}
-      >
-        <button
-          onClick={() => window.location.href = '/marketplace'}
-          className="group inline-flex items-center gap-3 bg-accent hover:bg-accent/90 text-white font-bold px-8 py-4 rounded-full shadow-lg shadow-accent/30 hover:shadow-accent/50 hover:scale-105 transition-all duration-300"
-        >
-          <span className="text-lg">Alle Kategorien entdecken</span>
-          <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
-        </button>
-      </motion.div>
     </div>
   );
 }

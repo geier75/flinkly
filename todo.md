@@ -2010,3 +2010,13 @@
 - [x] Logo auf CreateGig-Page platziert (top-32 left-24)
 - [x] Size: 140px, Delay: 0.8s
 - [x] Checkpoint speichern
+
+
+---
+
+## 🔧 HOMEPAGE: BUTTON-POSITION
+
+### "Alle Kategorien entdecken" Button verschieben
+- [x] Button von RECHTS (floating neben Card) nach UNTEN (unter Card, zentriert) verschieben
+- [x] ServiceCardsFan.tsx angepasst (flex → flex flex-col)
+- [x] Checkpoint speichern
