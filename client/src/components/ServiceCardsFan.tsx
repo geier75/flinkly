@@ -128,20 +128,16 @@ export default function ServiceCardsFan() {
       <motion.div
         className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
         initial={{ opacity: 0, scale: 0.8, y: 30 }}
-        animate={{ 
-          opacity: flippedCards.size > 0 ? 0.1 : 1, 
-          scale: 1, 
-          y: 0 
-        }}
-        transition={{ duration: 0.5 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.3, type: "spring", bounce: 0.4 }}
       >
         <motion.img
           src="/images/flinkly-graffiti-v2.png"
           alt="FLINKLY"
-          className="w-[4000000px] h-auto"
-          style={{ opacity: flippedCards.size > 0 ? 0.1 : 0.6 }}
+          className="w-[4000000px] h-auto opacity-60"
           animate={{
             scale: [1, 1.05, 1],
+            opacity: [0.6, 0.8, 0.6]
           }}
           transition={{
             duration: 3,
@@ -153,6 +149,10 @@ export default function ServiceCardsFan() {
 
       <div 
         className="relative h-[550px] flex items-center justify-center z-10"
+        style={{
+          perspective: "1200px",
+          perspectiveOrigin: "50% 50%"
+        }}
       >
         <motion.div
           className="relative w-full h-full"
@@ -169,17 +169,12 @@ export default function ServiceCardsFan() {
             const z = Math.cos(angleRad) * radius;
             const isFlipped = flippedCards.has(service.category);
             
-            // Calculate which card should be front (at rotation 0)
-            // The front card should have rotateY(0deg)
-            const currentRotation = rotation % 360;
-            const cardRotation = -angle;
-            
             return (
               <motion.div
                 key={service.category}
                 className="absolute left-1/2 top-1/2"
                 style={{
-                  transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${cardRotation}deg)`,
+                  transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${-angle}deg)`,
                   transformStyle: "preserve-3d",
                 }}
                 onMouseEnter={() => setIsPaused(true)}
@@ -225,7 +220,7 @@ export default function ServiceCardsFan() {
                   </Card>
 
                   <Card 
-                    className="absolute inset-0 overflow-hidden backdrop-blur-xl bg-gradient-to-br from-slate-950/95 to-slate-900/95 border-2 border-primary/50 shadow-2xl shadow-primary/30"
+                    className="absolute inset-0 overflow-hidden backdrop-blur-xl bg-gradient-to-br from-primary/20 to-slate-900/60 border-2 border-primary/50 shadow-2xl shadow-primary/30"
                     style={{
                       backfaceVisibility: "hidden",
                       WebkitBackfaceVisibility: "hidden",
