@@ -91,7 +91,7 @@ export function ServiceCardsFan() {
         <motion.img
           src="/images/flinkly-graffiti.png"
           alt="FLINKLY"
-          className="w-[288000px] h-auto opacity-40"
+          className="w-[2880000px] h-auto opacity-40"
           style={{
             filter: "drop-shadow(0 0 60px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 80px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.9))"
           }}

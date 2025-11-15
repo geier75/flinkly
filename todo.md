@@ -2175,3 +2175,12 @@
   - [ ] GPU-Acceleration (will-change, transform3d)
   - [ ] Reduced-Motion-Support
   - [ ] Image-Lazy-Loading
+
+
+---
+
+## 🎨 FLINKLY FINALE GRÖßE (KRITISCH!)
+
+- [ ] **FLINKLY muss HALBE SEITE ausfüllen** - von links bis rechts unter den Karten
+- [ ] **1440000px** (5x größer als 288000px)
+- [ ] **Dominiert komplett** - Cards wirken winzig im Vergleich
