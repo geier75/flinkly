@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import MetaTags from "@/components/MetaTags";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import GigCard from "@/components/GigCard";
+import { VideoScene } from "@/components/webgl/VideoScene";
 import {
   Select,
   SelectContent,
@@ -12,9 +14,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, SlidersHorizontal, X, ChevronDown } from "lucide-react";
+import { Search, SlidersHorizontal, X, Star, Clock, TrendingUp, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
-import { GigCardSkeleton } from "@/components/SkeletonUI";
+import { Link } from "wouter";
 
 export default function Marketplace() {
   const [location] = useLocation();
@@ -23,354 +25,297 @@ export default function Marketplace() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [maxPrice, setMaxPrice] = useState<number>(250);
-  const [maxDeliveryDays, setMaxDeliveryDays] = useState<number | null>(null);
-  const [minRating, setMinRating] = useState<number | null>(null);
   const [sortBy, setSortBy] = useState<"relevance" | "price" | "delivery" | "rating">("relevance");
   const [showFilters, setShowFilters] = useState(false);
-  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const { data: gigs, isLoading } = trpc.gigs.list.useQuery({});
 
-  const categoriesHierarchy = [
-    { name: "Design", icon: "🎨", subcategories: ["Logo Design", "Grafik Design", "UI/UX Design"] },
-    { name: "Marketing", icon: "📱", subcategories: ["Social Media", "SEO", "Content Marketing"] },
-    { name: "Schreiben", icon: "✍️", subcategories: ["Content Writing", "Copywriting", "Blogging"] },
-    { name: "Video & Audio", icon: "🎬", subcategories: ["Video Editing", "Animation", "Voice Over"] },
-    { name: "Entwicklung", icon: "💻", subcategories: ["Web Development", "App Development", "WordPress"] },
+  const categories = [
+    { name: "Design & Kreation", icon: "🎨", count: 124 },
+    { name: "Development", icon: "💻", count: 98 },
+    { name: "Marketing", icon: "📱", count: 156 },
+    { name: "Content & Text", icon: "✍️", count: 87 },
+    { name: "Business", icon: "💼", count: 65 },
+    { name: "Technologie", icon: "🤖", count: 43 },
   ];
-  const allCategories = categoriesHierarchy.flatMap((cat) => cat.subcategories);
 
-  // Skeleton Loading State
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-slate-50">
-        <MetaTags 
-          title="Gig-Marktplatz - Digitale Dienstleistungen finden"
-          description="Durchsuche über 500 digitale Dienstleistungen von verifizierten Freelancern. Design, Programmierung, Texte, Marketing und mehr ab 1€."
-          type="website"
-        />
-        <div className="container mx-auto px-4 py-8">
-          <div className="mb-10">
-            <h1 className="text-5xl font-black text-slate-900 mb-4">
-              🔍 Gig-Marktplatz
-            </h1>
-            <p className="text-xl text-slate-700 font-semibold">
-              <span className="text-blue-600 font-bold">Lädt...</span>
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <GigCardSkeleton key={i} />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Filter gigs
+  const filteredGigs = gigs?.filter((gig) => {
+    const matchesSearch = !searchQuery || 
+      gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      gig.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = !category || gig.category === category;
+    const matchesPrice = gig.price <= maxPrice;
+    return matchesSearch && matchesCategory && matchesPrice;
+  }) || [];
 
-  // Filter and sort gigs client-side
-  const filteredGigs = gigs
-    ?.filter((gig) => {
-      if (maxPrice && Number(gig.price) > maxPrice) return false;
-      if (maxDeliveryDays && gig.deliveryDays > maxDeliveryDays) return false;
-      if (minRating && (Number(gig.averageRating) || 0) < minRating) return false;
-      return true;
-    })
-    .sort((a, b) => {
-      switch (sortBy) {
-        case "price":
-          return Number(a.price) - Number(b.price);
-        case "delivery":
-          return a.deliveryDays - b.deliveryDays;
-        case "rating":
-          return (Number(b.averageRating) || 0) - (Number(a.averageRating) || 0);
-        default:
-          return (b.completedOrders || 0) - (a.completedOrders || 0);
-      }
-    });
-
-  const activeFiltersCount = [
-    maxPrice < 250,
-    maxDeliveryDays !== null,
-    minRating !== null,
-    category !== "",
-  ].filter(Boolean).length;
-
-  const clearFilters = () => {
-    setMaxPrice(250);
-    setMaxDeliveryDays(null);
-    setMinRating(null);
-    setCategory("");
-  };
+  // Sort gigs
+  const sortedGigs = [...filteredGigs].sort((a, b) => {
+    switch (sortBy) {
+      case "price":
+        return a.price - b.price;
+      case "delivery":
+        return a.deliveryDays - b.deliveryDays;
+      case "rating":
+        return 0; // Rating sorting disabled (no rating field in schema)
+      default:
+        return 0;
+    }
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-slate-50">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
       <MetaTags 
-        title="Gig-Marktplatz - Digitale Dienstleistungen finden"
-        description="Durchsuche über 500 digitale Dienstleistungen von verifizierten Freelancern. Design, Programmierung, Texte, Marketing und mehr ab 1€."
+        title="Marketplace - Digitale Expertise finden | Flinkly"
+        description="Entdecke Premium-Freelancer für digitale Dienstleistungen. Design, Development, Marketing und mehr. DACH-Region. DSGVO-konform."
         type="website"
       />
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-5xl font-black text-slate-900 mb-4">
-            🔍 Gig-Marktplatz
-          </h1>
-          <p className="text-xl text-slate-700 font-semibold">
-            <span className="text-blue-600 font-bold">{filteredGigs?.length || 0}</span> Gigs gefunden
-          </p>
-        </div>
 
-        {/* Search & Filters Bar */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 space-y-6 border-2 border-blue-100">
-          {/* Search */}
-          <div className="flex gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-blue-600" />
-              <Input
-                type="text"
-                placeholder="Gigs durchsuchen..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-14 py-3 text-lg rounded-xl border-2 border-slate-200 hover:border-blue-400 focus:border-blue-600 focus:ring-2 focus:ring-blue-200"
-              />
-            </div>
-            <Button
-              onClick={() => setShowFilters(!showFilters)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-lg font-bold shadow-lg hover:shadow-xl transition-all duration-200 relative"
-            >
-              <SlidersHorizontal className="h-6 w-6 mr-2" />
-              Filter
-              {activeFiltersCount > 0 && (
-                <Badge className="ml-2 bg-red-500 text-white px-2.5 py-1 text-sm font-bold rounded-full">
-                  {activeFiltersCount}
-                </Badge>
-              )}
-            </Button>
-          </div>
+      {/* Full-Screen Video Background */}
+      <div className="fixed inset-0 z-0">
+        <VideoScene
+          videoSrc="/videos/marketplace-luxury.mp4"
+          blendMode="overlay"
+          opacity={0.15}
+          brightness={1.5}
+          contrast={1.2}
+          saturation={1.2}
+          className="w-full h-full scale-110"
+        />
+      </div>
 
-          {/* Hierarchical Category Navigation */}
-          <div className="space-y-3">
-            <div className="flex gap-3 overflow-x-auto pb-3 scrollbar-hide flex-wrap">
-              <Badge
-                variant={category === "" ? "default" : "outline"}
-                className="cursor-pointer whitespace-nowrap px-4 py-2 text-base font-bold rounded-lg hover:bg-blue-100 transition-all"
-                onClick={() => setCategory("")}
+      {/* Gradient Overlay */}
+      <div className="fixed inset-0 bg-gradient-to-b from-violet-950/60 via-slate-900/80 to-slate-950/90 z-[1]" />
+
+      {/* Content */}
+      <div className="relative z-10">
+        {/* Hero Section */}
+        <section className="relative py-24 overflow-hidden">
+          <div className="container mx-auto px-4">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              {/* Premium Badge with Floating Animation */}
+              <motion.div 
+                className="inline-flex items-center gap-2 bg-primary/10 border border-primary/30 px-6 py-3 rounded-full mb-8 backdrop-blur-sm"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
-                Alle
-              </Badge>
-              {categoriesHierarchy.map((cat) => (
-                <Badge
-                  key={cat.name}
-                  variant={expandedCategory === cat.name ? "default" : "outline"}
-                  className="cursor-pointer whitespace-nowrap flex items-center gap-2 px-4 py-2 text-base font-bold rounded-lg hover:shadow-md transition-all"
-                  onClick={() => setExpandedCategory(expandedCategory === cat.name ? null : cat.name)}
+                <Sparkles className="h-5 w-5 text-success" />
+                <span className="text-success font-bold">573 Premium-Experten verfügbar</span>
+              </motion.div>
+
+              <h1 className="text-6xl md:text-7xl font-black text-white mb-6" style={{
+                textShadow: '0 0 60px rgba(139, 92, 246, 0.4), 0 0 120px rgba(139, 92, 246, 0.2)'
+              }}>
+                FINDE DEINE
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent">
+                  DIGITALE EXPERTISE
+                </span>
+              </h1>
+              <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-12">
+                Premium-Freelancer aus der DACH-Region. Transparent, fair, DSGVO-konform.
+              </p>
+
+              {/* Search Bar */}
+              <div className="relative max-w-3xl mx-auto">
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-secondary/20 to-accent/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="relative bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-2xl p-2 flex gap-2 shadow-[0_20px_40px_rgba(0,0,0,0.5)]">
+                    <div className="flex-1 flex items-center gap-3 px-4">
+                      <Search className="h-5 w-5 text-slate-400" />
+                      <Input
+                        type="text"
+                        placeholder="Suche nach Dienstleistungen..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="border-0 bg-transparent text-white placeholder:text-slate-400 focus-visible:ring-0 text-lg"
+                      />
+                    </div>
+                    <Button 
+                      size="lg"
+                      className="bg-accent hover:bg-accent/90 text-white px-8 rounded-xl font-bold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
+                    >
+                      Suchen
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Category Pills with Stagger Animation */}
+            <div className="flex gap-3 justify-center flex-wrap max-w-5xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0 }}
+              >
+                <Button
+                  variant={!category ? "default" : "outline"}
+                  onClick={() => setCategory("")}
+                  className={!category ? "bg-primary hover:bg-primary/90 text-white" : "border-slate-700 hover:border-primary text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
                 >
-                  <span className="text-xl">{cat.icon}</span>
-                  {cat.name}
-                  <ChevronDown className="h-4 w-4" />
-                </Badge>
+                  Alle Kategorien
+                </Button>
+              </motion.div>
+              {categories.map((cat, index) => (
+                <motion.div
+                  key={cat.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
+                >
+                  <Button
+                    variant={category === cat.name ? "default" : "outline"}
+                    onClick={() => setCategory(cat.name)}
+                    className={category === cat.name ? "bg-primary hover:bg-primary/90 text-white" : "border-slate-700 hover:border-primary text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
+                  >
+                    <span className="mr-2">{cat.icon}</span>
+                    {cat.name}
+                    <Badge className="ml-2 bg-success/20 text-success border-success/40">{cat.count}</Badge>
+                  </Button>
+                </motion.div>
               ))}
             </div>
+          </div>
+        </section>
 
-            {expandedCategory && (
-              <div className="bg-white rounded-lg p-4 border border-slate-200">
-                <h3 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-                  <span>{categoriesHierarchy.find((c) => c.name === expandedCategory)?.icon}</span>
-                  {expandedCategory}
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                  {categoriesHierarchy
-                    .find((c) => c.name === expandedCategory)
-                    ?.subcategories.map((subcat) => (
-                      <Button
-                        key={subcat}
-                        variant={category === subcat ? "default" : "outline"}
-                        size="sm"
-                        className="justify-start"
-                        onClick={() => {
-                          setCategory(subcat);
-                          setExpandedCategory(null);
-                        }}
-                      >
-                        {subcat}
-                      </Button>
-                    ))}
+        {/* Gigs Grid */}
+        <section className="relative py-16">
+          <div className="container mx-auto px-4">
+            {/* Filter Bar */}
+            <div className="flex justify-between items-center mb-8 max-w-7xl mx-auto">
+              <div className="flex items-center gap-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
+                  className="border-slate-700 hover:border-primary text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"
+                >
+                  <SlidersHorizontal className="h-4 w-4 mr-2" />
+                  Filter
+                </Button>
+                <span className="text-slate-400">
+                  {sortedGigs.length} Gigs gefunden
+                </span>
+              </div>
+
+              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                <SelectTrigger className="w-[200px] border-slate-700 bg-slate-900/40 backdrop-blur-sm text-white">
+                  <SelectValue placeholder="Sortieren nach" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="relevance">Relevanz</SelectItem>
+                  <SelectItem value="price">Preis</SelectItem>
+                  <SelectItem value="delivery">Lieferzeit</SelectItem>
+                  <SelectItem value="rating">Bewertung</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Gigs Grid */}
+            {isLoading ? (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="animate-pulse">
+                    <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl h-96" />
+                  </div>
+                ))}
+              </div>
+            ) : sortedGigs.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-full mb-6">
+                  <Search className="h-10 w-10 text-slate-400" />
                 </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Keine Gigs gefunden</h3>
+                <p className="text-slate-400 mb-8">Versuche andere Suchbegriffe oder Filter</p>
+                <Button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setCategory("");
+                  }}
+                  className="bg-primary hover:bg-primary/90 text-white"
+                >
+                  Filter zurücksetzen
+                </Button>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                {sortedGigs.map((gig, index) => (
+                  <motion.div
+                    key={gig.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1 * index }}
+                  >
+                    <Link href={`/gig/${gig.id}`}>
+                    <Card className="group relative bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:-translate-y-2 shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(139,92,246,0.4),0_0_100px_rgba(139,92,246,0.2)]">
+                      {/* Gradient Border Glow */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+                      
+                      {/* Shimmer Effect */}
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1200 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                      <CardContent className="p-0">
+                        {/* Image */}
+                        <div className="relative h-48 overflow-hidden">
+                          <img
+                            src={gig.imageUrl || "/placeholder.jpg"}
+                            alt={gig.title}
+                            className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-110 transition-all duration-700"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-70 group-hover:opacity-40 transition-opacity duration-500" />
+                          
+                          {/* Category Badge */}
+                          <Badge className="absolute top-4 left-4 bg-primary/90 text-white border-0 backdrop-blur-sm">
+                            {gig.category}
+                          </Badge>
+                        </div>
+
+                        {/* Content */}
+                        <div className="p-6">
+                          <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-accent transition-colors duration-300">
+                            {gig.title}
+                          </h3>
+                          
+                          <p className="text-slate-400 text-sm mb-4 line-clamp-2">
+                            {gig.description}
+                          </p>
+
+                          {/* Stats */}
+                          <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-success fill-success" />
+                              <span className="text-white font-bold">5.0</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-4 w-4" />
+                              <span>{gig.deliveryDays}d</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <TrendingUp className="h-4 w-4" />
+                              <span>Neu</span>
+                            </div>
+                          </div>
+
+                          {/* Price */}
+                          <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
+                            <span className="text-slate-400 text-sm">Ab</span>
+                            <div className="text-right">
+                              <span className="text-3xl font-black text-white group-hover:text-success transition-colors duration-300">
+                                {gig.price}€
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                  </motion.div>
+                ))}
               </div>
             )}
           </div>
-
-          {/* Expanded Filters */}
-          {showFilters && (
-            <div className="pt-4 border-t border-slate-200 space-y-4">
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {/* Max Price */}
-                <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Max. Preis: {maxPrice}€
-                  </label>
-                  <input
-                    type="range"
-                    min="10"
-                    max="250"
-                    step="10"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(Number(e.target.value))}
-                    className="w-full"
-                  />
-                </div>
-
-                {/* Max Delivery Days */}
-                <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Lieferzeit
-                  </label>
-                  <Select
-                    value={maxDeliveryDays?.toString() || "all"}
-                    onValueChange={(value) =>
-                      setMaxDeliveryDays(value === "all" ? null : Number(value))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Alle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Alle</SelectItem>
-                      <SelectItem value="1">≤ 1 Tag</SelectItem>
-                      <SelectItem value="2">≤ 2 Tage</SelectItem>
-                      <SelectItem value="3">≤ 3 Tage</SelectItem>
-                      <SelectItem value="7">≤ 7 Tage</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Min Rating */}
-                <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Bewertung
-                  </label>
-                  <Select
-                    value={minRating?.toString() || "all"}
-                    onValueChange={(value) =>
-                      setMinRating(value === "all" ? null : Number(value))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Alle" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Alle</SelectItem>
-                      <SelectItem value="4">≥ 4 Sterne</SelectItem>
-                      <SelectItem value="4.5">≥ 4.5 Sterne</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Sort */}
-                <div>
-                  <label className="text-sm font-medium text-slate-700 mb-2 block">
-                    Sortierung
-                  </label>
-                  <Select
-                    value={sortBy}
-                    onValueChange={(value: any) => setSortBy(value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="relevance">Relevanz</SelectItem>
-                      <SelectItem value="price">Preis (niedrig)</SelectItem>
-                      <SelectItem value="delivery">Lieferzeit</SelectItem>
-                      <SelectItem value="rating">Bewertung</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              {activeFiltersCount > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="text-slate-600"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Filter zurücksetzen
-                </Button>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Gigs Grid */}
-        {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div
-                key={i}
-                className="bg-white rounded-lg h-96 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : filteredGigs && filteredGigs.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredGigs.map((gig) => (
-              <GigCard
-                key={gig.id}
-                gig={gig}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="max-w-md mx-auto text-center py-16">
-            <div className="bg-gradient-to-br from-blue-50 to-slate-50 rounded-full w-32 h-32 mx-auto mb-6 flex items-center justify-center">
-              <Search className="h-16 w-16 text-blue-300" />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-3">
-              Keine Gigs gefunden
-            </h3>
-            <p className="text-slate-600 mb-8 text-lg">
-              Versuche andere Suchbegriffe oder passe deine Filter an, um mehr Ergebnisse zu sehen.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button 
-                onClick={clearFilters}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
-              >
-                <X className="h-5 w-5 mr-2" />
-                Filter zurücksetzen
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => setSearchQuery("")}
-                className="border-2 border-slate-200 hover:border-blue-400 font-semibold px-6 py-3 rounded-xl transition-all"
-              >
-                Suche löschen
-              </Button>
-            </div>
-            
-            {/* Trust-Element: Beliebte Kategorien als Fallback */}
-            <div className="mt-12 pt-8 border-t border-slate-200">
-              <p className="text-sm font-medium text-slate-700 mb-4">Beliebte Kategorien:</p>
-              <div className="flex flex-wrap gap-2 justify-center">
-                {["Logo Design", "Social Media", "Content Writing", "Video Editing", "Web Development"].map((cat) => (
-                  <Badge
-                    key={cat}
-                    variant="outline"
-                    className="cursor-pointer px-4 py-2 text-sm font-medium hover:bg-blue-50 hover:border-blue-400 transition-all"
-                    onClick={() => setCategory(cat)}
-                  >
-                    {cat}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+        </section>
       </div>
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight } from "lucide-react";
@@ -9,37 +9,43 @@ const services = [
     image: "/images/service-design.jpg",
     title: "Design & Kreation",
     description: "Logo-Design, Branding, UI/UX, Illustration, Video-Editing",
-    color: "from-purple-500 to-pink-500"
+    color: "from-purple-500 to-pink-500",
+    category: "design"
   },
   {
     image: "/images/service-development.jpg",
     title: "Development",
     description: "Web-Development, App-Development, WordPress, Shopify",
-    color: "from-blue-500 to-cyan-500"
+    color: "from-blue-500 to-cyan-500",
+    category: "development"
   },
   {
     image: "/images/service-marketing.jpg",
     title: "Marketing",
     description: "Social Media, SEO, Content-Marketing, Google Ads",
-    color: "from-orange-500 to-red-500"
+    color: "from-orange-500 to-red-500",
+    category: "marketing"
   },
   {
     image: "/images/service-content.jpg",
     title: "Content & Text",
     description: "Copywriting, Blog-Artikel, Übersetzungen, Lektorat",
-    color: "from-green-500 to-teal-500"
+    color: "from-green-500 to-teal-500",
+    category: "content"
   },
   {
     image: "/images/service-business.jpg",
     title: "Business",
     description: "Virtuelle Assistenz, Buchhaltung, Projektmanagement",
-    color: "from-violet-500 to-purple-500"
+    color: "from-violet-500 to-purple-500",
+    category: "business"
   },
   {
     image: "/images/service-technology.jpg",
     title: "Technologie",
     description: "Data Science, AI/ML, Blockchain, Cloud-Services",
-    color: "from-yellow-500 to-orange-500"
+    color: "from-yellow-500 to-orange-500",
+    category: "technology"
   }
 ];
 
@@ -50,6 +56,27 @@ const services = [
 export function ServiceCardsFan() {
   const [isFanned, setIsFanned] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-open on mobile after 2s
+  useEffect(() => {
+    if (isMobile) {
+      const timer = setTimeout(() => {
+        setIsFanned(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isMobile]);
 
   // Calculate fan-out positions
   const getFanTransform = (index: number, totalCards: number) => {
@@ -65,15 +92,15 @@ export function ServiceCardsFan() {
     }
 
     // Fanned state - radial spread
-    const totalAngle = 200; // Total spread angle (increased for more space)
+    const totalAngle = isMobile ? 160 : 200; // Smaller spread on mobile
     const angleStep = totalAngle / (totalCards - 1);
-    const angle = -100 + (index * angleStep); // -100° to +100° (wider spread)
+    const angle = (isMobile ? -80 : -100) + (index * angleStep); // Adjusted for mobile
     
     // Calculate position on arc
-    const radius = 350; // Distance from center (increased)
+    const radius = isMobile ? 250 : 350; // Smaller radius on mobile
     const radians = (angle * Math.PI) / 180;
     const x = Math.sin(radians) * radius;
-    const y = -Math.abs(Math.cos(radians)) * 180; // Upward arc (higher)
+    const y = -Math.abs(Math.cos(radians)) * (isMobile ? 120 : 180); // Less arc height on mobile
 
     return {
       rotate: angle * 0.7, // More rotation for dramatic effect
@@ -87,11 +114,14 @@ export function ServiceCardsFan() {
   return (
     <div 
       className="relative flex items-center justify-center min-h-[600px] max-w-5xl mx-auto"
-      onMouseEnter={() => setIsFanned(true)}
+      onMouseEnter={() => !isMobile && setIsFanned(true)}
       onMouseLeave={() => {
-        setIsFanned(false);
-        setHoveredCard(null);
+        if (!isMobile) {
+          setIsFanned(false);
+          setHoveredCard(null);
+        }
       }}
+      onTouchStart={() => isMobile && setIsFanned(true)}
     >
       {/* WebGL Video Background (visible when stacked) */}
       <motion.div 
@@ -162,7 +192,8 @@ export function ServiceCardsFan() {
               onMouseLeave={() => setHoveredCard(null)}
             >
               <Card 
-                className="relative bg-slate-900/90 border-2 border-slate-700/50 hover:border-teal-500 backdrop-blur-xl group overflow-hidden shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(20,184,166,0.5),0_0_100px_rgba(20,184,166,0.3)] cursor-pointer transition-all duration-500"
+                className="relative bg-slate-900/90 border-2 border-slate-700/50 hover:border-primary backdrop-blur-xl group overflow-hidden shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(139,92,246,0.5),0_0_100px_rgba(139,92,246,0.3)] cursor-pointer transition-all duration-500"
+                onClick={() => window.location.href = `/marketplace?category=${service.category}`}
               >
                 {/* Animated Gradient Border Glow */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 -z-10`} />
@@ -203,6 +234,22 @@ export function ServiceCardsFan() {
           );
         })}
       </div>
+
+      {/* "Alle Kategorien entdecken" Button */}
+      <motion.div
+        className="mt-16 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+      >
+        <button
+          onClick={() => window.location.href = '/marketplace'}
+          className="group inline-flex items-center gap-3 bg-accent hover:bg-accent/90 text-white font-bold px-8 py-4 rounded-full shadow-lg shadow-accent/30 hover:shadow-accent/50 hover:scale-105 transition-all duration-300"
+        >
+          <span className="text-lg">Alle Kategorien entdecken</span>
+          <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+        </button>
+      </motion.div>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import { VideoScene } from "@/components/webgl/VideoScene";
 import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScroll";
 import { motion } from "framer-motion";
 import { ServiceCardsFan } from "@/components/ServiceCardsFan";
+import { ValueCardCarousel } from "@/components/ValueCardCarousel";
 
 function HeroSection() {
   const { ref, scrollYProgress } = useParallaxScroll();
@@ -274,20 +275,11 @@ export default function Home() {
                 
                 <CardContent className="p-0 relative z-10 overflow-hidden">
                   {/* Image Carousel */}
-                  <div className="relative aspect-[16/9] overflow-hidden">
-                    <img 
-                      src={value.images[0]}
-                      alt={value.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
-                    
-                    {/* Icon Overlay */}
-                    <div className="absolute top-4 left-4 text-5xl opacity-90 group-hover:scale-110 transition-transform duration-300">
-                      {value.icon}
-                    </div>
-                  </div>
+                  <ValueCardCarousel
+                    images={value.images}
+                    icon={value.icon}
+                    title={value.title}
+                  />
                   
                   {/* Content */}
                   <div className="p-8">
