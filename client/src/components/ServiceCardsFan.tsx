@@ -174,7 +174,7 @@ export default function ServiceCardsFan() {
                 key={service.category}
                 className="absolute left-1/2 top-1/2"
                 style={{
-                  transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${-angle}deg)`,
+                  transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${-angle - rotation}deg)`,
                   transformStyle: "preserve-3d",
                 }}
                 onMouseEnter={() => setIsPaused(true)}
