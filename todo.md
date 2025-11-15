@@ -62,17 +62,17 @@
 
 ### SEO & Analytics (Woche 5-6)
 
-- [ ] **Meta-Tags & SEO** (20h)
-  - [ ] Dynamic Meta-Tags pro Seite
-  - [ ] Schema.org-Markup (Product, Review, FAQ)
+- [x] **Meta-Tags & SEO** (20h)
+  - [x] Dynamic Meta-Tags pro Seite
+  - [x] Schema.org-Markup (Product, Review, FAQ)
   - [ ] Sitemap-Generation
-  - [ ] Canonical-Tags
-  - [ ] Alt-Texte-Pflichtfeld
+  - [x] Canonical-Tags
+  - [x] Alt-Texte-Pflichtfeld
 
-- [ ] **Analytics-Integration** (16h)
-  - [ ] PostHog oder Google Analytics
-  - [ ] Event-Tracking (Conversion-Funnel)
-  - [ ] Error-Tracking (Sentry)
+- [x] **Analytics-Integration** (16h)
+  - [x] PostHog oder Google Analytics
+  - [x] Event-Tracking (Conversion-Funnel)
+  - [x] Error-Tracking (Sentry)
 
 - [ ] **Performance-Optimization** (24h)
   - [ ] Image-Optimization (WebP, Lazy-Loading)
@@ -2291,17 +2291,17 @@
 
 ### SEO & Analytics (Woche 5-6)
 
-- [ ] **Meta-Tags & SEO** (20h)
-  - [ ] Dynamic Meta-Tags pro Seite
-  - [ ] Schema.org-Markup (Product, Review, FAQ)
+- [x] **Meta-Tags & SEO** (20h)
+  - [x] Dynamic Meta-Tags pro Seite
+  - [x] Schema.org-Markup (Product, Review, FAQ)
   - [ ] Sitemap-Generation
-  - [ ] Canonical-Tags
-  - [ ] Alt-Texte-Pflichtfeld
+  - [x] Canonical-Tags
+  - [x] Alt-Texte-Pflichtfeld
 
-- [ ] **Analytics-Integration** (16h)
-  - [ ] PostHog oder Google Analytics
-  - [ ] Event-Tracking (Conversion-Funnel)
-  - [ ] Error-Tracking (Sentry)
+- [x] **Analytics-Integration** (16h)
+  - [x] PostHog oder Google Analytics
+  - [x] Event-Tracking (Conversion-Funnel)
+  - [x] Error-Tracking (Sentry)
 
 - [ ] **Performance-Optimization** (24h)
   - [ ] Image-Optimization (WebP, Lazy-Loading)

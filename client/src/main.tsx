@@ -5,9 +5,13 @@ import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
 import superjson from "superjson";
 import posthog from "posthog-js";
+import { initSentry } from "@/lib/sentry";
 import App from "./App";
 import { getLoginUrl } from "./const";
 import "./index.css";
+
+// Initialize Sentry Error Monitoring
+initSentry();
 
 // Initialize PostHog (Consent-Aware)
 const initializePostHog = () => {

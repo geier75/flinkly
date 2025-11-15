@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { VideoScene } from "@/components/webgl/VideoScene";
 import MetaTags from "@/components/MetaTags";
+import { SEO, generateProductSchema, generateBreadcrumbSchema } from "@/components/SEO";
 import { 
   Star, 
   Clock, 
@@ -28,6 +29,30 @@ export default function GigDetail() {
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: gigId });
   const { data: reviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
+
+  // Calculate average rating
+  const avgRating = reviews && reviews.length > 0
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : undefined;
+
+  // Generate Schema.org Product markup
+  const productSchema = gig ? generateProductSchema({
+    id: gig.id,
+    title: gig.title,
+    description: gig.description,
+    price: gig.price,
+    seller: { name: "Flinkly Seller" }, // TODO: Fetch seller name from sellerId
+    rating: avgRating,
+    reviewCount: reviews?.length || 0,
+  }) : undefined;
+
+  // Generate Breadcrumb schema
+  const breadcrumbSchema = gig ? generateBreadcrumbSchema([
+    { name: "Home", url: "https://flinkly.de" },
+    { name: "Marketplace", url: "https://flinkly.de/marketplace" },
+    { name: gig.category, url: `https://flinkly.de/marketplace?category=${gig.category}` },
+    { name: gig.title, url: `https://flinkly.de/gig/${gig.id}` },
+  ]) : undefined;
 
   const [selectedPackage, setSelectedPackage] = useState<"basic" | "standard" | "premium">("basic");
 
@@ -99,6 +124,16 @@ export default function GigDetail() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+      <SEO
+        title={gig.title}
+        description={gig.description}
+        image={gig.imageUrl || undefined}
+        url={`https://flinkly.de/gig/${gig.id}`}
+        type="product"
+        schema={{
+          "@graph": [productSchema, breadcrumbSchema],
+        }}
+      />
       <MetaTags 
         title={`${gig.title} | Flinkly`}
         description={gig.description}
