@@ -59,19 +59,19 @@ export default function GlobalHeader() {
           {/* Logo */}
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              {APP_LOGO ? (
-                <img src={APP_LOGO} alt={APP_TITLE} className="h-10 drop-shadow-[0_0_15px_rgba(255,107,53,0.6)]" />
-              ) : (
-                <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10 bg-gradient-to-br from-accent via-primary to-purple-600 rounded-lg flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/50">
+              <div className="flex items-center gap-3">
+                {APP_LOGO ? (
+                  <img src={APP_LOGO} alt={APP_TITLE} className="h-12 drop-shadow-[0_0_20px_rgba(255,107,53,0.7)]" />
+                ) : (
+                  <div className="relative w-12 h-12 bg-gradient-to-br from-accent via-primary to-purple-600 rounded-lg flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-primary/50">
                     <span className="relative z-10">F</span>
                     <div className="absolute inset-0 bg-gradient-to-br from-accent/50 to-primary/50 rounded-lg blur-md" />
                   </div>
-                  <span className="font-black text-2xl bg-gradient-to-r from-accent via-primary to-purple-500 bg-clip-text text-transparent hidden sm:block tracking-tight">
-                    {APP_TITLE}
-                  </span>
-                </div>
-              )}
+                )}
+                <span className="font-black text-2xl bg-gradient-to-r from-accent via-primary to-purple-500 bg-clip-text text-transparent tracking-tight">
+                  FLINKLY
+                </span>
+              </div>
             </div>
           </Link>
 

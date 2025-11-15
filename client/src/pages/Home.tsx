@@ -149,7 +149,7 @@ export default function Home() {
       <HeroSection />
 
       {/* Services Section with WebGL Video Background */}
-      <section className="relative py-32 overflow-hidden -mt-32">
+      <section className="relative py-32 overflow-hidden -mt-48">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
           <VideoScene
@@ -195,7 +195,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section with FLINKLY Video Background */}
-      <section className="relative py-32 overflow-hidden -mt-32">
+      <section className="relative py-32 overflow-hidden -mt-48">
         {/* FLINKLY Video Background (HELLER!) */}
         <div className="absolute inset-0 z-0">
           <VideoScene
