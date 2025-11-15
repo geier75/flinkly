@@ -80,6 +80,23 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+  // Sitemap & Robots.txt (SEO)
+  app.get("/sitemap.xml", async (req, res) => {
+    const { generateSitemap } = await import("../sitemap");
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const sitemap = await generateSitemap(baseUrl);
+    res.header("Content-Type", "application/xml");
+    res.send(sitemap);
+  });
+
+  app.get("/robots.txt", async (req, res) => {
+    const { generateRobotsTxt } = await import("../sitemap");
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const robotsTxt = generateRobotsTxt(baseUrl);
+    res.header("Content-Type", "text/plain");
+    res.send(robotsTxt);
+  });
+
   // tRPC API
   app.use(
     "/api/trpc",

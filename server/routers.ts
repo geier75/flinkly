@@ -12,6 +12,8 @@ import { verificationRouter } from "./routers/verification";
 import { adminRouter } from "./routers/admin";
 import { similarGigsRouter } from "./routers/similarGigs";
 import { discountRouter } from "./routers/discount";
+import { dataExportRouter } from "./routers/dataExport";
+import { accountDeletionRouter } from "./routers/accountDeletion";
 
 export const appRouter = router({
   system: systemRouter,
@@ -21,6 +23,8 @@ export const appRouter = router({
   admin: adminRouter,
   similarGigs: similarGigsRouter,
   discount: discountRouter,
+  dataExport: dataExportRouter,
+  accountDeletion: accountDeletionRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

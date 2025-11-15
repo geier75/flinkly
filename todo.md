@@ -29,8 +29,8 @@
 - [x] **Cookie-Consent & DSGVO** (16h)
   - [x] Cookie-Banner mit Opt-in/Opt-out
   - [x] Datenschutzerklärung aktualisieren
-  - [ ] Datenexport-Funktion (Art. 20 DSGVO)
-  - [ ] Account-Löschung mit 30-Tage-Wartezeit
+  - [x] Datenexport-Funktion (Art. 20 DSGVO)
+  - [x] Account-Löschung mit 30-Tage-Wartezeit
 
 - [x] **Widerrufsbelehrung & AGB** (24h)
   - [x] AGB erstellen (Anwalt konsultieren)
@@ -65,7 +65,7 @@
 - [x] **Meta-Tags & SEO** (20h)
   - [x] Dynamic Meta-Tags pro Seite
   - [x] Schema.org-Markup (Product, Review, FAQ)
-  - [ ] Sitemap-Generation
+  - [x] Sitemap-Generation
   - [x] Canonical-Tags
   - [x] Alt-Texte-Pflichtfeld
 
@@ -74,10 +74,10 @@
   - [x] Event-Tracking (Conversion-Funnel)
   - [x] Error-Tracking (Sentry)
 
-- [ ] **Performance-Optimization** (24h)
-  - [ ] Image-Optimization (WebP, Lazy-Loading)
-  - [ ] Code-Splitting
-  - [ ] Font-Optimization
+- [x] **Performance-Optimization** (24h)
+  - [x] Image-Optimization (WebP, Lazy-Loading)
+  - [x] Code-Splitting
+  - [x] Font-Optimization
 
 ---
 
@@ -2294,7 +2294,7 @@
 - [x] **Meta-Tags & SEO** (20h)
   - [x] Dynamic Meta-Tags pro Seite
   - [x] Schema.org-Markup (Product, Review, FAQ)
-  - [ ] Sitemap-Generation
+  - [x] Sitemap-Generation
   - [x] Canonical-Tags
   - [x] Alt-Texte-Pflichtfeld
 
@@ -2303,10 +2303,10 @@
   - [x] Event-Tracking (Conversion-Funnel)
   - [x] Error-Tracking (Sentry)
 
-- [ ] **Performance-Optimization** (24h)
-  - [ ] Image-Optimization (WebP, Lazy-Loading)
-  - [ ] Code-Splitting
-  - [ ] Font-Optimization
+- [x] **Performance-Optimization** (24h)
+  - [x] Image-Optimization (WebP, Lazy-Loading)
+  - [x] Code-Splitting
+  - [x] Font-Optimization
 
 ### UX Improvements
 
