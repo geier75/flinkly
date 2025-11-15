@@ -1,6 +1,5 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { LoginBackground } from "@/components/LoginBackground";
 import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -78,7 +77,6 @@ function App() {
         // switchable
       >
         <TooltipProvider>
-          <LoginBackground />
           <Toaster />
           <GlobalHeader />
           <Onboarding />

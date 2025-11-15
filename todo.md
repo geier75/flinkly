@@ -2058,3 +2058,12 @@
 - [x] LoginBackground in App.tsx eingebunden
 - [x] Z-Index: 40 (hinter Modal, vor schwarzem Hintergrund)
 - [x] Checkpoint speichern
+
+
+---
+
+## 🗑️ LOGINBACKGROUND ENTFERNEN
+
+- [x] LoginBackground aus App.tsx entfernen (Import + Komponente)
+- [x] LoginBackground.tsx Komponente gelöscht
+- [x] Checkpoint speichern
