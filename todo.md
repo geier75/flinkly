@@ -1765,3 +1765,15 @@
 - [x] Icon-Overlay (top-left, opacity 90%)
 - [x] Hover-Zoom (scale-110, duration 700ms)
 - [x] 9 Bilder total (3 pro Card)
+
+
+---
+
+## 🇩🇪🇦🇹🇨🇭 DACH-BILD KORRIGIEREN
+
+**Problem:** Deutsche Flagge alleine passt nicht - DACH = Deutschland + Österreich + Schweiz  
+**Lösung:** Neues Bild mit allen 3 Ländern generieren
+
+- [x] Neues DACH-Region-Bild generiert (3 Flaggen 🇩🇪🇦🇹🇨🇭 + Laptop "MULTILINGUAL WEBSITE")
+- [x] Bild value-dach-focus-1.jpg ersetzt (altes Backup: value-dach-focus-1-old.jpg)
+- [x] Testing und Checkpoint
