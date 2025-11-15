@@ -9,8 +9,9 @@ import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/comp
 import { VideoScene } from "@/components/webgl/VideoScene";
 import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScroll";
 import { motion } from "framer-motion";
-import { ServiceCardsFan } from "@/components/ServiceCardsFan";
+import ServiceCardsFan from "@/components/ServiceCardsFan";
 import { ValueCardCarousel } from "@/components/ValueCardCarousel";
+import F1RaceStart from "@/components/F1RaceStart";
 
 
 function HeroSection() {
@@ -367,17 +368,9 @@ export default function Home() {
 function CTASection() {
   return (
     <section className="relative py-32 overflow-hidden">
-      {/* F1-Video-Hintergrund */}
+      {/* F1-Canvas-Animation-Hintergrund */}
       <div className="absolute inset-0 z-0">
-        <VideoScene
-          videoSrc="/videos/f1-start-grid.mp4"
-          blendMode="overlay"
-          opacity={0.4}
-          brightness={0.8}
-          contrast={1.2}
-          saturation={1.1}
-          className="w-full h-full"
-        />
+        <F1RaceStart />
       </div>
 
       {/* Gradient Overlay */}

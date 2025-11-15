@@ -2184,3 +2184,26 @@
 - [ ] **FLINKLY muss HALBE SEITE ausfüllen** - von links bis rechts unter den Karten
 - [ ] **1440000px** (5x größer als 288000px)
 - [ ] **Dominiert komplett** - Cards wirken winzig im Vergleich
+
+
+---
+
+## 🎴 CARD-FLIP-ANIMATION + RÜCKSEITE
+
+- [ ] **Cards drehbar machen** - Klick auf Card → 180° Flip-Animation
+- [ ] **Rückseite mit Infos** - Technische Details, Preise, Features pro Service
+- [ ] **Smooth 3D-Flip** - rotateY(180deg) mit preserve-3d
+- [ ] **Beide Seiten stylen** - Vorderseite (Bild + Titel), Rückseite (Infos)
+
+## 💡 FLINKLY LED HELLER
+
+- [ ] **Glow-Effekte verstärken** - drop-shadow von 60/80/100px auf 100/120/150px
+- [ ] **Opacity erhöhen** - von 0.4 auf 0.6
+- [ ] **Pulsing stärker** - scale 1.05, opacity 0.8-1.0
+
+## 🏎️ F1-VIDEO ERSTELLEN
+
+- [ ] **Animiertes Canvas** - Digitale F1-Autos + Ampel
+- [ ] **5 rote Lichter** → alle aus → Grün
+- [ ] **Loop-fähig** - 10-15 Sekunden
+- [ ] **In CTASection integrieren**
