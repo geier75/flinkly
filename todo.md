@@ -2031,3 +2031,30 @@
 - [x] 🌍 Emoji bei "DACH-Fokus" entfernen
 - [x] 🔍 Emoji bei "Transparenz" entfernen
 - [x] Checkpoint speichern
+
+
+---
+
+## 🎨 LOGIN-MODAL: HINTERGRUND ANPASSEN
+
+### Phase 1: Custom-Login-Background-Komponente
+- [x] LoginBackground.tsx erstellt
+- [x] CSS-Styles für bunte Muster-Punkte
+- [x] Floating "FLINKLY" Wort mit Gradient-Text
+
+### Phase 2: Bunte Muster-Punkte
+- [x] 150 Violett/Orange/Türkis/Pink/Blau-Punkte
+- [x] Glow-Effekte für jeden Punkt
+- [x] Variation in Größe (2-8px) und Farbe
+- [x] Subtile Floating-Animation (5-8s Loops)
+
+### Phase 3: Floating "FLINKLY" Wort
+- [x] 3x "FLINKLY" Wörter (verschiedene Größen, Positionen)
+- [x] Gradient-Text (Violett → Orange, Türkis → Pink, Orange → Violett)
+- [x] Floating-Animations (6-8s Loops)
+- [x] Radial-Gradient-Overlay für Tiefe
+
+### Phase 4: Integration
+- [x] LoginBackground in App.tsx eingebunden
+- [x] Z-Index: 40 (hinter Modal, vor schwarzem Hintergrund)
+- [x] Checkpoint speichern
