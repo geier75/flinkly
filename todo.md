@@ -2438,7 +2438,12 @@
   - [x] DB-Schema erweitern (favorites-Tabelle)
   - [x] tRPC-Procedures (addFavorite, removeFavorite, getFavorites)
   - [x] Heart-Icon auf Gig-Cards (Toggle-Funktion)
-  - [ ] Favoriten-Page (/favorites) erstellen
+  - [x] Favoriten-Page (/favorites) erstellen
+    - [x] Grid-Layout für gespeicherte Gigs
+    - [x] Filter nach Kategorien
+    - [x] Sortierung (Preis, Lieferzeit, Datum hinzugefügt)
+    - [x] Empty-State für keine Favoriten
+    - [x] Remove-Funktion auf Cards
   - [x] Optimistic Updates für sofortiges Feedback
 
 - [ ] **Gig-Detail-Optimierung** (12h)

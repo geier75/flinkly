@@ -36,6 +36,7 @@ const Messages = lazy(() => import("./pages/Messages"));
 const DataExportDashboard = lazy(() => import("./pages/DataExportDashboard"));
 const PrivacyDashboard = lazy(() => import("./pages/PrivacyDashboard"));
 const SellerVerification = lazy(() => import("./pages/SellerVerification"));
+const Favorites = lazy(() => import("./pages/Favorites"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -56,6 +57,7 @@ function Router() {
       <Route path={"/seller-dashboard"} component={SellerDashboard} />
       <Route path={"/admin"} component={AdminDashboard} />
       <Route path={"/profile"} component={Profile} />
+      <Route path={"/favorites"} component={Favorites} />
       <Route path={"/order/:id"} component={OrderDetail} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/messages"} component={Messages} />
