@@ -2020,3 +2020,14 @@
 - [x] Button von RECHTS (floating neben Card) nach UNTEN (unter Card, zentriert) verschieben
 - [x] ServiceCardsFan.tsx angepasst (flex → flex flex-col)
 - [x] Checkpoint speichern
+
+
+---
+
+## 🎨 VALUE-CARDS: EMOJIS ENTFERNEN
+
+### Emojis aus Value-Cards entfernen
+- [x] 💰 Emoji bei "Faire Gebühren" entfernen
+- [x] 🌍 Emoji bei "DACH-Fokus" entfernen
+- [x] 🔍 Emoji bei "Transparenz" entfernen
+- [x] Checkpoint speichern

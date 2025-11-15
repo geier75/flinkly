@@ -241,7 +241,7 @@ export default function Home() {
           <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {[
               {
-                icon: "💰",
+                icon: "",
                 title: "Faire Gebühren",
                 text: "Nur 15% Provision statt 20% wie bei Fiverr. Mehr Geld für deine Arbeit.",
                 highlight: "15% statt 20%",
@@ -252,7 +252,7 @@ export default function Home() {
                 ]
               },
               {
-                icon: "🌍",
+                icon: "",
                 title: "DACH-Fokus",
                 text: "Deutsch, Qualität, DSGVO-konform. Für den deutschsprachigen Markt gebaut.",
                 highlight: "DACH-Region",
@@ -263,7 +263,7 @@ export default function Home() {
                 ]
               },
               {
-                icon: "🔍",
+                icon: "",
                 title: "Transparenz",
                 text: "Keine versteckten Kosten, ehrliche Kommunikation. Was du siehst, ist was du bekommst.",
                 highlight: "100% Ehrlich",
