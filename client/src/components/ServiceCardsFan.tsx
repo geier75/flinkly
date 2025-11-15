@@ -91,7 +91,7 @@ export function ServiceCardsFan() {
         <motion.img
           src="/images/flinkly-graffiti.png"
           alt="FLINKLY"
-          className="w-[3600px] h-auto opacity-40"
+          className="w-[288000px] h-auto opacity-40"
           style={{
             filter: "drop-shadow(0 0 60px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 80px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.9))"
           }}
@@ -159,7 +159,7 @@ export function ServiceCardsFan() {
                 onMouseLeave={() => setIsPaused(false)}
               >
                 <Card 
-                  className="w-[280px] h-[380px] overflow-hidden backdrop-blur-xl bg-slate-900/40 border-2 border-white/10 hover:border-primary/50 transition-all duration-500 group cursor-pointer shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.6)]"
+                  className="w-[240px] h-[340px] overflow-hidden backdrop-blur-xl bg-slate-900/40 border-2 border-white/10 hover:border-primary/50 transition-all duration-500 group cursor-pointer shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.6)]"
                 >
                   {/* Image */}
                   <div className="relative h-56 overflow-hidden">

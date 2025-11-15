@@ -2137,13 +2137,18 @@
 
 ## 🏎️ FORMEL-1-AMPEL-ANIMATION (NEU)
 
+### FLINKLY noch GRÖßER:
+- [x] **FLINKLY VERVIERFACHT** (28800px - 4x größer als 7200px!)
+
 ### "BEREIT ZU STARTEN?"-Section:
-- [ ] **Formel-1-Start-Ampel-Video** erstellen
-- [ ] **5 rote Lichter** erscheinen nacheinander
-- [ ] **Alle Lichter aus** (GO!-Moment)
-- [ ] **Grünes Licht** + "START!"-Text
-- [ ] **Geschwindigkeits-Effekt** (Zoom, Motion-Blur)
-- [ ] **Buttons erscheinen** nach Animation
+- [x] ~~Formel-1-Start-Ampel-Overlay~~ (FALSCH - nicht gewünscht)
+- [x] **F1-Overlay ENTFERNT**
+- [x] **Video-Hintergrund** in CTASection eingebaut
+- [ ] **F1-Video erstellen/finden** - Digitale Autos warten an Ampel (Ampel Rot → Grün)
+- [x] **Text + Buttons DARÜBER** mit Framer Motion Animations
+- [x] **VideoScene-Komponente** für Video-Loop
+
+**Hinweis:** Video `/videos/f1-start-grid.mp4` muss noch hinzugefügt werden (digitale F1-Autos an Startampel)
 
 ### Phase 2: Experten-Team-Optimierungen
 - [ ] **3D-Graphics-Specialist:**

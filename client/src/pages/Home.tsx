@@ -312,40 +312,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-teal-500 via-emerald-500 to-green-500 opacity-10" />
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-5xl md:text-6xl font-black text-white mb-8">
-              BEREIT ZU STARTEN?
-            </h2>
-            <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
-              Werde Teil von Deutschlands führendem Marktplatz für digitale Expertise.
-            </p>
-            <div className="flex gap-6 justify-center flex-wrap">
-              <Link href="/marketplace">
-                <Button 
-                  size="lg"
-                  className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
-                >
-                  Jetzt Experten finden
-                  <ArrowRight className="ml-3 h-6 w-6" />
-                </Button>
-              </Link>
-              <a href={getLoginUrl()}>
-                <Button 
-                  size="lg"
-                  variant="outline"
-                  className="text-lg px-12 py-8 rounded-2xl border-2 border-primary/50 hover:border-primary hover:bg-primary/20 text-white transition-all duration-300 font-bold backdrop-blur-sm"
-                >
-                  Als Experte registrieren
-                </Button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* CTA Section with F1 Start Animation */}
+      <CTASection />
 
       {/* Footer */}
       <footer className="relative py-12 border-t border-slate-800">
@@ -390,5 +358,82 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+/**
+ * CTA Section with F1 Video Background
+ */
+function CTASection() {
+  return (
+    <section className="relative py-32 overflow-hidden">
+      {/* F1-Video-Hintergrund */}
+      <div className="absolute inset-0 z-0">
+        <VideoScene
+          videoSrc="/videos/f1-start-grid.mp4"
+          blendMode="overlay"
+          opacity={0.4}
+          brightness={0.8}
+          contrast={1.2}
+          saturation={1.1}
+          className="w-full h-full"
+        />
+      </div>
+
+      {/* Gradient Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 via-emerald-500/10 to-green-500/10 z-0" />
+      
+      {/* Content DARÜBER */}
+      <div className="container mx-auto px-4 relative z-10">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.h2 
+            className="text-5xl md:text-6xl font-black text-white mb-8"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            BEREIT ZU STARTEN?
+          </motion.h2>
+          
+          <motion.p 
+            className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            Werde Teil von Deutschlands führendem Marktplatz für digitale Expertise.
+          </motion.p>
+          
+          <motion.div 
+            className="flex gap-6 justify-center flex-wrap"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <Link href="/marketplace">
+              <Button 
+                size="lg"
+                className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
+              >
+                Jetzt Experten finden
+                <ArrowRight className="ml-3 h-6 w-6" />
+              </Button>
+            </Link>
+            <a href={getLoginUrl()}>
+              <Button 
+                size="lg"
+                variant="outline"
+                className="text-lg px-12 py-8 rounded-2xl border-2 border-primary/50 hover:border-primary hover:bg-primary/20 text-white transition-all duration-300 font-bold backdrop-blur-sm"
+              >
+                Als Experte registrieren
+              </Button>
+            </a>
+          </motion.div>
+        </div>
+      </div>
+    </section>
   );
 }
