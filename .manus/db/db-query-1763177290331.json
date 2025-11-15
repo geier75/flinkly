@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO gigs (sellerId, title, description, category, price, deliveryDays, imageUrl, status, active, createdAt, updatedAt)\nVALUES (\n  1,\n  'Professionelles Logo-Design für dein Startup',\n  'Ich erstelle ein einzigartiges, professionelles Logo-Design für dein Startup oder Unternehmen. Mit über 5 Jahren Erfahrung im Bereich Design & Kreation habe ich bereits hunderte zufriedene Kunden betreut. Du erhältst alle Quelldateien und kommerzielle Nutzungsrechte.',\n  'design',\n  299,\n  3,\n  'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800',\n  'published',\n  1,\n  NOW(),\n  NOW()\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute INSERT INTO gigs (sellerId, title, description, category, price, deliveryDays, imageUrl, status, active, createdAt, updatedAt)\nVALUES (\n  1,\n  'Professionelles Logo-Design für dein Startup',\n  'Ich erstelle ein einzigartiges, professionelles Logo-Design für dein Startup oder Unternehmen. Mit über 5 Jahren Erfahrung im Bereich Design & Kreation habe ich bereits hunderte zufriedene Kunden betreut. Du erhältst alle Quelldateien und kommerzielle Nutzungsrechte.',\n  'design',\n  299,\n  3,\n  'https://images.unsplash.com/photo-1626785774573-4b799315345d?w=800',\n  'published',\n  1,\n  NOW(),\n  NOW()\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 310
+}
