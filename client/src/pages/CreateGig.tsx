@@ -44,6 +44,7 @@ export default function CreateGig() {
     price: "",
     deliveryDays: "3",
     imageUrl: "",
+    imageAlt: "",
   });
 
   const createGigMutation = trpc.gigs.create.useMutation({
@@ -125,6 +126,11 @@ export default function CreateGig() {
     const price = parseInt(formData.price);
     if (!price || price < 10 || price > 250) {
       toast.error("Preis muss zwischen 10€ und 250€ liegen");
+      return;
+    }
+    // Quick Win #6: Alt-Text Validation
+    if (formData.imageUrl && !formData.imageAlt) {
+      toast.error("Bitte füge eine Bild-Beschreibung (Alt-Text) hinzu");
       return;
     }
 
@@ -464,6 +470,25 @@ export default function CreateGig() {
                             Füge ein Bild hinzu, um dein Gig attraktiver zu machen
                           </p>
                         </div>
+
+                        {/* Alt-Text (Quick Win #6 - Accessibility) */}
+                        {formData.imageUrl && (
+                          <div className="space-y-2">
+                            <Label htmlFor="imageAlt" className="text-slate-200 font-medium">
+                              Bild-Beschreibung (Alt-Text) <span className="text-red-500">*</span>
+                            </Label>
+                            <Input
+                              id="imageAlt"
+                              value={formData.imageAlt}
+                              onChange={(e) => setFormData({ ...formData, imageAlt: e.target.value })}
+                              placeholder="z.B. Professionelles Logo-Design mit modernen Farben"
+                              className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all"
+                            />
+                            <p className="text-sm text-slate-400">
+                              Beschreibe das Bild für Screenreader (Barrierefreiheit + SEO)
+                            </p>
+                          </div>
+                        )}
 
                         {/* Summary Card */}
                         <Card className="bg-slate-800/50 border-slate-700">

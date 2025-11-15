@@ -96,8 +96,8 @@ export default function Marketplace() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
       <MetaTags 
-        title="Marketplace - Digitale Expertise finden | Flinkly"
-        description="Entdecke Premium-Freelancer für digitale Dienstleistungen. Design, Development, Marketing und mehr. DACH-Region. DSGVO-konform."
+        title="Marketplace - 500+ digitale Dienstleistungen ab 10€ | Flinkly"
+        description="Durchsuche 500+ Gigs von verifizierten Experten. Webdesign, Logo-Design, Social Media Marketing, SEO, Content Creation. Filter nach Kategorie, Preis, Bewertung. DACH-Region. DSGVO-konform. Geld-zurück-Garantie."
         type="website"
       />
 

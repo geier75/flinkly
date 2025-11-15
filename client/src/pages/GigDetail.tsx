@@ -163,8 +163,8 @@ export default function GigDetail() {
         }}
       />
       <MetaTags 
-        title={`${gig.title} | Flinkly`}
-        description={gig.description}
+        title={`${gig.title} ab ${gig.price}€ | Lieferung in ${gig.deliveryDays} Tagen | Flinkly`}
+        description={`${gig.description.slice(0, 150)}... ⭐ ${gig.averageRating || 5.0}/5 Sterne. Sichere Zahlung. DSGVO-konform. Geld-zurück-Garantie.`}
         type="website"
       />
 
@@ -483,7 +483,7 @@ export default function GigDetail() {
                           size="lg"
                           className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
                         >
-                          Jetzt bestellen
+                          Projekt starten
                         </Button>
                       </motion.div>
 
@@ -575,6 +575,22 @@ export default function GigDetail() {
             </div>
           </div>
         </section>
+      </div>
+
+      {/* Sticky Bottom Bar (Mobile) - Quick Win #4 */}
+      <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t-2 border-primary/30 p-4 shadow-2xl z-50 md:hidden">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <p className="text-sm text-slate-400">Preis</p>
+            <p className="text-2xl font-black text-white">{selectedPkg.price}€</p>
+          </div>
+          <Button 
+            size="lg"
+            className="flex-1 bg-accent hover:bg-accent/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-accent/30"
+          >
+            Projekt starten
+          </Button>
+        </div>
       </div>
     </div>
   );

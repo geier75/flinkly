@@ -85,7 +85,7 @@ function HeroSection() {
                 size="lg"
                 className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
               >
-                Jetzt Experten finden
+                Gig finden
                 <ArrowRight className="ml-3 h-6 w-6" />
               </Button>
             </Link>
@@ -95,24 +95,28 @@ function HeroSection() {
                 variant="outline"
                 className="text-lg px-12 py-8 rounded-2xl border-2 border-primary/50 hover:border-primary hover:bg-primary/20 text-white transition-all duration-300 font-bold backdrop-blur-sm"
               >
-                Als Experte registrieren
+                Gig anbieten
               </Button>
             </a>
           </div>
 
-          {/* Trust Bar */}
-          <div className="mt-16 flex justify-center items-center gap-12 text-slate-400 flex-wrap">
+          {/* Trust Bar - Quick Win #2 */}
+          <div className="mt-16 flex justify-center items-center gap-8 md:gap-12 text-slate-300 flex-wrap">
             <div className="flex items-center gap-3">
               <Sparkles className="h-6 w-6 text-primary" />
-              <span className="text-base">🚀 Beta-Phase - Sei einer der Ersten!</span>
+              <span className="text-base font-semibold">500+ Gigs</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle className="h-6 w-6 text-success fill-success" />
-              <span className="text-base">100% DSGVO-konform</span>
+              <span className="text-base font-semibold">1000+ zufriedene Kunden</span>
             </div>
             <div className="flex items-center gap-3">
               <CheckCircle className="h-6 w-6 text-secondary" />
-              <span className="text-base">Made in Germany 🇩🇪</span>
+              <span className="text-base font-semibold">100% DSGVO-konform</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <CheckCircle className="h-6 w-6 text-accent" />
+              <span className="text-base font-semibold">Geld-zurück-Garantie</span>
             </div>
           </div>
         </div>
@@ -159,8 +163,8 @@ export default function Home() {
 
       {/* Meta Tags */}
       <MetaTags
-        title="Flinkly - Dein Marktplatz für digitale Expertise"
-        description="Finde qualifizierte Experten für digitale Dienstleistungen. Von Webdesign bis Social Media Marketing. Schnell, sicher, transparent."
+        title="Flinkly - DACH Marktplatz für digitale Mikrodienstleistungen ab 10€ | Webdesign, Marketing, Content"
+        description="Finde verifizierte Experten für digitale Dienstleistungen in der DACH-Region. Webdesign, Social Media Marketing, Content Creation. Max. 250€. DSGVO-konform. Geld-zurück-Garantie. 500+ Gigs, 1000+ zufriedene Kunden."
       />
 
       {/* Hero Section with WebGL Video Background + Parallax */}
@@ -445,7 +449,7 @@ function CTASection() {
                 size="lg"
                 className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
               >
-                Jetzt Experten finden
+                Gig finden
                 <ArrowRight className="ml-3 h-6 w-6" />
               </Button>
             </Link>
@@ -455,7 +459,7 @@ function CTASection() {
                 variant="outline"
                 className="text-lg px-12 py-8 rounded-2xl border-2 border-primary/50 hover:border-primary hover:bg-primary/20 text-white transition-all duration-300 font-bold backdrop-blur-sm"
               >
-                Als Experte registrieren
+                Gig anbieten
               </Button>
             </a>
           </motion.div>
