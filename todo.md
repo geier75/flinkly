@@ -2261,3 +2261,81 @@
 - [ ] Cross-Browser-Testing (Chrome, Firefox, Safari, Edge)
 - [ ] Mobile-Testing (iOS, Android)
 - [ ] Edge-Cases testen (Empty States, Error States, Offline)
+
+
+---
+
+## 🔥 CURRENT SPRINT: Core Features + SEO + UX (User-Requested)
+
+### Core Features (Woche 3-4)
+
+- [ ] **Messaging-System** (60h)
+  - [ ] Real-time Chat (Socket.io)
+  - [ ] Order-bezogene Threads
+  - [ ] File-Sharing
+  - [ ] Push-Notifications
+  - [ ] Read-Receipts
+
+- [ ] **Seller-Verifizierung** (32h)
+  - [ ] E-Mail + Telefon-Verifizierung
+  - [ ] Verifizierungs-Badges
+  - [ ] Admin-Approval-Queue
+  - [ ] ID-Verifizierung (IDnow) optional
+
+- [ ] **Input-Validation & Security** (24h)
+  - [ ] Zod-Schemas für alle tRPC-Procedures
+  - [ ] CSRF-Protection
+  - [ ] Rate-Limiting (100 req/min auth, 20 anon)
+  - [ ] Content-Security-Policy
+  - [ ] File-Upload-Validation
+
+### SEO & Analytics (Woche 5-6)
+
+- [ ] **Meta-Tags & SEO** (20h)
+  - [ ] Dynamic Meta-Tags pro Seite
+  - [ ] Schema.org-Markup (Product, Review, FAQ)
+  - [ ] Sitemap-Generation
+  - [ ] Canonical-Tags
+  - [ ] Alt-Texte-Pflichtfeld
+
+- [ ] **Analytics-Integration** (16h)
+  - [ ] PostHog oder Google Analytics
+  - [ ] Event-Tracking (Conversion-Funnel)
+  - [ ] Error-Tracking (Sentry)
+
+- [ ] **Performance-Optimization** (24h)
+  - [ ] Image-Optimization (WebP, Lazy-Loading)
+  - [ ] Code-Splitting
+  - [ ] Font-Optimization
+
+### UX Improvements
+
+- [ ] **Favoriten/Wishlist** (16h)
+  - [ ] Heart-Icon auf Gig-Cards
+  - [ ] "Meine Favoriten" Seite
+  - [ ] E-Mail-Reminder
+
+- [ ] **Gig-Detail verbessern** (20h)
+  - [ ] "Frage stellen" Button
+  - [ ] "Ähnliche Gigs" Sektion
+  - [ ] Portfolio-Sektion
+  - [ ] Sticky Bottom Bar (Mobile)
+
+- [ ] **Checkout verbessern** (16h)
+  - [ ] Review-Schritt vor Zahlung
+  - [ ] Exit-Intent-Modal
+  - [ ] Zahlungsmethode speichern
+  - [ ] AVV-Tooltip
+  - [x] Legal-Compliance (Widerruf, AGB Checkbox)
+
+- [ ] **Mobile-Optimierung** (24h)
+  - [ ] Touch-Targets 44x44px
+  - [ ] Hamburger-Menü
+  - [ ] Multi-Step-Forms
+  - [ ] Swipe-Gesten für Service-Cards
+
+- [ ] **Accessibility** (20h)
+  - [ ] Keyboard-Navigation
+  - [ ] ARIA-Labels
+  - [ ] Skip-Links
+  - [ ] Kontrast-Fixes

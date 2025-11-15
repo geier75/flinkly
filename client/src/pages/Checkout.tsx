@@ -493,8 +493,15 @@ export default function Checkout() {
                         className="text-primary hover:underline"
                       >
                         AGB
+                      </button>
+                      , die{" "}
+                      <button
+                        onClick={() => setLocation("/widerruf")}
+                        className="text-primary hover:underline"
+                      >
+                        Widerrufsbelehrung
                       </button>{" "}
-                      und{" "}
+                      und die{" "}
                       <button
                         onClick={() => setLocation("/privacy")}
                         className="text-primary hover:underline"

@@ -9,35 +9,43 @@ import GlobalHeader from "./components/GlobalHeader";
 import MobileActionBar from "./components/MobileActionBar";
 import CookieConsent from "./components/CookieConsent";
 import Footer from "./components/Footer";
+import { lazy, Suspense } from "react";
 import Home from "./pages/Home";
-import Marketplace from "./pages/Marketplace";
-import Dashboard from "./pages/Dashboard";
-import GigDetail from "./pages/GigDetail";
-import CreateGig from "./pages/CreateGig";
-import EditGig from "./pages/EditGig";
-import Profile from "./pages/Profile";
-import About from "./pages/About";
-import HowItWorks from "./pages/HowItWorks";
-import FAQ from "./pages/FAQ";
-import Contact from "./pages/Contact";
-import Terms from "./pages/Terms";
-import Privacy from "./pages/Privacy";
-import Impressum from "./pages/Impressum";
-import Widerruf from "./pages/Widerruf";
-import OrderDetail from "./pages/OrderDetail";
-import Settings from "./pages/Settings";
-import Checkout from "./pages/Checkout";
-import SellerDashboard from "./pages/SellerDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import Messages from "./pages/Messages";
-import DataExportDashboard from "./pages/DataExportDashboard";
-import PrivacyDashboard from "./pages/PrivacyDashboard";
-import SellerVerification from "./pages/SellerVerification";
+
+// Code-Splitting: Lazy-load non-critical pages
+const Marketplace = lazy(() => import("./pages/Marketplace"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const GigDetail = lazy(() => import("./pages/GigDetail"));
+const CreateGig = lazy(() => import("./pages/CreateGig"));
+const EditGig = lazy(() => import("./pages/EditGig"));
+const Profile = lazy(() => import("./pages/Profile"));
+const About = lazy(() => import("./pages/About"));
+const HowItWorks = lazy(() => import("./pages/HowItWorks"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Impressum = lazy(() => import("./pages/Impressum"));
+const Widerruf = lazy(() => import("./pages/Widerruf"));
+const OrderDetail = lazy(() => import("./pages/OrderDetail"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const SellerDashboard = lazy(() => import("./pages/SellerDashboard"));
+const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
+const Messages = lazy(() => import("./pages/Messages"));
+const DataExportDashboard = lazy(() => import("./pages/DataExportDashboard"));
+const PrivacyDashboard = lazy(() => import("./pages/PrivacyDashboard"));
+const SellerVerification = lazy(() => import("./pages/SellerVerification"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
-    <Switch>
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+      </div>
+    }>
+      <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/marketplace"} component={Marketplace} />
       <Route path={"/gig/:id"} component={GigDetail} />
@@ -66,6 +74,7 @@ function Router() {
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
+    </Suspense>
   );
 }
 
