@@ -267,12 +267,7 @@ export default function Home() {
           {isTestimonialsLoading ? (
             <TestimonialsSkeleton />
           ) : (
-            <motion.div
-              className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6 }}
-            >
+            <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {[
               {
                 icon: "",
@@ -347,7 +342,7 @@ export default function Home() {
                 </CardContent>
               </Card>
             ))}
-            </motion.div>
+            </div>
           )}
         </div>
       </section>

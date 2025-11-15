@@ -1,5 +1,4 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
@@ -14,6 +13,9 @@ import {
   Package,
   Edit,
   Trash2,
+  DollarSign,
+  TrendingUp,
+  Zap
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -35,53 +37,57 @@ function DraftCard({ gig }: { gig: any }) {
   
   const publishGig = trpc.gigs.publish.useMutation({
     onSuccess: () => {
-      toast.success("Gig veroeffentlicht!");
+      toast.success("Gig veröffentlicht!");
       utils.gigs.myGigs.invalidate();
       utils.gigs.getDrafts.invalidate();
     },
     onError: () => {
-      toast.error("Fehler beim Veroeffentlichen");
+      toast.error("Fehler beim Veröffentlichen");
     },
   });
 
   const deleteGig = trpc.gigs.delete.useMutation({
     onSuccess: () => {
-      toast.success("Entwurf geloescht");
+      toast.success("Entwurf gelöscht");
       utils.gigs.getDrafts.invalidate();
       setShowDeleteDialog(false);
     },
     onError: () => {
-      toast.error("Fehler beim Loeschen");
+      toast.error("Fehler beim Löschen");
     },
   });
 
   return (
-    <PremiumCard className="hover:shadow-md transition-shadow border-amber-200 bg-amber-50">
-      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
-        <Badge className="mb-2 bg-amber-600">Entwurf</Badge>
-        <h3 className="font-semibold text-slate-900 mb-2">{gig.title}</h3>
-        <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+    <Card className="cyber-glass-card border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-300 hover:shadow-[0_0_40px_oklch(0.75_0.20_35_/_0.3)]">
+      <CardContent className="pt-6">
+        <Badge className="mb-3 bg-orange-500/20 text-orange-400 border border-orange-500/40">
+          Entwurf
+        </Badge>
+        <h3 className="font-bold text-white text-lg mb-2">{gig.title}</h3>
+        <p className="text-sm text-slate-400 mb-3 line-clamp-2">
           {gig.description}
         </p>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-lg font-bold text-primary">
-            {(Number(gig.price) / 100).toFixed(2)}EUR
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-xl font-black cyber-neon-orange">
+            {(Number(gig.price) / 100).toFixed(2)}€
           </span>
-          <Badge variant="outline">{gig.category}</Badge>
+          <Badge className="bg-slate-800/50 text-emerald-400 border border-emerald-500/30">
+            {gig.category}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button
             size="sm"
-            className="flex-1 bg-green-600 hover:bg-green-700"
+            className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-[0_0_20px_oklch(0.70_0.25_150_/_0.3)]"
             onClick={() => publishGig.mutate({ id: gig.id })}
             disabled={publishGig.isPending}
           >
-            Veroeffentlichen
+            Veröffentlichen
           </Button>
           <Button
             size="sm"
             variant="outline"
-            className="text-red-600 hover:bg-red-50"
+            className="border-2 border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="w-4 h-4" />
@@ -89,27 +95,29 @@ function DraftCard({ gig }: { gig: any }) {
         </div>
 
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-          <AlertDialogContent>
+          <AlertDialogContent className="cyber-glass-card border-2 border-red-500/30">
             <AlertDialogHeader>
-              <AlertDialogTitle>Entwurf loeschen?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Bist du sicher, dass du den Entwurf "{gig.title}" loeschen moechtest?
+              <AlertDialogTitle className="cyber-chrome-text">Entwurf löschen?</AlertDialogTitle>
+              <AlertDialogDescription className="text-slate-300">
+                Bist du sicher, dass du den Entwurf "{gig.title}" löschen möchtest?
               </AlertDialogDescription>
             </AlertDialogHeader>
             <div className="flex gap-3">
-              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+              <AlertDialogCancel className="border-slate-700 text-slate-300 hover:bg-slate-800">
+                Abbrechen
+              </AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => deleteGig.mutate({ id: gig.id })}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
                 disabled={deleteGig.isPending}
               >
-                {deleteGig.isPending ? "Loeschen..." : "Entwurf loeschen"}
+                {deleteGig.isPending ? "Löschen..." : "Entwurf löschen"}
               </AlertDialogAction>
             </div>
           </AlertDialogContent>
         </AlertDialog>
       </CardContent>
-    </PremiumCard>
+    </Card>
   );
 }
 
@@ -129,23 +137,25 @@ function GigCard({ gig }: { gig: any }) {
   });
 
   return (
-    <PremiumCard className="hover:shadow-md transition-shadow">
-      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
-        <h3 className="font-semibold text-slate-900 mb-2">{gig.title}</h3>
-        <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+    <Card className="cyber-glass-card border-2 border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-[0_0_40px_oklch(0.70_0.25_150_/_0.3)]">
+      <CardContent className="pt-6">
+        <h3 className="font-bold text-white text-lg mb-2">{gig.title}</h3>
+        <p className="text-sm text-slate-400 mb-3 line-clamp-2">
           {gig.description}
         </p>
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-lg font-bold text-primary">
+        <div className="flex items-center justify-between mb-4">
+          <span className="text-xl font-black cyber-neon-orange">
             {(Number(gig.price) / 100).toFixed(2)}€
           </span>
-          <Badge variant="outline">{gig.category}</Badge>
+          <Badge className="bg-slate-800/50 text-emerald-400 border border-emerald-500/30">
+            {gig.category}
+          </Badge>
         </div>
         <div className="flex gap-2">
           <Button
             size="sm"
             variant="outline"
-            className="flex-1"
+            className="flex-1 border-2 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500"
             onClick={() => setLocation(`/gig/${gig.id}/edit`)}
           >
             <Edit className="w-4 h-4 mr-1" />
@@ -154,7 +164,7 @@ function GigCard({ gig }: { gig: any }) {
           <Button
             size="sm"
             variant="outline"
-            className="text-red-600 hover:bg-red-50"
+            className="border-2 border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500"
             onClick={() => setShowDeleteDialog(true)}
           >
             <Trash2 className="w-4 h-4" />
@@ -163,18 +173,20 @@ function GigCard({ gig }: { gig: any }) {
       </CardContent>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="cyber-glass-card border-2 border-red-500/30">
           <AlertDialogHeader>
-            <AlertDialogTitle>Gig löschen?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="cyber-chrome-text">Gig löschen?</AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-300">
               Bist du sicher, dass du das Gig "{gig.title}" löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex gap-3">
-            <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+            <AlertDialogCancel className="border-slate-700 text-slate-300 hover:bg-slate-800">
+              Abbrechen
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteGig.mutate({ id: gig.id })}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white"
               disabled={deleteGig.isPending}
             >
               {deleteGig.isPending ? "Lösche..." : "Gig löschen"}
@@ -182,7 +194,7 @@ function GigCard({ gig }: { gig: any }) {
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    </PremiumCard>
+    </Card>
   );
 }
 
@@ -197,22 +209,24 @@ export default function SellerDashboard() {
 
   if (!isAuthenticated) {
     return (
-    <PremiumPageLayout>
-        <PremiumCard className="max-w-md">
-          <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
-            <p className="text-slate-600 mb-4">Bitte melde dich an</p>
-            <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <Card className="max-w-md cyber-glass-card border-2 border-emerald-500/30">
+          <CardContent className="pt-6 text-center">
+            <p className="text-slate-300 mb-4">Bitte melde dich an</p>
+            <Button onClick={() => setLocation("/")} className="cyber-neon-button">
+              Zur Startseite
+            </Button>
           </CardContent>
-        </PremiumCard>
-      </PremiumPageLayout>
+        </Card>
+      </div>
     );
   }
 
   if (isLoading) {
     return (
-    <PremiumPageLayout>
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </PremiumPageLayout>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-emerald-500 cyber-neon-green"></div>
+      </div>
     );
   }
 
@@ -241,168 +255,167 @@ export default function SellerDashboard() {
     const hoursSinceCreated = (now.getTime() - new Date(createdAt).getTime()) / (1000 * 60 * 60);
     
     if (hoursSinceCreated > 24) {
-      return <Badge className="bg-red-100 text-red-800">⚠️ Überfällig</Badge>;
+      return <Badge className="bg-red-500/20 text-red-400 border border-red-500/40">⚠️ Überfällig</Badge>;
     } else if (hoursSinceCreated > 18) {
-      return <Badge className="bg-amber-100 text-amber-800">⏰ Bald fällig</Badge>;
+      return <Badge className="bg-orange-500/20 text-orange-400 border border-orange-500/40">⏰ Bald fällig</Badge>;
     }
     return null;
   };
 
   return (
-    <PremiumPageLayout>
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">Verkäufer-Dashboard</h1>
-            <p className="text-slate-600">Verwalte deine Gigs und Aufträge</p>
+    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Animated Background Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98120_1px,transparent_1px),linear-gradient(to_bottom,#10b98120_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      
+      {/* Neon Glow Orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+
+      <div className="relative z-10">
+        {/* Header */}
+        <div className="border-b-2 border-emerald-500/30 bg-slate-950/80 backdrop-blur-xl">
+          <div className="container mx-auto px-4 py-8">
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-6xl font-extrabold mb-3 tracking-tight cyber-chrome-text flex items-center gap-4">
+                    <TrendingUp className="h-12 w-12 text-emerald-500 animate-pulse" />
+                    VERKÄUFER-<span className="cyber-neon-green">DASHBOARD</span>
+                  </h1>
+                  <p className="text-slate-300 text-xl font-light tracking-wide">
+                    Verwalte deine <span className="cyber-neon-orange font-semibold">Gigs</span> und Aufträge
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => setLocation("/create-gig")}
+                  className="cyber-neon-button px-8 py-6 text-lg"
+                >
+                  <Package className="h-5 w-5 mr-2" />
+                  Neues Gig erstellen
+                </Button>
+              </div>
+            </motion.div>
           </div>
-          <Button onClick={() => setLocation("/create-gig")}>
-            + Neues Gig erstellen
-          </Button>
         </div>
 
-        {/* Performance Metrics */}
-        <div className="grid md:grid-cols-4 gap-4 mb-6">
-          <PremiumCard>
-            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">On-Time Rate</p>
-                  <p className="text-2xl font-bold text-slate-900">{onTimeRate}%</p>
-                </div>
-                <div className={`p-3 rounded-full ${onTimeRate >= 90 ? "bg-green-100" : "bg-amber-100"}`}>
-                  <Clock className={`h-6 w-6 ${onTimeRate >= 90 ? "text-green-600" : "text-amber-600"}`} />
-                </div>
-              </div>
-            </CardContent>
-          </PremiumCard>
-
-          <PremiumCard>
-            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">First-Pass Rate</p>
-                  <p className="text-2xl font-bold text-slate-900">{firstPassRate}%</p>
-                </div>
-                <div className={`p-3 rounded-full ${firstPassRate >= 80 ? "bg-green-100" : "bg-amber-100"}`}>
-                  <CheckCircle className={`h-6 w-6 ${firstPassRate >= 80 ? "text-green-600" : "text-amber-600"}`} />
-                </div>
-              </div>
-            </CardContent>
-          </PremiumCard>
-
-          <PremiumCard>
-            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Dispute Rate</p>
-                  <p className="text-2xl font-bold text-slate-900">{disputeRate}%</p>
-                </div>
-                <div className={`p-3 rounded-full ${disputeRate <= 5 ? "bg-green-100" : "bg-red-100"}`}>
-                  <AlertTriangle className={`h-6 w-6 ${disputeRate <= 5 ? "text-green-600" : "text-red-600"}`} />
-                </div>
-              </div>
-            </CardContent>
-          </PremiumCard>
-
-          <PremiumCard>
-            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-600 mb-1">Durchschn. Bewertung</p>
-                  <p className="text-2xl font-bold text-slate-900">{avgRating}</p>
-                </div>
-                <div className="p-3 rounded-full bg-yellow-100">
-                  <Star className="h-6 w-6 text-yellow-600 fill-yellow-600" />
-                </div>
-              </div>
-            </CardContent>
-          </PremiumCard>
-        </div>
-
-        {/* Kanban Board */}
-        <PremiumCard className="mb-6">
-          <CardHeader>
-            <CardTitle>Auftrags-Pipeline</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-4">
-              {kanbanColumns.map((column) => {
-                const columnOrders = getOrdersByStatus(column.status);
-                return (
-                  <div key={column.id} className="space-y-3">
-                    <div className="flex items-center gap-2 mb-3">
-                      <column.icon className="h-4 w-4 text-slate-600" />
-                      <h3 className="font-semibold text-slate-900">{column.title}</h3>
-                      <Badge variant="outline" className="ml-auto">
-                        {columnOrders.length}
-                      </Badge>
-                    </div>
-
-                    <div className="space-y-2">
-                      {columnOrders.length === 0 ? (
-                        <div className="border-2 border-dashed border-slate-200 rounded-lg p-4 text-center">
-                          <p className="text-xs text-slate-500">Keine Aufträge</p>
-                        </div>
-                      ) : (
-                        columnOrders.map((order) => (
-                          <Card
-                            key={order.id}
-                            className="cursor-pointer hover:shadow-md transition-shadow"
-                            onClick={() => setLocation(`/order/${order.id}`)}
-                          >
-                            <CardContent className="p-3 p-6 md:p-8 p-6 md:p-8">
-                              <div className="space-y-2">
-                                <div className="flex items-start justify-between gap-2">
-                                  <p className="text-sm font-semibold text-slate-900 line-clamp-2">
-                                    Auftrag #{order.id}
-                                  </p>
-                                  {getSLAWarning(order.createdAt)}
-                                </div>
-                                
-                                <div className="flex items-center justify-between text-xs text-slate-600">
-                                  <span>{Number(order.totalPrice)}€</span>
-                                  <span>
-                                    {order.createdAt
-                                      ? new Date(order.createdAt).toLocaleDateString("de-DE")
-                                      : "N/A"}
-                                  </span>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))
-                      )}
-                    </div>
+        <div className="container mx-auto px-4 py-8">
+          {/* Performance Metrics */}
+          <motion.div
+            className="grid md:grid-cols-4 gap-6 mb-8"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-[0_0_40px_oklch(0.70_0.25_150_/_0.3)]">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400 mb-2">On-Time Rate</p>
+                    <p className="text-4xl font-black cyber-chrome-text">{onTimeRate}%</p>
                   </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </PremiumCard>
+                  <div className={`p-4 rounded-full ${onTimeRate >= 90 ? "bg-emerald-500/20" : "bg-orange-500/20"}`}>
+                    <Clock className={`h-8 w-8 ${onTimeRate >= 90 ? "text-emerald-500 cyber-neon-green" : "text-orange-500 cyber-neon-orange"}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Gigs Tabs */}
-        <PremiumCard>
-          <CardHeader>
-            <CardTitle>Meine Gigs</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="mb-4">
-                <TabsTrigger value="published">Veroeffentlicht ({gigs.length})</TabsTrigger>
-                <TabsTrigger value="drafts">Entwerfe ({drafts.length})</TabsTrigger>
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 hover:border-emerald-500/60 transition-all duration-300 hover:shadow-[0_0_40px_oklch(0.70_0.25_150_/_0.3)]">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400 mb-2">First-Pass Rate</p>
+                    <p className="text-4xl font-black cyber-chrome-text">{firstPassRate}%</p>
+                  </div>
+                  <div className={`p-4 rounded-full ${firstPassRate >= 80 ? "bg-emerald-500/20" : "bg-orange-500/20"}`}>
+                    <CheckCircle className={`h-8 w-8 ${firstPassRate >= 80 ? "text-emerald-500 cyber-neon-green" : "text-orange-500 cyber-neon-orange"}`} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="cyber-glass-card border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-300 hover:shadow-[0_0_40px_oklch(0.75_0.20_35_/_0.3)]">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400 mb-2">Dispute Rate</p>
+                    <p className="text-4xl font-black cyber-chrome-text">{disputeRate}%</p>
+                  </div>
+                  <div className="p-4 rounded-full bg-emerald-500/20">
+                    <AlertTriangle className="h-8 w-8 text-emerald-500 cyber-neon-green" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="cyber-glass-card border-2 border-orange-500/30 hover:border-orange-500/60 transition-all duration-300 hover:shadow-[0_0_40px_oklch(0.75_0.20_35_/_0.3)]">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-400 mb-2">Durchschnitt</p>
+                    <p className="text-4xl font-black cyber-chrome-text">{avgRating}</p>
+                  </div>
+                  <div className="p-4 rounded-full bg-orange-500/20">
+                    <Star className="h-8 w-8 text-orange-500 cyber-neon-orange" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Main Content Tabs */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3 bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 p-2">
+                <TabsTrigger 
+                  value="published"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_oklch(0.70_0.25_150_/_0.4)]"
+                >
+                  <Package className="h-4 w-4 mr-2" />
+                  Veröffentlicht ({gigs.length})
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="drafts"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-600 data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_oklch(0.75_0.20_35_/_0.4)]"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Entwürfe ({drafts.length})
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="orders"
+                  className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-emerald-500 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_oklch(0.70_0.25_150_/_0.4)]"
+                >
+                  <Clock className="h-4 w-4 mr-2" />
+                  Aufträge ({orders.length})
+                </TabsTrigger>
               </TabsList>
 
+              {/* Published Gigs Tab */}
               <TabsContent value="published">
                 {gigs.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-slate-600 mb-4">Du hast noch keine veroeffentlichten Gigs</p>
-                    <Button onClick={() => setLocation("/create-gig")}>
-                      Erstes Gig erstellen
-                    </Button>
-                  </div>
+                  <Card className="cyber-glass-card border-2 border-emerald-500/30">
+                    <CardContent className="pt-12 pb-12 text-center">
+                      <Package className="h-16 w-16 text-emerald-500 mx-auto mb-4 cyber-neon-green" />
+                      <h3 className="text-2xl font-bold text-white mb-2">Noch keine Gigs</h3>
+                      <p className="text-slate-400 mb-6">
+                        Erstelle dein erstes Gig und starte durch!
+                      </p>
+                      <Button onClick={() => setLocation("/create-gig")} className="cyber-neon-button">
+                        <Package className="h-4 w-4 mr-2" />
+                        Erstes Gig erstellen
+                      </Button>
+                    </CardContent>
+                  </Card>
                 ) : (
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid md:grid-cols-3 gap-6">
                     {gigs.map((gig) => (
                       <GigCard key={gig.id} gig={gig} />
                     ))}
@@ -410,27 +423,90 @@ export default function SellerDashboard() {
                 )}
               </TabsContent>
 
+              {/* Drafts Tab */}
               <TabsContent value="drafts">
                 {drafts.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-slate-600 mb-4">Du hast noch keine Entwerfe</p>
-                    <Button onClick={() => setLocation("/create-gig")}>
-                      Neues Gig als Entwurf erstellen
-                    </Button>
-                  </div>
+                  <Card className="cyber-glass-card border-2 border-orange-500/30">
+                    <CardContent className="pt-12 pb-12 text-center">
+                      <Edit className="h-16 w-16 text-orange-500 mx-auto mb-4 cyber-neon-orange" />
+                      <h3 className="text-2xl font-bold text-white mb-2">Keine Entwürfe</h3>
+                      <p className="text-slate-400">
+                        Alle deine Gigs sind veröffentlicht
+                      </p>
+                    </CardContent>
+                  </Card>
                 ) : (
-                  <div className="grid md:grid-cols-3 gap-4">
+                  <div className="grid md:grid-cols-3 gap-6">
                     {drafts.map((gig) => (
                       <DraftCard key={gig.id} gig={gig} />
                     ))}
                   </div>
                 )}
               </TabsContent>
+
+              {/* Orders Tab */}
+              <TabsContent value="orders">
+                <div className="grid md:grid-cols-3 gap-6">
+                  {kanbanColumns.map((column) => {
+                    const columnOrders = getOrdersByStatus(column.status);
+                    const Icon = column.icon;
+                    
+                    return (
+                      <Card 
+                        key={column.id} 
+                        className="cyber-glass-card border-2 border-emerald-500/30"
+                      >
+                        <CardHeader>
+                          <CardTitle className="flex items-center gap-2 cyber-chrome-text text-xl">
+                            <Icon className="h-5 w-5 text-emerald-500" />
+                            {column.title}
+                            <Badge className="ml-auto bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                              {columnOrders.length}
+                            </Badge>
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {columnOrders.length === 0 ? (
+                            <p className="text-slate-400 text-sm text-center py-8">
+                              Keine Aufträge
+                            </p>
+                          ) : (
+                            columnOrders.map((order) => (
+                              <div
+                                key={order.id}
+                                className="p-4 rounded-xl bg-slate-900/40 backdrop-blur-xl border-2 border-slate-700/50 hover:border-emerald-500/50 transition-all duration-300 cursor-pointer"
+                                onClick={() => setLocation(`/order/${order.id}`)}
+                              >
+                                <div className="flex items-start justify-between mb-2">
+                                  <h4 className="font-semibold text-white text-sm">
+                                    Order #{order.id}
+                                  </h4>
+                                  {getSLAWarning(order.createdAt)}
+                                </div>
+                                <p className="text-xs text-slate-400 mb-2">
+                                  Käufer: {order.buyerId}
+                                </p>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-bold cyber-neon-orange">
+                                    Order-Details
+                                  </span>
+                                  <span className="text-xs text-slate-500">
+                                    {new Date(order.createdAt || "").toLocaleDateString()}
+                                  </span>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </TabsContent>
             </Tabs>
-          </CardContent>
-        </PremiumCard>
+          </motion.div>
+        </div>
       </div>
-    </PremiumPageLayout>
+    </div>
   );
 }
-
