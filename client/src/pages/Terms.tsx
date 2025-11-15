@@ -297,6 +297,42 @@ export default function Terms() {
                   </p>
                 </div>
 
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Muster-Widerrufsformular:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <p className="mb-4 font-semibold text-white">Wenn Sie den Vertrag widerrufen wollen, füllen Sie bitte dieses Formular aus und senden Sie es an:</p>
+                  <p className="mb-4 text-sm">
+                    MiMi Tech Ai UG (haftungsbeschränkt)<br />
+                    Michael Bemler<br />
+                    Lindenplatz 23<br />
+                    75378 Bad Liebenzell<br />
+                    E-Mail: info@mimitechai.com
+                  </p>
+                  <div className="bg-slate-800/60 border border-emerald-500/30 rounded p-4 font-mono text-sm">
+                    <p className="mb-2">Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung:</p>
+                    <p className="mb-2">_______________________________________</p>
+                    <p className="mb-2">Bestellt am (*) / erhalten am (*): _______________________________________</p>
+                    <p className="mb-2">Name des/der Verbraucher(s): _______________________________________</p>
+                    <p className="mb-2">Anschrift des/der Verbraucher(s): _______________________________________</p>
+                    <p className="mb-2">Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier): _______________________________________</p>
+                    <p>Datum: _______________________________________</p>
+                    <p className="text-xs text-slate-400 mt-4">(*) Unzutreffendes streichen.</p>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Folgen des Widerrufs:</h3>
+                
+                <p>
+                  Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, 
+                  <span className="cyber-neon-orange font-semibold">unverzüglich und spätestens binnen vierzehn Tagen</span> ab dem Tag zurückzuzahlen, 
+                  an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.
+                </p>
+
+                <p className="mt-4">
+                  Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, 
+                  es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart.
+                </p>
+
                 <h3 className="text-xl font-bold text-white mt-6 mb-4">Rückgaberecht bei Mängeln:</h3>
                 
                 <p>
@@ -534,6 +570,68 @@ export default function Terms() {
                     </li>
                   </ul>
                 </div>
+              </div>
+            </Card>
+
+            {/* Section 9.5: Plattformhaftung (DSA) */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                9.5. PLATTFORMHAFTUNG UND <span className="cyber-neon-orange">NOTICE-AND-TAKEDOWN</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Flinkly ist ein <span className="cyber-neon-green font-semibold">Vermittler</span> zwischen Käufern und Verkäufern und 
+                  <span className="cyber-neon-orange font-semibold"> nicht Vertragspartner</span> der zwischen Nutzern geschlossenen Verträge.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h4 className="font-bold text-white mb-3">Haftungsbeschränkung (DSA Art. 6):</h4>
+                  <p className="mb-3">
+                    Flinkly haftet <span className="cyber-neon-orange font-semibold">nicht</span> für die von Verkäufern angebotenen Dienstleistungen, 
+                    deren Qualität, Rechtmäßigkeit oder Vollständigkeit. Die Verantwortung liegt ausschließlich beim jeweiligen Verkäufer.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Flinkly übernimmt keine Prüfpflicht für Nutzerinhalte (Gig-Beschreibungen, Bewertungen, Nachrichten), 
+                    es sei denn, wir erlangen Kenntnis von rechtswidrigen Inhalten.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Notice-and-Takedown-Verfahren:</h3>
+                
+                <p>
+                  Wenn Sie der Meinung sind, dass ein Gig-Angebot oder Nutzerinhalt gegen geltendes Recht verstößt, 
+                  können Sie uns dies über unser <span className="cyber-neon-green font-semibold">Meldeformular</span> mitteilen:
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6 mt-4">
+                  <h4 className="font-bold text-white mb-3">Meldung rechtswidriger Inhalte:</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">E-Mail:</span> abuse@flinkly.de</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Betreff:</span> "Notice-and-Takedown: [Gig-ID oder Nutzer-ID]"</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Inhalt:</span> Detaillierte Beschreibung des Verstoßes + Rechtsgrundlage</span>
+                    </li>
+                  </ul>
+                  <p className="mt-4 text-sm text-slate-400">
+                    Wir prüfen Ihre Meldung <span className="cyber-neon-orange font-semibold">innerhalb von 48 Stunden</span> und 
+                    entfernen rechtswidrige Inhalte unverzüglich.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Haftung für eigene Inhalte:</h3>
+                
+                <p>
+                  Flinkly haftet für eigene Inhalte (z.B. Plattform-Texte, Hilfe-Artikel) nach den allgemeinen Gesetzen. 
+                  Für Nutzerinhalte haften wir nur, wenn wir von der Rechtswidrigkeit Kenntnis erlangen und nicht unverzüglich handeln.
+                </p>
               </div>
             </Card>
 
