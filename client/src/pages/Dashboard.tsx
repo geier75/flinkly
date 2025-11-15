@@ -1,4 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -71,10 +73,10 @@ export default function Dashboard() {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid md:grid-cols-3 gap-6">
-              <Card>
+              <PremiumCard>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Aktive Gigs</CardTitle>
-                  <Package className="h-4 w-4 text-blue-600" />
+                  <Package className="h-4 w-4 text-primary" />
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">{myGigs?.length || 0}</div>
@@ -82,9 +84,9 @@ export default function Dashboard() {
                     {myGigs?.filter((g) => g.active).length || 0} aktiv
                   </p>
                 </CardContent>
-              </Card>
+              </PremiumCard>
 
-              <Card>
+              <PremiumCard>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Bestellungen</CardTitle>
                   <ShoppingCart className="h-4 w-4 text-green-600" />
@@ -97,9 +99,9 @@ export default function Dashboard() {
                     {myPurchases?.filter((o) => o.status === "completed").length || 0} abgeschlossen
                   </p>
                 </CardContent>
-              </Card>
+              </PremiumCard>
 
-              <Card>
+              <PremiumCard>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Bewertung</CardTitle>
                   <Star className="h-4 w-4 text-yellow-600" />
@@ -108,15 +110,15 @@ export default function Dashboard() {
                   <div className="text-2xl font-bold">4.8</div>
                   <p className="text-xs text-slate-600">basierend auf 12 Bewertungen</p>
                 </CardContent>
-              </Card>
+              </PremiumCard>
             </div>
 
             {/* Quick Actions */}
-            <Card>
+            <PremiumCard>
               <CardHeader>
                 <CardTitle>Schnellstart</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="space-y-3 p-6 md:p-8 p-6 md:p-8">
                 <Link href="/marketplace">
                   <Button variant="outline" className="w-full justify-start">
                     Marketplace erkunden
@@ -131,7 +133,7 @@ export default function Dashboard() {
                   Profil bearbeiten
                 </Button>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </TabsContent>
 
           {/* Gigs Tab */}
@@ -147,8 +149,8 @@ export default function Dashboard() {
             </div>
 
             {!myGigs || myGigs.length === 0 ? (
-              <Card>
-                <CardContent className="pt-6 text-center">
+              <PremiumCard>
+                <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
                   <p className="text-slate-600 mb-4">
                     Du hast noch keine Gigs erstellt
                   </p>
@@ -156,12 +158,12 @@ export default function Dashboard() {
                     <Button>Erstes Gig erstellen</Button>
                   </Link>
                 </CardContent>
-              </Card>
+              </PremiumCard>
             ) : (
               <div className="space-y-4">
                 {myGigs.map((gig) => (
-                  <Card key={gig.id}>
-                    <CardContent className="pt-6">
+                  <PremiumCard key={gig.id}>
+                    <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <h3 className="font-bold text-lg mb-1">{gig.title}</h3>
@@ -198,7 +200,7 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </CardContent>
-                  </Card>
+                  </PremiumCard>
                 ))}
               </div>
             )}
@@ -215,8 +217,8 @@ export default function Dashboard() {
               {/* Purchases */}
               <TabsContent value="purchases" className="space-y-4 mt-6">
                 {!myPurchases || myPurchases.length === 0 ? (
-                  <Card>
-                    <CardContent className="pt-6 text-center">
+                  <PremiumCard>
+                    <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
                       <p className="text-slate-600 mb-4">
                         Du hast noch keine Gigs gekauft
                       </p>
@@ -224,11 +226,11 @@ export default function Dashboard() {
                         <Button>Marketplace erkunden</Button>
                       </Link>
                     </CardContent>
-                  </Card>
+                  </PremiumCard>
                 ) : (
                   myPurchases.map((order) => (
-                    <Card key={order.id}>
-                      <CardContent className="pt-6">
+                    <PremiumCard key={order.id}>
+                      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <h3 className="font-bold mb-2">Bestellung {order.id}</h3>
@@ -246,7 +248,7 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </CardContent>
-                    </Card>
+                    </PremiumCard>
                   ))
                 )}
               </TabsContent>
@@ -254,8 +256,8 @@ export default function Dashboard() {
               {/* Sales */}
               <TabsContent value="sales" className="space-y-4 mt-6">
                 {!mySales || mySales.length === 0 ? (
-                  <Card>
-                    <CardContent className="pt-6 text-center">
+                  <PremiumCard>
+                    <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
                       <p className="text-slate-600 mb-4">
                         Du hast noch keine Gigs verkauft
                       </p>
@@ -263,11 +265,11 @@ export default function Dashboard() {
                         <Button>Gig erstellen</Button>
                       </Link>
                     </CardContent>
-                  </Card>
+                  </PremiumCard>
                 ) : (
                   mySales.map((order) => (
-                    <Card key={order.id}>
-                      <CardContent className="pt-6">
+                    <PremiumCard key={order.id}>
+                      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
                             <h3 className="font-bold mb-2">Bestellung {order.id}</h3>
@@ -285,7 +287,7 @@ export default function Dashboard() {
                           </span>
                         </div>
                       </CardContent>
-                    </Card>
+                    </PremiumCard>
                   ))
                 )}
               </TabsContent>

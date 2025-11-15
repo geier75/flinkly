@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,22 +41,22 @@ export default function Contact() {
 
       <div className="container mx-auto px-4 py-16">
         <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          <Card>
+          <PremiumCard>
             <CardHeader>
-              <Mail className="h-10 w-10 text-blue-600 mb-4" />
+              <Mail className="h-10 w-10 text-primary mb-4" />
               <CardTitle>E-Mail Support</CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-slate-600 mb-4">
                 Schreib uns eine E-Mail und wir antworten innerhalb von 24 Stunden.
               </p>
-              <a href="mailto:support@flinkly.de" className="text-blue-600 hover:underline">
+              <a href="mailto:support@flinkly.de" className="text-primary hover:underline">
                 support@flinkly.de
               </a>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <MessageSquare className="h-10 w-10 text-green-600 mb-4" />
               <CardTitle>Live Chat</CardTitle>
@@ -66,9 +67,9 @@ export default function Contact() {
               </p>
               <Button variant="outline" className="w-full">Chat starten</Button>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <HelpCircle className="h-10 w-10 text-purple-600 mb-4" />
               <CardTitle>FAQ</CardTitle>
@@ -81,12 +82,12 @@ export default function Contact() {
                 <Button variant="outline" className="w-full">Zum FAQ</Button>
               </Link>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </div>
 
         {/* Contact Form */}
         <div className="max-w-2xl mx-auto">
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle className="text-2xl">Kontaktformular</CardTitle>
               <p className="text-slate-600">
@@ -147,7 +148,7 @@ export default function Contact() {
                 </Button>
               </form>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </div>
 
         {/* Additional Info */}

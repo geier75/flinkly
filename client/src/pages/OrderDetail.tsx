@@ -1,7 +1,8 @@
 import { useParams, useLocation } from "wouter";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -48,24 +49,24 @@ export default function OrderDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <PremiumPageLayout>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      </PremiumPageLayout>
     );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
+    <PremiumPageLayout>
+        <PremiumCard className="max-w-md">
+          <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <p className="text-slate-600 mb-4">Auftrag nicht gefunden</p>
             <Button onClick={() => setLocation("/dashboard")}>
               Zurück zum Dashboard
             </Button>
           </CardContent>
-        </Card>
-      </div>
+        </PremiumCard>
+      </PremiumPageLayout>
     );
   }
 
@@ -98,16 +99,16 @@ export default function OrderDetail() {
       description: "Verkäufer hat begonnen",
       timestamp: order.createdAt,
       icon: Clock,
-      color: "text-blue-600",
+      color: "text-primary",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <PremiumPageLayout>
       <div className="container mx-auto px-4 py-6">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-slate-600 mb-6">
-          <button onClick={() => setLocation("/dashboard")} className="hover:text-blue-600">
+          <button onClick={() => setLocation("/dashboard")} className="hover:text-primary">
             Dashboard
           </button>
           <ChevronRight className="h-4 w-4" />
@@ -115,8 +116,8 @@ export default function OrderDetail() {
         </div>
 
         {/* Header */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
+        <PremiumCard className="mb-6">
+          <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h1 className="text-2xl font-bold text-slate-900 mb-2">
@@ -132,7 +133,7 @@ export default function OrderDetail() {
             <div className="grid md:grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-slate-600 mb-1">Preis</p>
-                <p className="text-xl font-bold text-blue-600">{Number(order.totalPrice)}€</p>
+                <p className="text-xl font-bold text-primary">{Number(order.totalPrice)}€</p>
               </div>
               <div>
                 <p className="text-sm text-slate-600 mb-1">Erstellt am</p>
@@ -148,12 +149,12 @@ export default function OrderDetail() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content - Tabs */}
           <div className="lg:col-span-2">
-            <Card>
+            <PremiumCard>
               <Tabs defaultValue="timeline" className="w-full">
                 <CardHeader>
                   <TabsList className="grid w-full grid-cols-3">
@@ -210,7 +211,7 @@ export default function OrderDetail() {
                   <TabsContent value="files" className="space-y-4">
                     <div>
                       <h4 className="font-semibold text-slate-900 mb-3">Briefing</h4>
-                      <div className="bg-slate-50 rounded-lg p-4">
+                      <div className="bg-transparent rounded-lg p-4">
                         <p className="text-sm text-slate-700 whitespace-pre-line">
                           {order.buyerMessage || "Kein Briefing vorhanden"}
                         </p>
@@ -272,7 +273,7 @@ export default function OrderDetail() {
                   </TabsContent>
                 </CardContent>
               </Tabs>
-            </Card>
+            </PremiumCard>
           </div>
 
           {/* Sidebar - Actions */}
@@ -280,11 +281,11 @@ export default function OrderDetail() {
             <div className="sticky top-20 space-y-4">
               {/* Actions Card */}
               {order.status === "in_progress" && (
-                <Card>
+                <PremiumCard>
                   <CardHeader>
                     <CardTitle className="text-base">Abnahme</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
+                  <CardContent className="space-y-3 p-6 md:p-8 p-6 md:p-8">
                     <Button
                       className="w-full"
                       onClick={() => acceptDeliveryMutation.mutate({ orderId: order.id })}
@@ -332,15 +333,15 @@ export default function OrderDetail() {
                       Streitfall eröffnen
                     </Button>
                   </CardContent>
-                </Card>
+                </PremiumCard>
               )}
 
               {/* Info Card */}
-              <Card>
+              <PremiumCard>
                 <CardHeader>
                   <CardTitle className="text-base">Wichtige Hinweise</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3 text-sm text-slate-700">
+                <CardContent className="space-y-3 text-sm text-slate-700 p-6 md:p-8 p-6 md:p-8">
                   <div className="flex items-start gap-2">
                     <CheckCircle className="h-4 w-4 text-green-600 mt-0.5 flex-shrink-0" />
                     <p>Geld wird erst nach Abnahme ausgezahlt</p>
@@ -350,16 +351,16 @@ export default function OrderDetail() {
                     <p>Bei Streitfall vermittelt Flinkly</p>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Clock className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <Clock className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                     <p>Automatische Abnahme nach 7 Tagen</p>
                   </div>
                 </CardContent>
-              </Card>
+              </PremiumCard>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </PremiumPageLayout>
   );
 }
 

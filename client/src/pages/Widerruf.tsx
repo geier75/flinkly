@@ -1,18 +1,19 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { APP_TITLE } from "@/const";
 
 export default function Widerruf() {
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <PremiumPageLayout>
       <div className="container max-w-4xl">
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <CardTitle className="text-3xl">Widerrufsbelehrung</CardTitle>
             <p className="text-sm text-slate-600">Stand: 13. November 2025</p>
           </CardHeader>
-          <CardContent className="prose prose-slate max-w-none">
+          <CardContent className="prose prose-slate max-w-none p-6 md:p-8 p-6 md:p-8">
             
             <h2>Widerrufsrecht</h2>
             <p>
@@ -181,8 +182,8 @@ export default function Widerruf() {
             </div>
 
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
-    </div>
+    </PremiumPageLayout>
   );
 }

@@ -9,6 +9,8 @@
  */
 
 import { useState } from "react";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -88,12 +90,12 @@ export default function SellerVerification() {
   if (!user) {
     return (
       <div className="container max-w-4xl py-12">
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <CardTitle>Bitte anmelden</CardTitle>
             <CardDescription>Sie müssen angemeldet sein, um Ihren Account zu verifizieren.</CardDescription>
           </CardHeader>
-        </Card>
+        </PremiumCard>
       </div>
     );
   }
@@ -108,7 +110,7 @@ export default function SellerVerification() {
       </div>
 
       {/* Verification Status Overview */}
-      <Card className="mb-6">
+      <PremiumCard className="mb-6">
         <CardHeader>
           <CardTitle>Verifizierungs-Status</CardTitle>
           <CardDescription>Ihr aktueller Verifizierungs-Level</CardDescription>
@@ -123,11 +125,11 @@ export default function SellerVerification() {
             </Badge>
           </div>
         </CardContent>
-      </Card>
+      </PremiumCard>
 
       <div className="space-y-6">
         {/* Email Verification */}
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -146,7 +148,7 @@ export default function SellerVerification() {
                 : "Verifizieren Sie Ihre E-Mail-Adresse"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
             {!verificationStatus?.emailVerified && (
               <>
                 <div className="space-y-2">
@@ -199,10 +201,10 @@ export default function SellerVerification() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Phone Verification (Optional) */}
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -221,7 +223,7 @@ export default function SellerVerification() {
                 : "Erhöhen Sie Ihr Vertrauen mit Telefon-Verifizierung"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
             {!verificationStatus?.phoneVerified && (
               <>
                 <div className="space-y-2">
@@ -280,10 +282,10 @@ export default function SellerVerification() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Admin Approval */}
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -302,7 +304,7 @@ export default function SellerVerification() {
                 : "Beantragen Sie die Admin-Genehmigung für höchstes Vertrauen"}
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
             {!verificationStatus?.adminApproved && (
               <>
                 <div className="bg-muted p-4 rounded-lg space-y-2">
@@ -341,7 +343,7 @@ export default function SellerVerification() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
@@ -136,8 +137,8 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Card className="max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <PremiumCard className="max-w-md">
           <CardHeader>
             <CardTitle>Anmeldung erforderlich</CardTitle>
           </CardHeader>
@@ -147,15 +148,15 @@ export default function AdminDashboard() {
             </p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Card className="max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <PremiumCard className="max-w-md">
           <CardHeader>
             <CardTitle>Zugriff verweigert</CardTitle>
           </CardHeader>
@@ -165,7 +166,7 @@ export default function AdminDashboard() {
             </p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
     );
   }
@@ -193,7 +194,7 @@ export default function AdminDashboard() {
         <div className="mb-8">
           <h2 className="text-xl font-bold text-slate-900 mb-4">Plattform-Übersicht</h2>
           <div className="grid md:grid-cols-4 gap-6">
-            <Card>
+            <PremiumCard>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600">
                   Gesamt-Nutzer
@@ -209,12 +210,12 @@ export default function AdminDashboard() {
                       +{platformStats.newUsersToday} heute
                     </p>
                   </div>
-                  <Users className="h-8 w-8 text-blue-600" />
+                  <Users className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card>
+            <PremiumCard>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600">
                   Aktive Gigs
@@ -233,9 +234,9 @@ export default function AdminDashboard() {
                   <Package className="h-8 w-8 text-purple-600" />
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card>
+            <PremiumCard>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600">
                   Gesamt-Umsatz
@@ -254,9 +255,9 @@ export default function AdminDashboard() {
                   <DollarSign className="h-8 w-8 text-green-600" />
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card>
+            <PremiumCard>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-slate-600">
                   Dispute Rate
@@ -275,7 +276,7 @@ export default function AdminDashboard() {
                   <AlertTriangle className="h-8 w-8 text-orange-600" />
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </div>
         </div>
 
@@ -302,7 +303,7 @@ export default function AdminDashboard() {
 
           {/* Moderation Tab */}
           <TabsContent value="moderation" className="space-y-6">
-            <Card>
+            <PremiumCard>
               <CardHeader>
                 <CardTitle>Gig-Moderation</CardTitle>
                 <div className="flex gap-2 mt-4">
@@ -385,12 +386,12 @@ export default function AdminDashboard() {
                   )}
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </TabsContent>
 
           {/* Disputes Tab */}
           <TabsContent value="disputes" className="space-y-6">
-            <Card>
+            <PremiumCard>
               <CardHeader>
                 <CardTitle>Streitfall-Management</CardTitle>
               </CardHeader>
@@ -475,13 +476,13 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </TabsContent>
 
           {/* Compliance Tab */}
           <TabsContent value="compliance" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              <Card>
+              <PremiumCard>
                 <CardHeader>
                   <CardTitle>Compliance-Reports</CardTitle>
                 </CardHeader>
@@ -510,13 +511,13 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 </CardContent>
-              </Card>
+              </PremiumCard>
 
-              <Card>
+              <PremiumCard>
                 <CardHeader>
                   <CardTitle>DSGVO-Compliance</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
                   <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-2">
                       <CheckCircle className="h-5 w-5 text-green-600" />
@@ -532,7 +533,7 @@ export default function AdminDashboard() {
 
                   <div className="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg">
                     <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-blue-600" />
+                      <FileText className="h-5 w-5 text-primary" />
                       <div>
                         <p className="font-semibold text-blue-900">Datenlöschungen</p>
                         <p className="text-sm text-blue-700">12 ausstehend</p>
@@ -543,7 +544,7 @@ export default function AdminDashboard() {
                     </Button>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200 rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-transparent border border-slate-200 rounded-lg">
                     <div className="flex items-center gap-2">
                       <Shield className="h-5 w-5 text-slate-600" />
                       <div>
@@ -556,10 +557,10 @@ export default function AdminDashboard() {
                     </Button>
                   </div>
                 </CardContent>
-              </Card>
+              </PremiumCard>
             </div>
 
-            <Card>
+            <PremiumCard>
               <CardHeader>
                 <CardTitle>Umsatzreports (DACH)</CardTitle>
               </CardHeader>
@@ -582,17 +583,17 @@ export default function AdminDashboard() {
                   ))}
                 </div>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </TabsContent>
 
           {/* Analytics Tab */}
           <TabsContent value="analytics" className="space-y-6">
             <div className="grid md:grid-cols-2 gap-6">
-              <Card>
+              <PremiumCard>
                 <CardHeader>
                   <CardTitle>Plattform-KPIs</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
                   <div className="flex justify-between items-center">
                     <span className="text-slate-600">Time-to-First-Gig</span>
                     <span className="font-semibold text-green-600">18h</span>
@@ -612,13 +613,13 @@ export default function AdminDashboard() {
                     <span className="font-semibold text-green-600">62</span>
                   </div>
                 </CardContent>
-              </Card>
+              </PremiumCard>
 
-              <Card>
+              <PremiumCard>
                 <CardHeader>
                   <CardTitle>Top-Kategorien</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-3 p-6 md:p-8 p-6 md:p-8">
                   {[
                     { name: "Logo Design", orders: 234, revenue: 35100 },
                     { name: "Social Media", orders: 189, revenue: 15120 },
@@ -636,7 +637,7 @@ export default function AdminDashboard() {
                     </div>
                   ))}
                 </CardContent>
-              </Card>
+              </PremiumCard>
             </div>
           </TabsContent>
         </Tabs>

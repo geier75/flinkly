@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -53,35 +54,35 @@ export default function EditGig() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
+    <PremiumPageLayout>
+        <PremiumCard className="max-w-md">
+          <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <p className="text-slate-600 mb-4">Bitte melde dich an</p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
           </CardContent>
-        </Card>
-      </div>
+        </PremiumCard>
+      </PremiumPageLayout>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <PremiumPageLayout>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      </PremiumPageLayout>
     );
   }
 
   if (!gig) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
+    <PremiumPageLayout>
+        <PremiumCard className="max-w-md">
+          <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <p className="text-slate-600 mb-4">Gig nicht gefunden</p>
             <Button onClick={() => setLocation("/seller-dashboard")}>Zurück</Button>
           </CardContent>
-        </Card>
-      </div>
+        </PremiumCard>
+      </PremiumPageLayout>
     );
   }
 
@@ -99,9 +100,9 @@ export default function EditGig() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-12">
+    <PremiumPageLayout>
       <div className="container max-w-3xl">
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <CardTitle>Gig bearbeiten</CardTitle>
           </CardHeader>
@@ -215,9 +216,9 @@ export default function EditGig() {
               </div>
             </form>
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
-    </div>
+    </PremiumPageLayout>
   );
 }
 

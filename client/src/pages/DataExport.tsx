@@ -3,6 +3,8 @@
  */
 
 import { useState } from "react";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -72,8 +74,8 @@ export default function DataExport() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Card className="max-w-md">
+    <PremiumPageLayout>
+        <PremiumCard className="max-w-md">
           <CardHeader>
             <CardTitle>Anmeldung erforderlich</CardTitle>
             <CardDescription>
@@ -85,13 +87,13 @@ export default function DataExport() {
               Jetzt anmelden
             </Button>
           </CardContent>
-        </Card>
-      </div>
+        </PremiumCard>
+      </PremiumPageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <PremiumPageLayout>
       <MetaTags
         title="Datenexport - Flinkly"
         description="Exportieren Sie Ihre personenbezogenen Daten gemäß DSGVO Art. 20."
@@ -110,10 +112,10 @@ export default function DataExport() {
         </div>
 
         {/* Info Card */}
-        <Card className="mb-8 bg-blue-50 border-blue-200">
+        <PremiumCard className="mb-8 bg-blue-50 border-blue-200">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-blue-600" />
+              <AlertCircle className="h-5 w-5 text-primary" />
               Was wird exportiert?
             </CardTitle>
           </CardHeader>
@@ -124,17 +126,17 @@ export default function DataExport() {
               Format (JSON oder CSV) bereitgestellt.
             </p>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Data Selection */}
-        <Card className="mb-8">
+        <PremiumCard className="mb-8">
           <CardHeader>
             <CardTitle>Wählen Sie die zu exportierenden Daten</CardTitle>
             <CardDescription>
               Sie können auswählen, welche Datenkategorien exportiert werden sollen.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
             <div className="flex items-center space-x-3">
               <Checkbox
                 id="profile"
@@ -231,17 +233,17 @@ export default function DataExport() {
               </label>
             </div>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Format Selection */}
-        <Card className="mb-8">
+        <PremiumCard className="mb-8">
           <CardHeader>
             <CardTitle>Exportformat</CardTitle>
             <CardDescription>
               Wählen Sie das Format, in dem Ihre Daten exportiert werden sollen.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
             <div className="flex items-center space-x-3">
               <Checkbox
                 id="json"
@@ -272,11 +274,11 @@ export default function DataExport() {
               </label>
             </div>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Export Button */}
-        <Card>
-          <CardContent className="pt-6">
+        <PremiumCard>
+          <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
             {exportSuccess ? (
               <div className="flex items-center justify-center gap-3 text-green-600 mb-4">
                 <CheckCircle2 className="h-6 w-6" />
@@ -308,7 +310,7 @@ export default function DataExport() {
               Die Datei wird automatisch heruntergeladen.
             </p>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Legal Notice */}
         <div className="mt-8 p-4 bg-slate-100 rounded-lg">
@@ -319,6 +321,6 @@ export default function DataExport() {
           </p>
         </div>
       </div>
-    </div>
+    </PremiumPageLayout>
   );
 }

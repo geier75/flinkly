@@ -9,6 +9,8 @@
  */
 
 import { useState } from "react";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,12 +93,12 @@ export default function PrivacyDashboard() {
   if (!user) {
     return (
       <div className="container max-w-4xl py-12">
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <CardTitle>Bitte anmelden</CardTitle>
             <CardDescription>Sie müssen angemeldet sein, um auf Ihr Datenschutz-Dashboard zuzugreifen.</CardDescription>
           </CardHeader>
-        </Card>
+        </PremiumCard>
       </div>
     );
   }
@@ -120,7 +122,7 @@ export default function PrivacyDashboard() {
 
       {/* Account Deletion Warning */}
       {deletionStatus && deletionStatus.status === "pending" && (
-        <Card className="mb-6 border-destructive">
+        <PremiumCard className="mb-6 border-destructive">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-destructive" />
@@ -137,7 +139,7 @@ export default function PrivacyDashboard() {
               {cancelDeletionMutation.isPending ? "Wird widerrufen..." : "Löschung widerrufen"}
             </Button>
           </CardContent>
-        </Card>
+        </PremiumCard>
       )}
 
       <Tabs defaultValue="overview" className="space-y-6">
@@ -158,7 +160,7 @@ export default function PrivacyDashboard() {
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
@@ -168,7 +170,7 @@ export default function PrivacyDashboard() {
                 Transparente Übersicht aller Daten, die wir über Sie speichern
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
               <div className="grid gap-4">
                 <DataCategory
                   icon={<FileText className="h-4 w-4" />}
@@ -208,13 +210,13 @@ export default function PrivacyDashboard() {
                 />
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle>Ihre Rechte nach DSGVO</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 p-6 md:p-8 p-6 md:p-8">
               <RightItem
                 icon={<CheckCircle2 className="h-4 w-4 text-green-600" />}
                 title="Recht auf Auskunft (Art. 15)"
@@ -236,19 +238,19 @@ export default function PrivacyDashboard() {
                 description="Korrektur falscher Daten in Ihren Einstellungen"
               />
             </CardContent>
-          </Card>
+          </PremiumCard>
         </TabsContent>
 
         {/* Export Tab */}
         <TabsContent value="export" className="space-y-4">
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle>Datenexport (Art. 20 DSGVO)</CardTitle>
               <CardDescription>
                 Laden Sie eine Kopie Ihrer Daten in maschinenlesbarem Format herunter
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
               <div className="space-y-4">
                 <h3 className="font-semibold">Wählen Sie die zu exportierenden Daten:</h3>
                 
@@ -344,19 +346,19 @@ export default function PrivacyDashboard() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </TabsContent>
 
         {/* Delete Tab */}
         <TabsContent value="delete" className="space-y-4">
-          <Card className="border-destructive">
+          <PremiumCard className="border-destructive">
             <CardHeader>
               <CardTitle className="text-destructive">Account löschen (Art. 17 DSGVO)</CardTitle>
               <CardDescription>
                 Permanente Löschung Ihres Accounts und aller persönlichen Daten
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
               <div className="bg-muted p-4 rounded-lg space-y-2">
                 <h3 className="font-semibold flex items-center gap-2">
                   <Shield className="h-4 w-4" />
@@ -409,7 +411,7 @@ export default function PrivacyDashboard() {
                 </AlertDialogContent>
               </AlertDialog>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </TabsContent>
       </Tabs>
     </div>

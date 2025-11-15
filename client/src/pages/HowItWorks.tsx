@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Search, MessageSquare, CreditCard, CheckCircle, Star, Shield } from "lucide-react";
 import { Link } from "wouter";
 
@@ -28,10 +29,10 @@ export default function HowItWorks() {
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Search className="h-8 w-8 text-blue-600" />
+                  <Search className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle>1. Suchen</CardTitle>
               </CardHeader>
@@ -40,9 +41,9 @@ export default function HowItWorks() {
                   Durchsuche unseren Marketplace nach der passenden Dienstleistung oder nutze die Filter
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
                   <MessageSquare className="h-8 w-8 text-green-600" />
@@ -54,9 +55,9 @@ export default function HowItWorks() {
                   Schreibe dem Anbieter eine Nachricht mit deinen Anforderungen
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center">
                   <CreditCard className="h-8 w-8 text-purple-600" />
@@ -68,9 +69,9 @@ export default function HowItWorks() {
                   Bezahle sicher über unser Treuhand-System – Geld wird erst bei Abnahme freigegeben
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-yellow-100 flex items-center justify-center">
                   <CheckCircle className="h-8 w-8 text-yellow-600" />
@@ -82,7 +83,7 @@ export default function HowItWorks() {
                   Erhalte dein Ergebnis, prüfe es und gib das Geld frei – fertig!
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </div>
         </div>
 
@@ -94,10 +95,10 @@ export default function HowItWorks() {
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
-                  <Star className="h-8 w-8 text-blue-600" />
+                  <Star className="h-8 w-8 text-primary" />
                 </div>
                 <CardTitle>1. Gig erstellen</CardTitle>
               </CardHeader>
@@ -106,9 +107,9 @@ export default function HowItWorks() {
                   Erstelle ein Gig mit Beschreibung, Preis (max. 250€) und Lieferzeit
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
                   <MessageSquare className="h-8 w-8 text-green-600" />
@@ -120,9 +121,9 @@ export default function HowItWorks() {
                   Käufer kontaktieren dich und du klärst die Details
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center">
                   <CheckCircle className="h-8 w-8 text-purple-600" />
@@ -134,9 +135,9 @@ export default function HowItWorks() {
                   Erledige die Arbeit innerhalb der vereinbarten Lieferzeit
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
 
-            <Card className="text-center">
+            <PremiumCard className="text-center">
               <CardHeader>
                 <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-yellow-100 flex items-center justify-center">
                   <CreditCard className="h-8 w-8 text-yellow-600" />
@@ -148,7 +149,7 @@ export default function HowItWorks() {
                   Nach Abnahme wird das Geld automatisch an dich ausgezahlt
                 </p>
               </CardContent>
-            </Card>
+            </PremiumCard>
           </div>
         </div>
 
@@ -157,7 +158,7 @@ export default function HowItWorks() {
           <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Sicherheit steht an erster Stelle</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="flex gap-4">
-              <Shield className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+              <Shield className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-slate-900 mb-2">Treuhand-System</h3>
                 <p className="text-sm text-slate-600">
@@ -167,7 +168,7 @@ export default function HowItWorks() {
             </div>
 
             <div className="flex gap-4">
-              <Shield className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+              <Shield className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-slate-900 mb-2">DSGVO-konform</h3>
                 <p className="text-sm text-slate-600">
@@ -177,7 +178,7 @@ export default function HowItWorks() {
             </div>
 
             <div className="flex gap-4">
-              <Shield className="h-6 w-6 text-blue-600 flex-shrink-0 mt-1" />
+              <Shield className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
               <div>
                 <h3 className="font-semibold text-slate-900 mb-2">Bewertungssystem</h3>
                 <p className="text-sm text-slate-600">

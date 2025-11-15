@@ -1,4 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -67,7 +69,7 @@ export default function Profile() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 max-w-2xl">
         {/* Profile Card */}
-        <Card className="mb-6">
+        <PremiumCard className="mb-6">
           <CardHeader className="pb-4">
             <div className="flex justify-between items-start">
               <div>
@@ -84,7 +86,7 @@ export default function Profile() {
               )}
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
             {isEditing ? (
               <>
                 {/* Name */}
@@ -190,15 +192,15 @@ export default function Profile() {
               </>
             )}
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Account Settings */}
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <CardTitle>Kontoeinstellungen</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-slate-50 p-4 rounded-lg">
+          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
+            <div className="bg-transparent p-4 rounded-lg">
               <p className="text-sm text-slate-600 mb-3">
                 <strong>Benutzer-ID:</strong> {user.id}
               </p>
@@ -219,17 +221,17 @@ export default function Profile() {
               Abmelden
             </Button>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Info */}
-        <Card className="mt-6 bg-blue-50 border-blue-200">
-          <CardContent className="pt-6">
+        <PremiumCard className="mt-6 bg-blue-50 border-blue-200">
+          <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
             <p className="text-sm text-slate-700">
               <strong>💡 Hinweis:</strong> Dein Profil wird von anderen Benutzern gesehen, wenn du Gigs
               anbietest oder Bewertungen hinterlässt.
             </p>
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
     </div>
   );

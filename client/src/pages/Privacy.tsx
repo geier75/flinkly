@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
 import TableOfContents from "@/components/TableOfContents";
 
@@ -59,15 +61,15 @@ export default function Privacy() {
             <p className="text-slate-700 mb-4">
               Verantwortlich für die Datenverarbeitung auf dieser Website im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:
             </p>
-            <div className="bg-slate-50 p-6 rounded-lg text-slate-700 mb-4">
+            <div className="bg-transparent p-6 rounded-lg text-slate-700 mb-4">
               <strong className="text-slate-900">MiMi Tech Ai UG (haftungsbeschränkt)</strong><br />
               Lindenplatz 23<br />
               75378 Bad Liebenzell<br />
               Deutschland<br />
               <br />
-              E-Mail: <a href="mailto:info@mimitechai.com" className="text-blue-600 hover:underline">info@mimitechai.com</a><br />
-              Telefon: <a href="tel:+4915758805737" className="text-blue-600 hover:underline">+49 1575 8805737</a><br />
-              Website: <a href="https://www.mimitechai.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer" aria-label="MiMi Tech Ai Website (öffnet in neuem Tab)">www.mimitechai.com</a>
+              E-Mail: <a href="mailto:info@mimitechai.com" className="text-primary hover:underline">info@mimitechai.com</a><br />
+              Telefon: <a href="tel:+4915758805737" className="text-primary hover:underline">+49 1575 8805737</a><br />
+              Website: <a href="https://www.mimitechai.com" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer" aria-label="MiMi Tech Ai Website (öffnet in neuem Tab)">www.mimitechai.com</a>
             </div>
             <p className="text-slate-700">
               Diese Datenschutzerklärung informiert Sie über Art, Umfang und Zweck der Verarbeitung personenbezogener Daten auf unserer Plattform Flinkly sowie über Ihre Rechte als betroffene Person.
@@ -237,7 +239,7 @@ export default function Privacy() {
 
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-6">6.4 Drittlandübermittlung</h3>
             <p className="text-slate-700 mb-4">
-              Stripe ist ein US-amerikanisches Unternehmen. Die Datenübermittlung in die USA erfolgt auf Grundlage von <strong>Standard-Vertragsklauseln (SCC)</strong> gemäß Art. 46 Abs. 2 lit. c DSGVO. Weitere Informationen finden Sie in der <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" aria-label="Stripe Datenschutzerklärung (öffnet in neuem Tab)">Stripe Datenschutzerklärung</a>.
+              Stripe ist ein US-amerikanisches Unternehmen. Die Datenübermittlung in die USA erfolgt auf Grundlage von <strong>Standard-Vertragsklauseln (SCC)</strong> gemäß Art. 46 Abs. 2 lit. c DSGVO. Weitere Informationen finden Sie in der <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline" aria-label="Stripe Datenschutzerklärung (öffnet in neuem Tab)">Stripe Datenschutzerklärung</a>.
             </p>
 
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-6">6.5 Rechtsgrundlage</h3>
@@ -315,7 +317,7 @@ export default function Privacy() {
               Wir verwenden folgende Cookie-Kategorien:
             </p>
             <div className="space-y-4 mb-4">
-              <div className="bg-slate-50 p-4 rounded-lg">
+              <div className="bg-transparent p-4 rounded-lg">
                 <h4 className="font-semibold text-slate-900 mb-2">Notwendige Cookies</h4>
                 <p className="text-slate-700 text-sm mb-2">
                   Diese Cookies sind für den Betrieb der Website erforderlich (z.B. Session-Cookies, CSRF-Token).
@@ -324,7 +326,7 @@ export default function Privacy() {
                   <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse)
                 </p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-lg">
+              <div className="bg-transparent p-4 rounded-lg">
                 <h4 className="font-semibold text-slate-900 mb-2">Funktionale Cookies</h4>
                 <p className="text-slate-700 text-sm mb-2">
                   Diese Cookies ermöglichen erweiterte Funktionen (z.B. Spracheinstellungen, Theme).
@@ -333,7 +335,7 @@ export default function Privacy() {
                   <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
                 </p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-lg">
+              <div className="bg-transparent p-4 rounded-lg">
                 <h4 className="font-semibold text-slate-900 mb-2">Analytische Cookies</h4>
                 <p className="text-slate-700 text-sm mb-2">
                   Diese Cookies helfen uns, die Nutzung der Website zu analysieren und zu verbessern (z.B. PostHog).
@@ -342,7 +344,7 @@ export default function Privacy() {
                   <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
                 </p>
               </div>
-              <div className="bg-slate-50 p-4 rounded-lg">
+              <div className="bg-transparent p-4 rounded-lg">
                 <h4 className="font-semibold text-slate-900 mb-2">Marketing-Cookies</h4>
                 <p className="text-slate-700 text-sm mb-2">
                   Diese Cookies ermöglichen personalisierte Werbung (z.B. Exit-Intent-Modal, Retargeting).
@@ -389,7 +391,7 @@ export default function Privacy() {
             <p className="text-slate-700 mb-4">
               <strong>Drittlandübermittlung:</strong> USA (Standard-Vertragsklauseln gemäß Art. 46 Abs. 2 lit. c DSGVO)<br />
               <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)<br />
-              <strong>Weitere Informationen:</strong> <a href="https://posthog.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" aria-label="PostHog Datenschutzerklärung (öffnet in neuem Tab)">PostHog Datenschutzerklärung</a>
+              <strong>Weitere Informationen:</strong> <a href="https://posthog.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline" aria-label="PostHog Datenschutzerklärung (öffnet in neuem Tab)">PostHog Datenschutzerklärung</a>
             </p>
 
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-6">10.2 Sentry (Error-Tracking, geplant)</h3>
@@ -399,7 +401,7 @@ export default function Privacy() {
             <p className="text-slate-700 mb-4">
               <strong>Drittlandübermittlung:</strong> USA (Standard-Vertragsklauseln gemäß Art. 46 Abs. 2 lit. c DSGVO)<br />
               <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an der Fehleranalyse)<br />
-              <strong>Weitere Informationen:</strong> <a href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline" aria-label="Sentry Datenschutzerklärung (öffnet in neuem Tab)">Sentry Datenschutzerklärung</a>
+              <strong>Weitere Informationen:</strong> <a href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline" aria-label="Sentry Datenschutzerklärung (öffnet in neuem Tab)">Sentry Datenschutzerklärung</a>
             </p>
 
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-6">10.3 Consent-Aware-Tracking</h3>
@@ -457,7 +459,7 @@ export default function Privacy() {
 
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-6">13.1 Live Privacy Dashboard</h3>
             <p className="text-slate-700 mb-4">
-              In unserem <Link href="/privacy-dashboard" className="text-blue-600 hover:underline">Live Privacy Dashboard</Link> können Sie in Echtzeit sehen, welche Daten wir über Sie gespeichert haben. Sie können Ihre Daten selektiv exportieren (JSON, CSV) oder Ihr Konto löschen.
+              In unserem <Link href="/privacy-dashboard" className="text-primary hover:underline">Live Privacy Dashboard</Link> können Sie in Echtzeit sehen, welche Daten wir über Sie gespeichert haben. Sie können Ihre Daten selektiv exportieren (JSON, CSV) oder Ihr Konto löschen.
             </p>
 
             <h3 className="text-xl font-semibold text-slate-900 mb-3 mt-6">13.2 Datenexport (Art. 20 DSGVO)</h3>
@@ -493,7 +495,7 @@ export default function Privacy() {
             </p>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-slate-200 rounded-lg">
-                <thead className="bg-slate-50">
+                <thead className="bg-transparent">
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 border-b">Datenart</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 border-b">Speicherdauer</th>
@@ -605,7 +607,7 @@ export default function Privacy() {
                 </Link>
               </div>
               <p className="text-slate-700 mt-4 text-sm">
-                Alternativ können Sie uns unter <a href="mailto:info@mimitechai.com" className="text-blue-600 hover:underline">info@mimitechai.com</a> oder telefonisch unter <a href="tel:+4915758805737" className="text-blue-600 hover:underline">+49 1575 8805737</a> kontaktieren.
+                Alternativ können Sie uns unter <a href="mailto:info@mimitechai.com" className="text-primary hover:underline">info@mimitechai.com</a> oder telefonisch unter <a href="tel:+4915758805737" className="text-primary hover:underline">+49 1575 8805737</a> kontaktieren.
               </p>
             </div>
           </section>
@@ -619,7 +621,7 @@ export default function Privacy() {
             </p>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-slate-200 rounded-lg">
-                <thead className="bg-slate-50">
+                <thead className="bg-transparent">
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 border-b">Verarbeitungszweck</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 border-b">Rechtsgrundlage</th>
@@ -688,7 +690,7 @@ export default function Privacy() {
             </p>
             <div className="overflow-x-auto">
               <table className="min-w-full bg-white border border-slate-200 rounded-lg">
-                <thead className="bg-slate-50">
+                <thead className="bg-transparent">
                   <tr>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 border-b">Service</th>
                     <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900 border-b">Land</th>
@@ -702,7 +704,7 @@ export default function Privacy() {
                     <td className="px-4 py-3 text-sm text-slate-700">USA</td>
                     <td className="px-4 py-3 text-sm text-slate-700">Art. 46 Abs. 2 lit. c DSGVO</td>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Standard-Vertragsklauseln (SCC)</a>
+                      <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Standard-Vertragsklauseln (SCC)</a>
                     </td>
                   </tr>
                   <tr>
@@ -710,7 +712,7 @@ export default function Privacy() {
                     <td className="px-4 py-3 text-sm text-slate-700">USA</td>
                     <td className="px-4 py-3 text-sm text-slate-700">Art. 46 Abs. 2 lit. c DSGVO</td>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      <a href="https://posthog.com/privacy" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Standard-Vertragsklauseln (SCC)</a>
+                      <a href="https://posthog.com/privacy" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Standard-Vertragsklauseln (SCC)</a>
                     </td>
                   </tr>
                   <tr>
@@ -718,7 +720,7 @@ export default function Privacy() {
                     <td className="px-4 py-3 text-sm text-slate-700">USA</td>
                     <td className="px-4 py-3 text-sm text-slate-700">Art. 46 Abs. 2 lit. c DSGVO</td>
                     <td className="px-4 py-3 text-sm text-slate-700">
-                      <a href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Standard-Vertragsklauseln (SCC)</a>
+                      <a href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Standard-Vertragsklauseln (SCC)</a>
                     </td>
                   </tr>
                 </tbody>

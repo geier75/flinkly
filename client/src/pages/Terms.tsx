@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
 
 export default function Terms() {
@@ -151,15 +153,15 @@ export default function Terms() {
 
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-slate-900 mb-4">12. Impressum</h2>
-            <div className="bg-slate-50 p-4 rounded-lg text-slate-700">
+            <div className="bg-transparent p-4 rounded-lg text-slate-700">
               <strong>MiMi Tech Ai UG (haftungsbeschränkt)</strong><br />
               Lindenplatz 23<br />
               75378 Bad Liebenzell<br />
               Deutschland<br />
               <br />
-              E-Mail: <a href="mailto:info@mimitechai.com" className="text-blue-600 hover:underline">info@mimitechai.com</a><br />
-              Telefon: <a href="tel:+4915758805737" className="text-blue-600 hover:underline">+49 1575 8805737</a><br />
-              Website: <a href="https://www.mimitechai.com" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">www.mimitechai.com</a>
+              E-Mail: <a href="mailto:info@mimitechai.com" className="text-primary hover:underline">info@mimitechai.com</a><br />
+              Telefon: <a href="tel:+4915758805737" className="text-primary hover:underline">+49 1575 8805737</a><br />
+              Website: <a href="https://www.mimitechai.com" className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">www.mimitechai.com</a>
             </div>
           </section>
         </div>

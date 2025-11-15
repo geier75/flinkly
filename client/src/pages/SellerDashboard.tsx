@@ -1,6 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { trpc } from "@/lib/trpc";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -54,15 +56,15 @@ function DraftCard({ gig }: { gig: any }) {
   });
 
   return (
-    <Card className="hover:shadow-md transition-shadow border-amber-200 bg-amber-50">
-      <CardContent className="pt-6">
+    <PremiumCard className="hover:shadow-md transition-shadow border-amber-200 bg-amber-50">
+      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
         <Badge className="mb-2 bg-amber-600">Entwurf</Badge>
         <h3 className="font-semibold text-slate-900 mb-2">{gig.title}</h3>
         <p className="text-sm text-slate-600 mb-3 line-clamp-2">
           {gig.description}
         </p>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-lg font-bold text-blue-600">
+          <span className="text-lg font-bold text-primary">
             {(Number(gig.price) / 100).toFixed(2)}EUR
           </span>
           <Badge variant="outline">{gig.category}</Badge>
@@ -107,7 +109,7 @@ function DraftCard({ gig }: { gig: any }) {
           </AlertDialogContent>
         </AlertDialog>
       </CardContent>
-    </Card>
+    </PremiumCard>
   );
 }
 
@@ -127,14 +129,14 @@ function GigCard({ gig }: { gig: any }) {
   });
 
   return (
-    <Card className="hover:shadow-md transition-shadow">
-      <CardContent className="pt-6">
+    <PremiumCard className="hover:shadow-md transition-shadow">
+      <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
         <h3 className="font-semibold text-slate-900 mb-2">{gig.title}</h3>
         <p className="text-sm text-slate-600 mb-3 line-clamp-2">
           {gig.description}
         </p>
         <div className="flex items-center justify-between mb-3">
-          <span className="text-lg font-bold text-blue-600">
+          <span className="text-lg font-bold text-primary">
             {(Number(gig.price) / 100).toFixed(2)}€
           </span>
           <Badge variant="outline">{gig.category}</Badge>
@@ -180,7 +182,7 @@ function GigCard({ gig }: { gig: any }) {
           </div>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </PremiumCard>
   );
 }
 
@@ -195,22 +197,22 @@ export default function SellerDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Card className="max-w-md">
-          <CardContent className="pt-6 text-center">
+    <PremiumPageLayout>
+        <PremiumCard className="max-w-md">
+          <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <p className="text-slate-600 mb-4">Bitte melde dich an</p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
           </CardContent>
-        </Card>
-      </div>
+        </PremiumCard>
+      </PremiumPageLayout>
     );
   }
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+    <PremiumPageLayout>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      </PremiumPageLayout>
     );
   }
 
@@ -247,7 +249,7 @@ export default function SellerDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <PremiumPageLayout>
       <div className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -261,8 +263,8 @@ export default function SellerDashboard() {
 
         {/* Performance Metrics */}
         <div className="grid md:grid-cols-4 gap-4 mb-6">
-          <Card>
-            <CardContent className="pt-6">
+          <PremiumCard>
+            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">On-Time Rate</p>
@@ -273,10 +275,10 @@ export default function SellerDashboard() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
-            <CardContent className="pt-6">
+          <PremiumCard>
+            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">First-Pass Rate</p>
@@ -287,10 +289,10 @@ export default function SellerDashboard() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
-            <CardContent className="pt-6">
+          <PremiumCard>
+            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">Dispute Rate</p>
@@ -301,10 +303,10 @@ export default function SellerDashboard() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
-            <CardContent className="pt-6">
+          <PremiumCard>
+            <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-slate-600 mb-1">Durchschn. Bewertung</p>
@@ -315,11 +317,11 @@ export default function SellerDashboard() {
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </div>
 
         {/* Kanban Board */}
-        <Card className="mb-6">
+        <PremiumCard className="mb-6">
           <CardHeader>
             <CardTitle>Auftrags-Pipeline</CardTitle>
           </CardHeader>
@@ -349,7 +351,7 @@ export default function SellerDashboard() {
                             className="cursor-pointer hover:shadow-md transition-shadow"
                             onClick={() => setLocation(`/order/${order.id}`)}
                           >
-                            <CardContent className="p-3">
+                            <CardContent className="p-3 p-6 md:p-8 p-6 md:p-8">
                               <div className="space-y-2">
                                 <div className="flex items-start justify-between gap-2">
                                   <p className="text-sm font-semibold text-slate-900 line-clamp-2">
@@ -377,10 +379,10 @@ export default function SellerDashboard() {
               })}
             </div>
           </CardContent>
-        </Card>
+        </PremiumCard>
 
         {/* Gigs Tabs */}
-        <Card>
+        <PremiumCard>
           <CardHeader>
             <CardTitle>Meine Gigs</CardTitle>
           </CardHeader>
@@ -426,9 +428,9 @@ export default function SellerDashboard() {
               </TabsContent>
             </Tabs>
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
-    </div>
+    </PremiumPageLayout>
   );
 }
 

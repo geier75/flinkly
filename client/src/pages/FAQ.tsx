@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import {
   Accordion,
   AccordionContent,

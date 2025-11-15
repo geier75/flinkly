@@ -3,12 +3,13 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { useConversation } from "@/hooks/useSocket";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Paperclip, ArrowLeft, FileText, Image as ImageIcon, X } from "lucide-react";
 import { toast } from "sonner";
@@ -174,10 +175,10 @@ export default function Messages() {
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Card className="p-8">
+        <PremiumCard className="p-8">
           <h2 className="text-2xl font-bold mb-4">Anmeldung erforderlich</h2>
           <p className="text-muted-foreground">Bitte melden Sie sich an, um Nachrichten zu sehen.</p>
-        </Card>
+        </PremiumCard>
       </div>
     );
   }
@@ -189,7 +190,7 @@ export default function Messages() {
       <div className="container mx-auto p-4 h-screen flex flex-col">
         <div className="flex-1 flex gap-4 overflow-hidden">
           {/* Conversations List */}
-          <Card className={`w-full md:w-96 flex flex-col ${selectedConversationId ? "hidden md:flex" : ""}`}>
+          <PremiumCard className={`w-full md:w-96 flex flex-col ${selectedConversationId ? "hidden md:flex" : ""}`}>
             <div className="p-4 border-b">
               <h2 className="text-2xl font-bold">Nachrichten</h2>
               <p className="text-sm text-muted-foreground">
@@ -245,11 +246,11 @@ export default function Messages() {
                 </button>
               ))}
             </div>
-          </Card>
+          </PremiumCard>
 
           {/* Chat Area */}
           {selectedConversationId && selectedConversation ? (
-            <Card className="flex-1 flex flex-col">
+            <PremiumCard className="flex-1 flex flex-col">
               {/* Chat Header */}
               <div className="p-4 border-b flex items-center gap-3">
                 <Button
@@ -396,14 +397,14 @@ export default function Messages() {
                   </Button>
                 </div>
               </div>
-            </Card>
+            </PremiumCard>
           ) : (
-            <Card className="flex-1 hidden md:flex items-center justify-center">
+            <PremiumCard className="flex-1 hidden md:flex items-center justify-center">
               <div className="text-center text-muted-foreground">
                 <p className="text-lg">Wählen Sie eine Konversation aus</p>
                 <p className="text-sm mt-2">um Nachrichten zu sehen</p>
               </div>
-            </Card>
+            </PremiumCard>
           )}
         </div>
       </div>

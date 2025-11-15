@@ -7,6 +7,8 @@
  */
 
 import { useState } from "react";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -74,12 +76,12 @@ export default function DataExportDashboard() {
         </AlertDescription>
       </Alert>
 
-      <Card className="mb-6">
+      <PremiumCard className="mb-6">
         <CardHeader>
           <CardTitle>Export-Einstellungen</CardTitle>
           <CardDescription>Wählen Sie, welche Daten Sie exportieren möchten</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
           {/* Format-Auswahl */}
           <div className="space-y-3">
             <Label className="font-semibold">Export-Format</Label>
@@ -163,9 +165,9 @@ export default function DataExportDashboard() {
             </Button>
           </div>
         </CardContent>
-      </Card>
+      </PremiumCard>
 
-      <Card>
+      <PremiumCard>
         <CardHeader>
           <CardTitle>Export-Historie</CardTitle>
           <CardDescription>Ihre letzten Datenexporte (Audit Trail)</CardDescription>
@@ -176,7 +178,7 @@ export default function DataExportDashboard() {
           </p>
           {/* TODO: Implement export history from data_export_logs table */}
         </CardContent>
-      </Card>
+      </PremiumCard>
     </div>
   );
 }

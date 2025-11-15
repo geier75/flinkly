@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -35,8 +36,8 @@ export default function Settings() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <Card className="max-w-md">
+      <div className="min-h-screen flex items-center justify-center bg-transparent">
+        <PremiumCard className="max-w-md">
           <CardHeader>
             <CardTitle>Anmeldung erforderlich</CardTitle>
           </CardHeader>
@@ -46,7 +47,7 @@ export default function Settings() {
             </p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
           </CardContent>
-        </Card>
+        </PremiumCard>
       </div>
     );
   }
@@ -67,11 +68,11 @@ export default function Settings() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="space-y-6">
           {/* Account Information */}
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle>Konto-Informationen</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
               <div className="space-y-2">
                 <Label htmlFor="name">Name</Label>
                 <Input id="name" defaultValue={user?.name || ""} />
@@ -85,14 +86,14 @@ export default function Settings() {
               </div>
               <Button>Änderungen speichern</Button>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
           {/* Notifications */}
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle>Benachrichtigungen</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="email-notifications">E-Mail-Benachrichtigungen</Label>
@@ -147,14 +148,14 @@ export default function Settings() {
 
               <Button onClick={handleSaveSettings}>Einstellungen speichern</Button>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
           {/* Security */}
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle>Sicherheit</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label htmlFor="two-factor">Zwei-Faktor-Authentifizierung</Label>
@@ -181,10 +182,10 @@ export default function Settings() {
                 <Button variant="outline">Passwort ändern</Button>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
           {/* Payment Methods */}
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <CardTitle>Zahlungsmethoden</CardTitle>
             </CardHeader>
@@ -194,14 +195,14 @@ export default function Settings() {
               </p>
               <Button variant="outline">Zahlungsmethode hinzufügen</Button>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
           {/* Danger Zone */}
-          <Card className="border-red-200">
+          <PremiumCard className="border-red-200">
             <CardHeader>
               <CardTitle className="text-red-600">Gefahrenbereich</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
               <div>
                 <h3 className="font-semibold text-slate-900 mb-2">Konto löschen</h3>
                 <p className="text-sm text-slate-600 mb-4">
@@ -212,7 +213,7 @@ export default function Settings() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </div>
       </div>
     </div>

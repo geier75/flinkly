@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Link } from "wouter";
 
 export default function Impressum() {
@@ -22,7 +24,7 @@ export default function Impressum() {
         <div className="prose prose-slate max-w-none">
           <section className="mb-12">
             <h2 className="text-2xl font-bold text-slate-900 mb-4">Anbieter</h2>
-            <div className="bg-slate-50 p-6 rounded-lg text-slate-700">
+            <div className="bg-transparent p-6 rounded-lg text-slate-700">
               <p className="font-semibold text-lg mb-2">MiMi Tech Ai UG (haftungsbeschränkt)</p>
               <p>Lindenplatz 23</p>
               <p>75378 Bad Liebenzell</p>
@@ -35,13 +37,13 @@ export default function Impressum() {
             <div className="space-y-2 text-slate-700">
               <p>
                 <strong>E-Mail:</strong>{" "}
-                <a href="mailto:info@mimitechai.com" className="text-blue-600 hover:underline">
+                <a href="mailto:info@mimitechai.com" className="text-primary hover:underline">
                   info@mimitechai.com
                 </a>
               </p>
               <p>
                 <strong>Telefon:</strong>{" "}
-                <a href="tel:+4915758805737" className="text-blue-600 hover:underline">
+                <a href="tel:+4915758805737" className="text-primary hover:underline">
                   +49 1575 8805737
                 </a>
               </p>
@@ -49,7 +51,7 @@ export default function Impressum() {
                 <strong>Website:</strong>{" "}
                 <a
                   href="https://www.mimitechai.com"
-                  className="text-blue-600 hover:underline"
+                  className="text-primary hover:underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -104,7 +106,7 @@ export default function Impressum() {
             <p className="text-slate-700">
               <a
                 href="https://ec.europa.eu/consumers/odr/"
-                className="text-blue-600 hover:underline"
+                className="text-primary hover:underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { motion } from "framer-motion";
 import { Users, Target, Heart, Shield } from "lucide-react";
 import { Link } from "wouter";
 
@@ -33,9 +34,9 @@ export default function About() {
 
         {/* Values */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-          <Card>
+          <PremiumCard>
             <CardHeader>
-              <Target className="h-10 w-10 text-blue-600 mb-4" />
+              <Target className="h-10 w-10 text-primary mb-4" />
               <CardTitle>Fokussiert</CardTitle>
             </CardHeader>
             <CardContent>
@@ -43,9 +44,9 @@ export default function About() {
                 Wir konzentrieren uns auf kleine, klar definierte Aufgaben bis max. 250€
               </p>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <Shield className="h-10 w-10 text-green-600 mb-4" />
               <CardTitle>Sicher</CardTitle>
@@ -55,9 +56,9 @@ export default function About() {
                 Treuhand-Zahlungssystem und DSGVO-konforme Datenverarbeitung
               </p>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <Users className="h-10 w-10 text-purple-600 mb-4" />
               <CardTitle>Lokal</CardTitle>
@@ -67,9 +68,9 @@ export default function About() {
                 Speziell für die DACH-Region mit lokalen Zahlungsmethoden
               </p>
             </CardContent>
-          </Card>
+          </PremiumCard>
 
-          <Card>
+          <PremiumCard>
             <CardHeader>
               <Heart className="h-10 w-10 text-red-600 mb-4" />
               <CardTitle>Fair</CardTitle>
@@ -79,7 +80,7 @@ export default function About() {
                 Transparente Preise und faire Konditionen für alle Beteiligten
               </p>
             </CardContent>
-          </Card>
+          </PremiumCard>
         </div>
 
         {/* Story */}
@@ -128,7 +129,7 @@ export default function About() {
               </Button>
             </Link>
             <Link href="/create-gig">
-              <Button size="lg" variant="outline" className="bg-white text-blue-600 hover:bg-slate-100">
+              <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-slate-100">
                 Gig erstellen
               </Button>
             </Link>
