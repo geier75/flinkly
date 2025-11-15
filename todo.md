@@ -2339,3 +2339,67 @@
   - [ ] ARIA-Labels
   - [ ] Skip-Links
   - [ ] Kontrast-Fixes
+
+
+---
+
+## ⚖️ JURA-ELITE-TEAM: RECHTLICHE PERFEKTION (Prof. Dr. Dr. Klaus Müller)
+
+### Phase 1: Privacy.tsx DSGVO-Perfektion
+- [x] **Stripe-Datenverarbeitung** (Art. 6 Abs. 1 lit. b DSGVO)
+  - [x] Rechtsgrundlage: Vertragserfüllung
+  - [x] Joint-Controllership-Hinweis
+  - [x] Datenübermittlung an Stripe (Irland)
+  - [x] Speicherfrist: 10 Jahre (Steuerrecht)
+
+- [x] **PostHog/Sentry Drittlandübermittlung** (Schrems II)
+  - [x] USA-Übermittlung (Art. 44 ff. DSGVO)
+  - [x] Standardvertragsklauseln (SCC)
+  - [x] Zusätzliche Garantien
+  - [x] Widerspruchsrecht
+
+- [x] **Speicherfristen konkretisieren**
+  - [x] User-Daten: 3 Jahre nach letzter Aktivität
+  - [x] Order-Daten: 10 Jahre (Steuerrecht)
+  - [x] Messages: 3 Jahre
+  - [x] Analytics: 14 Monate (PostHog-Default)
+
+### Phase 2: Terms.tsx DACH-Konformität
+- [ ] **Widerrufsbelehrung integrieren**
+  - [ ] 14-Tage-Frist (§ 355 BGB)
+  - [ ] Muster-Widerrufsformular
+  - [ ] Ausnahmen (§ 312g BGB)
+
+- [ ] **Verbraucherschutz-Hinweise**
+  - [ ] Gesamtpreis-Transparenz
+  - [ ] Versandkosten-Hinweis
+  - [ ] Zahlungsarten
+
+- [ ] **Plattformhaftung-Disclaimer** (DSA Art. 6)
+  - [ ] Keine Prüfpflicht
+  - [ ] Notice-and-Takedown
+  - [ ] Seller-Verantwortung
+
+### Phase 3: Impressum.tsx Vervollständigung
+- [ ] **Seller-Impressumspflicht** (§ 5 TMG)
+  - [ ] Hinweis für gewerbliche Seller
+  - [ ] Impressumspflicht-Prüfung
+  - [ ] Abmahnung-Risiko
+
+- [ ] **Streitschlichtung** (ODR-Plattform)
+  - [ ] EU-ODR-Link
+  - [ ] Verbraucherschlichtung
+  - [ ] Teilnahme-Hinweis
+
+### Phase 4: Checkout.tsx EU-Konformität
+- [ ] **Button-Lösung** ("Zahlungspflichtig bestellen")
+  - [ ] § 312j BGB
+  - [ ] Eindeutige Kennzeichnung
+  - [ ] Gesamtpreis-Anzeige
+
+- [ ] **Preisangaben-Transparenz**
+  - [ ] Bruttopreis
+  - [ ] MwSt.-Hinweis
+  - [ ] Versandkosten
+
+---

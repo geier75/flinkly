@@ -248,13 +248,23 @@ export default function Privacy() {
                     Stripe ist ein PCI-DSS Level 1 zertifizierter Zahlungsdienstleister.
                   </p>
                   <p className="mb-3">
-                    <span className="font-semibold">Anbieter:</span> Stripe, Inc., 510 Townsend Street, San Francisco, CA 94103, USA
+                    <span className="font-semibold">Anbieter:</span> Stripe, Inc., 510 Townsend Street, San Francisco, CA 94103, USA<br />
+                    <span className="font-semibold">EU-Niederlassung:</span> Stripe Payments Europe Ltd., 1 Grand Canal Street Lower, Grand Canal Dock, Dublin 2, Irland
                   </p>
                   <p className="mb-3">
-                    <span className="font-semibold">Verarbeitete Daten:</span> Kreditkartendaten, Name, E-Mail, Rechnungsadresse, IP-Adresse
+                    <span className="font-semibold">Verarbeitete Daten:</span> Kreditkartendaten, Name, E-Mail, Rechnungsadresse, IP-Adresse, Transaktionsdaten
                   </p>
                   <p className="mb-3">
                     <span className="font-semibold">Rechtsgrundlage:</span> Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Joint-Controllership:</span> Flinkly und Stripe sind gemeinsam Verantwortliche (Art. 26 DSGVO) für die Zahlungsabwicklung. Die Verantwortlichkeiten sind in einer Vereinbarung geregelt.
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Drittlandübermittlung:</span> Stripe verarbeitet Daten teilweise in den USA. Die Übermittlung erfolgt auf Grundlage von <span className="cyber-neon-orange font-semibold">Standardvertragsklauseln (SCC)</span> der EU-Kommission (Art. 46 Abs. 2 lit. c DSGVO).
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Speicherfrist:</span> 10 Jahre (steuerrechtliche Aufbewahrungspflicht gem. § 147 AO)
                   </p>
                   <p className="text-sm text-slate-400">
                     Weitere Informationen: <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" className="cyber-neon-green hover:text-emerald-400 transition-colors">https://stripe.com/de/privacy</a>
@@ -314,6 +324,71 @@ export default function Privacy() {
               </div>
             </Card>
 
+            {/* Section 5.5: Analytics & Error-Monitoring */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                ANALYTICS & <span className="cyber-neon-orange">ERROR-MONITORING</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">PostHog (Analytics)</h3>
+                  <p className="mb-3">
+                    Wir nutzen <span className="cyber-neon-orange font-semibold">PostHog</span> für Webanalyse und Conversion-Tracking (nur mit Ihrer Einwilligung).
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Anbieter:</span> PostHog Inc., 2261 Market Street #4008, San Francisco, CA 94114, USA
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Verarbeitete Daten:</span> IP-Adresse (anonymisiert), Seitenaufrufe, Klicks, Gerätetyp, Browser, Conversion-Events
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Rechtsgrundlage:</span> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung, jederzeit widerrufbar)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Drittlandübermittlung:</span> PostHog verarbeitet Daten in den USA. Die Übermittlung erfolgt auf Grundlage von <span className="cyber-neon-orange font-semibold">Standardvertragsklauseln (SCC)</span> der EU-Kommission (Art. 46 Abs. 2 lit. c DSGVO).
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Speicherfrist:</span> 14 Monate (PostHog-Default)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Widerspruchsrecht:</span> Sie können Ihre Einwilligung jederzeit in den Cookie-Einstellungen widerrufen.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Weitere Informationen: <a href="https://posthog.com/privacy" target="_blank" rel="noopener noreferrer" className="cyber-neon-green hover:text-emerald-400 transition-colors">https://posthog.com/privacy</a>
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Sentry (Error-Monitoring)</h3>
+                  <p className="mb-3">
+                    Wir nutzen <span className="cyber-neon-orange font-semibold">Sentry</span> für Error-Monitoring und Performance-Tracking (nur in Production).
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Anbieter:</span> Functional Software, Inc. (Sentry), 132 Hawthorne Street, San Francisco, CA 94107, USA
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Verarbeitete Daten:</span> Error-Logs, Stack-Traces, IP-Adresse (anonymisiert), Browser, Gerätetyp, Session-Replays (nur bei Errors)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Rechtsgrundlage:</span> Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an Fehleranalyse und Verbesserung der Website-Stabilität)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Drittlandübermittlung:</span> Sentry verarbeitet Daten in den USA. Die Übermittlung erfolgt auf Grundlage von <span className="cyber-neon-orange font-semibold">Standardvertragsklauseln (SCC)</span> der EU-Kommission (Art. 46 Abs. 2 lit. c DSGVO).
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Speicherfrist:</span> 90 Tage (Error-Logs), 30 Tage (Session-Replays)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Datenschutzmaßnahmen:</span> Alle Texte und Eingaben werden maskiert (GDPR-Compliance). Nur Error-Kontext wird gespeichert.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Weitere Informationen: <a href="https://sentry.io/privacy/" target="_blank" rel="noopener noreferrer" className="cyber-neon-green hover:text-emerald-400 transition-colors">https://sentry.io/privacy/</a>
+                  </p>
+                </div>
+              </div>
+            </Card>
+
             {/* Section 6: Ihre Rechte */}
             <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
               <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text flex items-center gap-3">
@@ -358,6 +433,16 @@ export default function Privacy() {
                   <h3 className="text-xl font-bold text-white mb-4">Widerrufsrecht (Art. 7 Abs. 3 DSGVO)</h3>
                   <p>
                     Sie können eine erteilte Einwilligung jederzeit widerrufen. Die Rechtmäßigkeit der bis zum Widerruf erfolgten Datenverarbeitung bleibt unberührt.
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Widerspruchsrecht (Art. 21 DSGVO)</h3>
+                  <p className="mb-3">
+                    Sie haben das Recht, <span className="cyber-neon-orange font-semibold">jederzeit Widerspruch</span> gegen die Verarbeitung Ihrer personenbezogenen Daten einzulegen, die auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse) erfolgt.
+                  </p>
+                  <p>
+                    <span className="font-semibold">Betrifft:</span> Analytics (PostHog), Error-Monitoring (Sentry), Direktmarketing
                   </p>
                 </div>
 
@@ -422,11 +507,15 @@ export default function Privacy() {
                   <ul className="space-y-2">
                     <li className="flex items-start gap-3">
                       <span className="cyber-neon-green font-bold">•</span>
-                      <span><span className="font-semibold">Gig-Bestellungen:</span> 10 Jahre (steuerrechtliche Aufbewahrungspflicht)</span>
+                      <span><span className="font-semibold">User-Daten:</span> 3 Jahre nach letzter Aktivität (oder bis zur Account-Löschung)</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="cyber-neon-green font-bold">•</span>
-                      <span><span className="font-semibold">Chat-Nachrichten:</span> 2 Jahre nach Abschluss der Bestellung</span>
+                      <span><span className="font-semibold">Gig-Bestellungen:</span> 10 Jahre (steuerrechtliche Aufbewahrungspflicht gem. § 147 AO)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Chat-Nachrichten:</span> 3 Jahre nach Abschluss der Bestellung</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="cyber-neon-green font-bold">•</span>
@@ -434,7 +523,15 @@ export default function Privacy() {
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="cyber-neon-green font-bold">•</span>
-                      <span><span className="font-semibold">Account-Daten:</span> Bis zur Löschung des Accounts (mit 30-Tage-Wartezeit)</span>
+                      <span><span className="font-semibold">Analytics (PostHog):</span> 14 Monate</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Error-Logs (Sentry):</span> 90 Tage (Session-Replays: 30 Tage)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Stripe-Zahlungsdaten:</span> 10 Jahre (steuerrechtliche Aufbewahrungspflicht)</span>
                     </li>
                   </ul>
                 </div>
