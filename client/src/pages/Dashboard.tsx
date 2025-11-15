@@ -1,11 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
-import { Plus, Package, ShoppingCart, Star } from "lucide-react";
+import { Plus, Package, ShoppingCart, Star, TrendingUp, Zap } from "lucide-react";
 import { Link, useLocation } from "wouter";
 
 export default function Dashboard() {
@@ -23,276 +22,375 @@ export default function Dashboard() {
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
-      pending: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/40",
-      in_progress: "bg-accent/20 text-accent border border-accent/40",
-      completed: "bg-green-500/20 text-green-300 border border-green-500/40",
-      cancelled: "bg-red-500/20 text-red-300 border border-red-500/40",
-      disputed: "bg-orange-500/20 text-orange-300 border border-orange-500/40",
+      pending: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/60 shadow-[0_0_20px_rgba(234,179,8,0.4)]",
+      in_progress: "bg-primary/20 text-primary border border-primary/60 shadow-[0_0_20px_oklch(0.70_0.25_150_/_0.4)]",
+      completed: "bg-green-500/20 text-green-300 border border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)]",
+      cancelled: "bg-red-500/20 text-red-300 border border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.4)]",
+      disputed: "bg-accent/20 text-accent border border-accent/60 shadow-[0_0_20px_oklch(0.70_0.20_35_/_0.4)]",
     };
     return colors[status] || "bg-slate-700/50 text-slate-300 border border-slate-600";
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 to-slate-900">
-      {/* Header with Cyberpunk Neon Border */}
-      <div className="bg-slate-900/80 backdrop-blur-xl border-b-2 border-transparent bg-gradient-to-r from-accent via-primary to-purple-500 bg-clip-border" style={{backgroundClip: 'border-box', borderImage: 'linear-gradient(90deg, rgb(249 115 22), rgb(20 184 166), rgb(168 85 247)) 1'}}>
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-between items-start">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 relative overflow-hidden">
+      {/* Animated Background Grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+      
+      {/* Cyberpunk Neon Header */}
+      <div className="relative z-10 cyber-neon-border bg-slate-900/80 backdrop-blur-xl">
+        <div className="container mx-auto px-4 py-12">
+          <motion.div 
+            className="flex justify-between items-start"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <div>
-              <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight" style={{textShadow: '0 0 20px rgba(249, 115, 22, 0.5)'}}>
-                Willkommen, {user?.name || "Nutzer"}!
+              <h1 className="text-6xl font-extrabold mb-3 tracking-tight cyber-chrome-text flex items-center gap-4">
+                <Zap className="h-12 w-12 text-primary animate-pulse" />
+                Willkommen bei <span className="cyber-neon-green">Flinkly</span>
               </h1>
-              <p className="text-slate-300 text-lg">
+              <p className="text-slate-300 text-xl font-light tracking-wide">
                 Verwalte deine Gigs, Bestellungen und Verdienste
               </p>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <Link href="/profile">
-                <Button variant="outline" className="border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">Profil</Button>
+                <Button variant="outline" className="border-2 border-slate-600 text-white hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300 backdrop-blur-xl">
+                  Profil
+                </Button>
               </Link>
-                <Link href="/create-gig">
-                  <Button className="gap-2 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30 border border-accent/50 transition-all hover:scale-105">
-                    <Plus className="h-4 w-4" />
-                    Neuer Gig
-                  </Button>
-                </Link>
+              <Link href="/create-gig">
+                <Button className="cyber-neon-button text-white font-bold px-8 py-3 text-lg">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Neuer Gig
+                </Button>
+              </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border border-slate-700">
-            <TabsTrigger value="overview" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Übersicht</TabsTrigger>
-            <TabsTrigger value="gigs" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Meine Gigs</TabsTrigger>
-            <TabsTrigger value="orders" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Bestellungen</TabsTrigger>
+      <div className="container mx-auto px-4 py-12 relative z-10">
+        <Tabs defaultValue="overview" className="space-y-10">
+          <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-2 border-slate-700 backdrop-blur-xl p-2 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+            <TabsTrigger 
+              value="overview" 
+              className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+            >
+              <TrendingUp className="h-5 w-5 mr-2" />
+              Übersicht
+            </TabsTrigger>
+            <TabsTrigger 
+              value="gigs" 
+              className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+            >
+              <Package className="h-5 w-5 mr-2" />
+              Meine Gigs
+            </TabsTrigger>
+            <TabsTrigger 
+              value="orders" 
+              className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+            >
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              Bestellungen
+            </TabsTrigger>
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview" className="space-y-6">
+          <TabsContent value="overview" className="space-y-8">
             <motion.div 
-              className="grid md:grid-cols-3 gap-6"
+              className="grid md:grid-cols-3 gap-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <Card className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl group transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300">Aktive Gigs</CardTitle>
-                  <Package className="h-5 w-5 text-accent" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-white">{myGigs?.length || 0}</div>
-                  <p className="text-xs text-slate-400">
-                    {myGigs?.filter((g) => g.active).length || 0} aktiv
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Active Gigs Card */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Card className="cyber-glass-card border-2 border-primary/40 group transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)]">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                    <CardTitle className="text-lg font-bold text-slate-200">Aktive Gigs</CardTitle>
+                    <Package className="h-8 w-8 text-primary animate-pulse" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-5xl font-extrabold cyber-neon-green mb-2">{myGigs?.length || 0}</div>
+                    <p className="text-sm text-slate-400 font-medium">
+                      {myGigs?.filter((g) => g.active).length || 0} aktiv • {myGigs?.filter((g) => !g.active).length || 0} inaktiv
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl group transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300">Bestellungen</CardTitle>
-                  <ShoppingCart className="h-5 w-5 text-primary" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-white">
-                    {(myPurchases?.length || 0) + (mySales?.length || 0)}
-                  </div>
-                  <p className="text-xs text-slate-400">
-                    {myPurchases?.filter((o) => o.status === "completed").length || 0} abgeschlossen
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Orders Card */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Card className="cyber-glass-card border-2 border-accent/40 group transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.20_35_/_0.6)]">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                    <CardTitle className="text-lg font-bold text-slate-200">Bestellungen</CardTitle>
+                    <ShoppingCart className="h-8 w-8 text-accent animate-pulse" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-5xl font-extrabold cyber-neon-orange mb-2">
+                      {(myPurchases?.length || 0) + (mySales?.length || 0)}
+                    </div>
+                    <p className="text-sm text-slate-400 font-medium">
+                      {myPurchases?.filter((o) => o.status === "completed").length || 0} abgeschlossen
+                    </p>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-              <Card className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-yellow-500/80 backdrop-blur-xl group transition-all duration-300 hover:shadow-[0_0_30px_rgba(234,179,8,0.3)]">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-slate-300">Bewertung</CardTitle>
-                  <Star className="h-5 w-5 text-yellow-500" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-white">4.8</div>
-                  <p className="text-xs text-slate-400">basierend auf 12 Bewertungen</p>
-                </CardContent>
-              </Card>
+              {/* Rating Card */}
+              <motion.div
+                whileHover={{ scale: 1.05, y: -5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Card className="cyber-glass-card border-2 border-yellow-500/40 group transition-all duration-500 hover:shadow-[0_0_60px_rgba(234,179,8,0.6)]">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                    <CardTitle className="text-lg font-bold text-slate-200">Bewertung</CardTitle>
+                    <Star className="h-8 w-8 text-yellow-500 animate-pulse" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-5xl font-extrabold text-yellow-400 mb-2" style={{textShadow: '0 0 20px rgba(234, 179, 8, 0.8)'}}>4.8</div>
+                    <p className="text-sm text-slate-400 font-medium">basierend auf 12 Bewertungen</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </motion.div>
 
             {/* Quick Actions */}
-            <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
-              <CardHeader>
-                <CardTitle className="text-white">Schnellstart</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Link href="/marketplace">
-                  <Button variant="outline" className="w-full justify-start border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">
-                    Marketplace erkunden
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+            >
+              <Card className="cyber-glass-card border-2 border-slate-700/50">
+                <CardHeader>
+                  <CardTitle className="text-2xl font-bold cyber-chrome-text">Schnellstart</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Link href="/marketplace">
+                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-white hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300 py-6">
+                      <Zap className="h-5 w-5 mr-3 text-primary" />
+                      Marketplace erkunden
+                    </Button>
+                  </Link>
+                  <Link href="/create-gig">
+                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-white hover:border-accent hover:bg-accent/10 hover:shadow-[0_0_30px_oklch(0.70_0.20_35_/_0.4)] transition-all duration-300 py-6">
+                      <Plus className="h-5 w-5 mr-3 text-accent" />
+                      Erstes Gig erstellen
+                    </Button>
+                  </Link>
+                  <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-white hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300 py-6">
+                    <Star className="h-5 w-5 mr-3 text-yellow-500" />
+                    Profil bearbeiten
                   </Button>
-                </Link>
-                <Link href="/create-gig">
-                  <Button variant="outline" className="w-full justify-start border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">
-                    Erstes Gig erstellen
-                  </Button>
-                </Link>
-                <Button variant="outline" className="w-full justify-start border-slate-600 text-white hover:border-accent hover:bg-accent/10 transition-all">
-                  Profil bearbeiten
-                </Button>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </motion.div>
           </TabsContent>
 
           {/* Gigs Tab */}
-          <TabsContent value="gigs" className="space-y-6">
+          <TabsContent value="gigs" className="space-y-8">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-white">Meine Gigs</h2>
+              <h2 className="text-4xl font-extrabold cyber-chrome-text">Meine Gigs</h2>
               <Link href="/create-gig">
-                <Button className="gap-2 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30 border border-accent/50 transition-all hover:scale-105">
-                  <Plus className="h-4 w-4" />
+                <Button className="cyber-neon-button text-white font-bold px-8 py-4 text-lg">
+                  <Plus className="h-5 w-5 mr-2" />
                   Neuer Gig
                 </Button>
               </Link>
             </div>
 
             {!myGigs || myGigs.length === 0 ? (
-              <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
-                <CardContent className="pt-6 text-center">
-                  <p className="text-slate-300 mb-4">
+              <Card className="cyber-glass-card border-2 border-slate-700/50">
+                <CardContent className="pt-12 pb-12 text-center">
+                  <Package className="h-24 w-24 mx-auto mb-6 text-slate-600" />
+                  <p className="text-slate-300 mb-6 text-xl font-medium">
                     Du hast noch keine Gigs erstellt
                   </p>
                   <Link href="/create-gig">
-                    <Button className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30">Erstes Gig erstellen</Button>
+                    <Button className="cyber-neon-button text-white font-bold px-10 py-4 text-lg">
+                      Erstes Gig erstellen
+                    </Button>
                   </Link>
                 </CardContent>
               </Card>
             ) : (
-              <div className="space-y-4">
-                {myGigs.map((gig) => (
-                  <Card key={gig.id} className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(249,115,22,0.3)]">
-                    <CardContent className="pt-6">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-xl mb-2 text-white">{gig.title}</h3>
-                          <p className="text-sm text-slate-400 mb-3">
-                            {gig.description.substring(0, 100)}...
-                          </p>
-                          <div className="flex gap-4 text-sm">
-                            <span className="text-accent font-semibold">
-                              €{(gig.price / 100).toFixed(2)}
-                            </span>
-                            <span className="text-slate-400">
-                              {gig.completedOrders} Bestellungen
-                            </span>
-                            {gig.averageRating && (
-                              <span className="text-yellow-500">
-                                ⭐ {parseFloat(gig.averageRating.toString()).toFixed(1)}
+              <div className="space-y-6">
+                {myGigs.map((gig, index) => (
+                  <motion.div
+                    key={gig.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02, x: 10 }}
+                  >
+                    <Card className="cyber-glass-card border-2 border-primary/40 hover:border-primary/80 transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)]">
+                      <CardContent className="pt-8 pb-8">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-extrabold text-2xl mb-3 text-white">{gig.title}</h3>
+                            <p className="text-base text-slate-400 mb-4 leading-relaxed">
+                              {gig.description.substring(0, 150)}...
+                            </p>
+                            <div className="flex gap-6 text-base">
+                              <span className="cyber-neon-orange font-bold text-xl">
+                                €{(gig.price / 100).toFixed(2)}
                               </span>
-                            )}
+                              <span className="text-slate-400 font-medium">
+                                {gig.completedOrders} Bestellungen
+                              </span>
+                              {gig.averageRating && (
+                                <span className="text-yellow-400 font-semibold" style={{textShadow: '0 0 10px rgba(234, 179, 8, 0.6)'}}>
+                                  ⭐ {parseFloat(gig.averageRating.toString()).toFixed(1)}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex gap-3">
+                            <span
+                              className={`px-4 py-2 rounded-full text-sm font-bold border-2 ${
+                                gig.active
+                                  ? "bg-green-500/20 text-green-300 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)]"
+                                  : "bg-slate-700/50 text-slate-300 border-slate-600"
+                              }`}
+                            >
+                              {gig.active ? "Aktiv" : "Inaktiv"}
+                            </span>
+                            <Button variant="outline" size="sm" className="border-2 border-slate-600 text-white hover:border-accent hover:bg-accent/10 hover:shadow-[0_0_20px_oklch(0.70_0.20_35_/_0.4)] font-semibold px-6">
+                              Bearbeiten
+                            </Button>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium border ${
-                              gig.active
-                                ? "bg-green-500/20 text-green-300 border-green-500/40"
-                                : "bg-slate-700/50 text-slate-300 border-slate-600"
-                            }`}
-                          >
-                            {gig.active ? "Aktiv" : "Inaktiv"}
-                          </span>
-                          <Button variant="outline" size="sm" className="border-slate-600 text-white hover:border-accent hover:bg-accent/10">
-                            Bearbeiten
-                          </Button>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
           </TabsContent>
 
           {/* Orders Tab */}
-          <TabsContent value="orders" className="space-y-6">
+          <TabsContent value="orders" className="space-y-8">
             <Tabs defaultValue="purchases" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border border-slate-700">
-                <TabsTrigger value="purchases" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Meine Käufe</TabsTrigger>
-                <TabsTrigger value="sales" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-accent data-[state=active]:to-primary data-[state=active]:text-white">Meine Verkäufe</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border-2 border-slate-700 backdrop-blur-xl p-2 rounded-2xl">
+                <TabsTrigger 
+                  value="purchases" 
+                  className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+                >
+                  Meine Käufe
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="sales" 
+                  className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+                >
+                  Meine Verkäufe
+                </TabsTrigger>
               </TabsList>
 
               {/* Purchases */}
-              <TabsContent value="purchases" className="space-y-4 mt-6">
+              <TabsContent value="purchases" className="space-y-6 mt-8">
                 {!myPurchases || myPurchases.length === 0 ? (
-                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
-                    <CardContent className="pt-6 text-center">
-                      <p className="text-slate-300 mb-4">
+                  <Card className="cyber-glass-card border-2 border-slate-700/50">
+                    <CardContent className="pt-12 pb-12 text-center">
+                      <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-slate-600" />
+                      <p className="text-slate-300 mb-6 text-xl font-medium">
                         Du hast noch keine Gigs gekauft
                       </p>
                       <Link href="/marketplace">
-                        <Button className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30">Marketplace erkunden</Button>
+                        <Button className="cyber-neon-button text-white font-bold px-10 py-4 text-lg">
+                          Marketplace erkunden
+                        </Button>
                       </Link>
                     </CardContent>
                   </Card>
                 ) : (
-                  myPurchases.map((order) => (
-                    <Card key={order.id} className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]">
-                      <CardContent className="pt-6">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-bold mb-2 text-white">Bestellung {order.id}</h3>
-                            <div className="space-y-1 text-sm text-slate-400">
-                              <p className="text-accent font-semibold">€{(order.totalPrice / 100).toFixed(2)}</p>
-                              <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
+                  myPurchases.map((order, index) => (
+                    <motion.div
+                      key={order.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <Card className="cyber-glass-card border-2 border-accent/40 hover:border-accent/80 transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.20_35_/_0.6)]">
+                        <CardContent className="pt-8 pb-8">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="font-bold mb-3 text-white text-xl">Bestellung #{order.id}</h3>
+                              <div className="space-y-2 text-base text-slate-400 font-medium">
+                                <p className="cyber-neon-orange font-bold text-2xl">€{(order.totalPrice / 100).toFixed(2)}</p>
+                                <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
+                              </div>
                             </div>
+                            <span className={`px-4 py-2 rounded-full text-sm font-bold ${getStatusBadge(order.status || "pending")}`}>
+                              {order.status === "pending" && "Ausstehend"}
+                              {order.status === "in_progress" && "In Bearbeitung"}
+                              {order.status === "completed" && "Abgeschlossen"}
+                              {order.status === "cancelled" && "Storniert"}
+                              {order.status === "disputed" && "Umstritten"}
+                            </span>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(order.status || "pending")}`}>
-                            {order.status === "pending" && "Ausstehend"}
-                            {order.status === "in_progress" && "In Bearbeitung"}
-                            {order.status === "completed" && "Abgeschlossen"}
-                            {order.status === "cancelled" && "Storniert"}
-                            {order.status === "disputed" && "Umstritten"}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))
                 )}
               </TabsContent>
 
               {/* Sales */}
-              <TabsContent value="sales" className="space-y-4 mt-6">
+              <TabsContent value="sales" className="space-y-6 mt-8">
                 {!mySales || mySales.length === 0 ? (
-                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
-                    <CardContent className="pt-6 text-center">
-                      <p className="text-slate-300 mb-4">
+                  <Card className="cyber-glass-card border-2 border-slate-700/50">
+                    <CardContent className="pt-12 pb-12 text-center">
+                      <Package className="h-24 w-24 mx-auto mb-6 text-slate-600" />
+                      <p className="text-slate-300 mb-6 text-xl font-medium">
                         Du hast noch keine Gigs verkauft
                       </p>
                       <Link href="/create-gig">
-                        <Button className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 shadow-lg shadow-accent/30">Gig erstellen</Button>
+                        <Button className="cyber-neon-button text-white font-bold px-10 py-4 text-lg">
+                          Gig erstellen
+                        </Button>
                       </Link>
                     </CardContent>
                   </Card>
                 ) : (
-                  mySales.map((order) => (
-                    <Card key={order.id} className="bg-slate-900/40 border-2 border-slate-700/50 hover:border-primary/80 backdrop-blur-xl transition-all duration-300 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]">
-                      <CardContent className="pt-6">
-                        <div className="flex justify-between items-start">
-                          <div className="flex-1">
-                            <h3 className="font-bold mb-2 text-white">Bestellung {order.id}</h3>
-                            <div className="space-y-1 text-sm text-slate-400">
-                              <p className="text-accent font-semibold">€{(order.totalPrice / 100).toFixed(2)}</p>
-                              <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
+                  mySales.map((order, index) => (
+                    <motion.div
+                      key={order.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.4, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                    >
+                      <Card className="cyber-glass-card border-2 border-primary/40 hover:border-primary/80 transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)]">
+                        <CardContent className="pt-8 pb-8">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h3 className="font-bold mb-3 text-white text-xl">Bestellung #{order.id}</h3>
+                              <div className="space-y-2 text-base text-slate-400 font-medium">
+                                <p className="cyber-neon-green font-bold text-2xl">€{(order.totalPrice / 100).toFixed(2)}</p>
+                                <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
+                              </div>
                             </div>
+                            <span className={`px-4 py-2 rounded-full text-sm font-bold ${getStatusBadge(order.status || "pending")}`}>
+                              {order.status === "pending" && "Ausstehend"}
+                              {order.status === "in_progress" && "In Bearbeitung"}
+                              {order.status === "completed" && "Abgeschlossen"}
+                              {order.status === "cancelled" && "Storniert"}
+                              {order.status === "disputed" && "Umstritten"}
+                            </span>
                           </div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadge(order.status || "pending")}`}>
-                            {order.status === "pending" && "Ausstehend"}
-                            {order.status === "in_progress" && "In Bearbeitung"}
-                            {order.status === "completed" && "Abgeschlossen"}
-                            {order.status === "cancelled" && "Storniert"}
-                            {order.status === "disputed" && "Umstritten"}
-                          </span>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
                   ))
                 )}
               </TabsContent>

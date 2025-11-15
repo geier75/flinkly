@@ -2219,3 +2219,16 @@
 - [ ] Orders/Checkout - Orange/Teal Gradient Buttons
 - [ ] Alle Dashboards - Gleiche Schriftgrößen wie Homepage
 - [ ] Alle Admin-Bereiche - Accent-Color (Orange) statt Primary (Blau)
+
+## 🎨 8K Cyberpunk-Perfektion (Grün/Orange, Metallische Schrift, Intensive Glows)
+
+**Ziel:** Dashboard/Admin/Profil auf höchstem visuellen Niveau
+
+- [ ] Farb-Palette: Primary (Teal) → Grün (Emerald-500) in index.css
+- [ ] Metallische Schrift: Chrome-Gradient, Text-Shadow, Reflections
+- [ ] Intensive Neon-Glows: Box-Shadow 60px+ Blur, Multiple Layers (Grün + Orange)
+- [ ] 8K-Glasmorphism: backdrop-blur-2xl, Border-Glow, Reflections
+- [ ] Dashboard.tsx - Perfektionieren (Glows, Metallische Headlines, Glasmorphism)
+- [ ] Profile.tsx - Perfektionieren (Chrome-Text, Intensive Shadows)
+- [ ] AdminDashboard.tsx - Cyberpunk-Perfektion
+- [ ] Alle Buttons - Grün/Orange Gradient statt Teal/Orange
