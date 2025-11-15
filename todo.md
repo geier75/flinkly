@@ -2563,3 +2563,27 @@
 - [ ] Kontrast-Fixes (WCAG 2.1 AA - 4.5:1 Minimum)
 
 **TOTAL Phase 1:** 156h (~4 Wochen) → **MVP Launch Ready**
+
+
+---
+
+## 🚀 BACKLOG FEATURES (In Progress)
+
+### Live-Vorschau in CreateGig.tsx (20h)
+- [x] Split-Screen-Layout (Form links, Preview rechts)
+- [x] Real-Time-Preview während Eingabe
+- [x] Auto-Save alle 30s (localStorage)
+- [x] SEO-Score-Widget
+- [x] Pricing-Calculator
+
+### Similar-Gigs-Algorithm (16h)
+- [x] Recommendation-Engine (Kategorie + Tags + Preis-Range)
+- [x] Collaborative-Filtering (Fallback: Trending)
+- [x] Similar-Gigs-Section auf GigDetail-Page
+- [x] Performance-Optimierung (SQL-Optimierung)
+
+### Review-Pagination (8h)
+- [x] Load-More-Button (max 5 Reviews initial)
+- [x] Sortierung (Neueste/Beste Bewertung)
+- [ ] Filter nach Sternen
+- [ ] Skeleton-Loading-States

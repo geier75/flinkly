@@ -31,6 +31,8 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { VideoScene } from "@/components/webgl/VideoScene";
 import { PopOutLogo } from "@/components/3d/PopOutLogo";
+import { GigPreview } from "@/components/GigPreview";
+import { useEffect } from "react";
 
 export default function CreateGig() {
   const { user, isAuthenticated } = useAuth();
@@ -47,6 +49,32 @@ export default function CreateGig() {
     imageUrl: "",
     imageAlt: "",
   });
+
+  // Auto-Save to localStorage every 30s
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (formData.title || formData.description) {
+        localStorage.setItem("gig-draft", JSON.stringify(formData));
+        toast.success("Entwurf automatisch gespeichert", { duration: 2000 });
+      }
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [formData]);
+
+  // Load draft on mount
+  useEffect(() => {
+    const draft = localStorage.getItem("gig-draft");
+    if (draft) {
+      try {
+        const parsed = JSON.parse(draft);
+        setFormData(parsed);
+        toast.info("Entwurf wiederhergestellt");
+      } catch (e) {
+        console.error("Failed to parse draft", e);
+      }
+    }
+  }, []);
 
   // Fetch templates
   const { data: templates } = trpc.templates.getByCategory.useQuery(
@@ -288,6 +316,14 @@ export default function CreateGig() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-2"
           >
+            {/* Show Live Preview only on steps 1-3 (not on template selection) */}
+            {currentStep === 0 && (
+              <div className="mb-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
+                <p className="text-blue-400 text-sm">
+                  💡 <strong>Tipp:</strong> Wähle eine Vorlage aus oder überspringe diesen Schritt, um direkt mit der Erstellung zu beginnen.
+                </p>
+              </div>
+            )}
             <form onSubmit={handleSubmit}>
               <Card className="bg-slate-900/40 backdrop-blur-xl border-2 border-slate-700/50 shadow-2xl shadow-slate-900/50">
                 <CardContent className="p-8">
@@ -587,6 +623,28 @@ export default function CreateGig() {
           </motion.div>
 
           {/* Live Preview Column */}
+          {/* Live Preview Column - Only show on steps 1-3 */}
+          {currentStep >= 1 && currentStep <= 3 && (
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="lg:col-span-1"
+            >
+              <GigPreview
+                title={formData.title}
+                description={formData.description}
+                category={formData.category}
+                price={formData.price}
+                deliveryDays={formData.deliveryDays}
+                imageUrl={formData.imageUrl}
+                imageAlt={formData.imageAlt}
+              />
+            </motion.div>
+          )}
+
+          {/* OLD PREVIEW - TO BE REMOVED */}
+          {false && (
           <motion.div
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
@@ -668,6 +726,7 @@ export default function CreateGig() {
               </Card>
             </div>
           </motion.div>
+          )}
         </div>
       </div>
     </div>

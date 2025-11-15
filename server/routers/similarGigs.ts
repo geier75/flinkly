@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../_core/trpc";
-import { getSimilarGigs } from "../db";
+import { getSimilarGigs as getSimilarGigsFromDb } from "../db";
+import { getSimilarGigs, getTrendingGigs } from "../recommendation";
 
 /**
  * Similar Gigs Router - Content-Based Filtering
@@ -29,11 +30,31 @@ export const similarGigsRouter = router({
       })
     )
     .query(async ({ input }) => {
-      const similarGigs = await getSimilarGigs(input.gigId, input.k, input.excludeSameSeller);
+      // Use new recommendation engine
+      const similarGigs = await getSimilarGigs({
+        gigId: input.gigId,
+        limit: input.k,
+      });
       
-      // TODO: Add telemetry
-      // ctx.analytics.capture("similar_gigs.requested", { gigId: input.gigId, k: input.k });
+      // Fallback to trending if no similar gigs found
+      if (similarGigs.length === 0) {
+        const trending = await getTrendingGigs(input.k);
+        return trending;
+      }
       
       return similarGigs;
+    }),
+
+  /**
+   * Get trending gigs
+   */
+  trending: publicProcedure
+    .input(
+      z.object({
+        limit: z.number().int().min(1).max(20).default(6),
+      })
+    )
+    .query(async ({ input }) => {
+      return getTrendingGigs(input.limit);
     }),
 });

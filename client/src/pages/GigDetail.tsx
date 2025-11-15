@@ -23,7 +23,8 @@ import {
   ChevronDown,
   CheckCircle2,
   Timer,
-  Target
+  Target,
+  ChevronRight
 } from "lucide-react";
 
 export default function GigDetail() {
@@ -31,8 +32,29 @@ export default function GigDetail() {
   const [, setLocation] = useLocation();
   const gigId = id ? parseInt(id) : 0;
 
+  const [reviewsToShow, setReviewsToShow] = useState(5);
+  const [reviewSort, setReviewSort] = useState<"recent" | "rating">("recent");
+
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: gigId });
-  const { data: reviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
+  const { data: allReviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
+  const { data: similarGigs } = trpc.similarGigs.byGigId.useQuery(
+    { gigId, k: 6 },
+    { enabled: !!gigId }
+  );
+
+  // Sort and paginate reviews
+  const reviews = allReviews
+    ? [...allReviews]
+        .sort((a, b) => {
+          if (reviewSort === "rating") {
+            return b.rating - a.rating;
+          }
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        })
+        .slice(0, reviewsToShow)
+    : [];
+
+  const hasMoreReviews = allReviews && allReviews.length > reviewsToShow;
 
   // Calculate average rating
   const avgRating = reviews && reviews.length > 0
@@ -375,7 +397,22 @@ export default function GigDetail() {
                 >
                   <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
                     <CardContent className="p-8">
-                      <h2 className="text-2xl font-bold text-white mb-6">Bewertungen</h2>
+                      <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-white">Bewertungen</h2>
+                        {allReviews && allReviews.length > 0 && (
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-slate-400">Sortieren:</span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setReviewSort(reviewSort === "recent" ? "rating" : "recent")}
+                              className="text-xs"
+                            >
+                              {reviewSort === "recent" ? "Neueste" : "Beste Bewertung"}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                       <div className="space-y-6">
                         {reviews && reviews.length > 0 ? (
                           reviews.map((review) => (
@@ -414,6 +451,20 @@ export default function GigDetail() {
                           <p className="text-slate-400 text-center py-4">Noch keine Bewertungen</p>
                         )}
                       </div>
+
+                      {/* Load More Button */}
+                      {hasMoreReviews && (
+                        <div className="mt-6 text-center">
+                          <Button
+                            variant="outline"
+                            onClick={() => setReviewsToShow(reviewsToShow + 5)}
+                            className="bg-slate-800/50 border-slate-700 hover:bg-slate-700"
+                          >
+                            Mehr Bewertungen anzeigen
+                            <ChevronDown className="ml-2 h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -578,6 +629,57 @@ export default function GigDetail() {
           </div>
         </section>
       </div>
+
+      {/* Similar Gigs Section */}
+      {similarGigs && similarGigs.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="container mx-auto px-4 py-12"
+        >
+          <h2 className="text-3xl font-black text-white mb-8">
+            Ähnliche Gigs
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {similarGigs.map((similarGig) => (
+              <Link key={similarGig.id} href={`/gig/${similarGig.id}`}>
+                <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl hover:border-primary/50 transition-all duration-300 cursor-pointer group">
+                  {similarGig.imageUrl && (
+                    <div className="relative h-48 overflow-hidden">
+                      <img
+                        src={similarGig.imageUrl}
+                        alt={similarGig.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <CardContent className="p-6">
+                    <Badge className="mb-2 bg-primary/20 text-primary border-primary/40">
+                      {similarGig.category}
+                    </Badge>
+                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {similarGig.title}
+                    </h3>
+                    <p className="text-slate-400 text-sm line-clamp-2 mb-4">
+                      {similarGig.description}
+                    </p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-slate-400" />
+                        <span className="text-sm text-slate-400">{similarGig.deliveryDays} Tage</span>
+                      </div>
+                      <p className="text-xl font-bold text-white">
+                        {similarGig.price}€
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       {/* Sticky Bottom Bar (Mobile) - Quick Win #4 */}
       <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t-2 border-primary/30 p-4 shadow-2xl z-50 md:hidden">
