@@ -19,7 +19,11 @@ import {
   Shield,
   Zap,
   Award,
-  X
+  X,
+  ChevronDown,
+  CheckCircle2,
+  Timer,
+  Target
 } from "lucide-react";
 
 export default function GigDetail() {
@@ -55,6 +59,30 @@ export default function GigDetail() {
   ]) : undefined;
 
   const [selectedPackage, setSelectedPackage] = useState<"basic" | "standard" | "premium">("basic");
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+
+  const faqItems = [
+    {
+      question: "Wie läuft der Bestellprozess ab?",
+      answer: "Nach der Bestellung erhältst du ein Briefing-Formular. Ich starte sofort mit der Arbeit und halte dich regelmäßig auf dem Laufenden. Du kannst jederzeit Feedback geben."
+    },
+    {
+      question: "Kann ich Änderungen anfordern?",
+      answer: "Ja! Je nach Paket hast du 2-5 Revisionen inklusive. Ich arbeite so lange, bis du 100% zufrieden bist. Premium-Paket bietet unbegrenzte Revisionen."
+    },
+    {
+      question: "Welche Dateiformate erhalte ich?",
+      answer: "Du erhältst alle Quelldateien (AI, PSD, PDF, PNG, JPG) sowie exportierte Versionen in verschiedenen Größen. Alle Dateien sind optimiert für Web und Print."
+    },
+    {
+      question: "Was passiert, wenn ich nicht zufrieden bin?",
+      answer: "Deine Zufriedenheit ist garantiert! Falls du nicht zufrieden bist, arbeite ich weiter bis es passt. Bei grundsätzlichen Problemen greift unser Käuferschutz."
+    },
+    {
+      question: "Kann ich die Lieferzeit verkürzen?",
+      answer: "Ja, gegen Aufpreis biete ich Express-Lieferung an. Kontaktiere mich vor der Bestellung, um die Verfügbarkeit zu prüfen."
+    }
+  ];
 
   const packages = [
     {
@@ -298,6 +326,47 @@ export default function GigDetail() {
                   </Card>
                 </motion.div>
 
+                {/* FAQ Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.25 }}
+                >
+                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                    <CardContent className="p-8">
+                      <h2 className="text-2xl font-bold text-white mb-6">Häufig gestellte Fragen</h2>
+                      <div className="space-y-3">
+                        {faqItems.map((faq, index) => (
+                          <div key={index} className="border border-slate-700/50 rounded-lg overflow-hidden">
+                            <button
+                              onClick={() => setExpandedFaq(expandedFaq === index ? null : index)}
+                              className="w-full flex items-center justify-between p-4 text-left hover:bg-slate-800/30 transition-colors duration-200"
+                            >
+                              <span className="font-bold text-white">{faq.question}</span>
+                              <ChevronDown 
+                                className={`h-5 w-5 text-slate-400 transition-transform duration-300 ${
+                                  expandedFaq === index ? "rotate-180" : ""
+                                }`} 
+                              />
+                            </button>
+                            {expandedFaq === index && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: "auto", opacity: 1 }}
+                                exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="px-4 pb-4"
+                              >
+                                <p className="text-slate-300 leading-relaxed">{faq.answer}</p>
+                              </motion.div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
                 {/* Reviews */}
                 <motion.div
                   initial={{ opacity: 0, y: 40 }}
@@ -426,6 +495,43 @@ export default function GigDetail() {
                         <MessageCircle className="h-5 w-5 mr-2" />
                         Nachricht senden
                       </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Seller Stats */}
+                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                    <CardContent className="p-6">
+                      <h3 className="text-lg font-bold text-white mb-4">Seller Performance</h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Timer className="h-5 w-5 text-primary" />
+                            <span className="text-slate-300">Antwortzeit</span>
+                          </div>
+                          <span className="font-bold text-white">&lt; 1 Std.</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Target className="h-5 w-5 text-success" />
+                            <span className="text-slate-300">Abschlussrate</span>
+                          </div>
+                          <span className="font-bold text-white">98%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle2 className="h-5 w-5 text-accent" />
+                            <span className="text-slate-300">Pünktliche Lieferung</span>
+                          </div>
+                          <span className="font-bold text-white">100%</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Award className="h-5 w-5 text-primary" />
+                            <span className="text-slate-300">Abgeschlossene Aufträge</span>
+                          </div>
+                          <span className="font-bold text-white">{gig.completedOrders || 0}</span>
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
 

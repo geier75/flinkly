@@ -724,3 +724,84 @@ input:focus, textarea:focus, select:focus {
   );
   background-size: 1000px 100%;
 }
+
+
+/* ============================================
+   Mobile-Touch-Optimierung (WCAG 2.5.5 AAA)
+   ============================================ */
+
+/* Touch-Target-Size: Minimum 44x44px für alle interaktiven Elemente */
+@layer components {
+  /* Buttons */
+  button,
+  [role="button"],
+  [type="button"],
+  [type="submit"],
+  [type="reset"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Links */
+  a[href] {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Icon-Buttons (Heart, Share, etc.) */
+  button[size="icon"],
+  .icon-button {
+    min-height: 44px;
+    min-width: 44px;
+    @apply flex items-center justify-center;
+  }
+
+  /* Select-Dropdowns */
+  select,
+  [role="combobox"] {
+    min-height: 44px;
+  }
+
+  /* Checkbox & Radio */
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 24px;
+    min-width: 24px;
+  }
+
+  /* Mobile-Specific Touch-Targets */
+  @media (max-width: 768px) {
+    /* Increase touch-targets on mobile */
+    button,
+    [role="button"],
+    a[href] {
+      min-height: 48px;
+      min-width: 48px;
+    }
+
+    /* Filter/Sort-Dropdowns */
+    .select-trigger {
+      min-height: 48px;
+    }
+
+    /* Navigation-Items */
+    nav a,
+    nav button {
+      min-height: 48px;
+      padding: 12px 16px;
+    }
+  }
+}
+
+/* Swipe-Gestures für Carousels */
+@layer components {
+  .swipeable-carousel {
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .swipeable-carousel::-webkit-scrollbar {
+    display: none;
+  }
+}

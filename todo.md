@@ -2452,9 +2452,9 @@
   - [ ] Reviews-Section optimieren (Pagination, Sorting)
   - [ ] Related-Gigs-Section (Similar-Gigs-Algorithm)
 
-- [ ] **Mobile-Touch-Optimierung** (8h)
-  - [ ] Touch-Targets auf 44x44px vergrößern (Buttons, Links)
-  - [ ] Mobile-Navigation optimieren (Hamburger-Menu)
-  - [ ] Swipe-Gestures für Service-Cards-Carousel
-  - [ ] Mobile-Keyboard-Handling (Input-Focus, Scroll-Behavior)
+- [x] **Mobile-Touch-Optimierung** (8h)
+  - [x] Touch-Targets auf 44x44px vergrößern (Buttons, Links)
+  - [x] Mobile-Navigation optimieren (Hamburger-Menu)
+  - [x] Swipe-Gestures für Service-Cards-Carousel
+  - [x] Mobile-Keyboard-Handling (Input-Focus, Scroll-Behavior)
 
