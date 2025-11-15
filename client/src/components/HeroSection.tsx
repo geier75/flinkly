@@ -17,7 +17,7 @@ import { fadeInUp, fadeIn, staggerContainer, staggerItem } from '@/hooks/useScro
 
 export default function HeroSection() {
   return (
-    <section className="container mx-auto px-4 py-32 text-center bg-gradient-to-b from-blue-50 to-white">
+    <section className="container mx-auto px-4 py-32 text-center bg-gradient-to-b from-blue-50 to-white relative z-50">
       <motion.div
         className="max-w-4xl mx-auto"
         initial="hidden"
@@ -27,7 +27,7 @@ export default function HeroSection() {
         {/* Headline */}
         <motion.h1
           variants={fadeInUp}
-          className="text-7xl font-black text-slate-900 mb-8 leading-tight"
+          className="text-5xl md:text-6xl font-black text-slate-900 mb-6 leading-[1.1] tracking-tight"
         >
           Kleine Gigs, <span className="text-blue-600">große Wirkung</span>
         </motion.h1>
@@ -35,7 +35,7 @@ export default function HeroSection() {
         {/* Subheadline */}
         <motion.p
           variants={fadeInUp}
-          className="text-2xl text-slate-700 mb-12 leading-relaxed max-w-3xl mx-auto"
+          className="text-lg md:text-xl text-slate-600 mb-10 leading-relaxed max-w-2xl mx-auto"
         >
           Dein Marktplatz für schnelle, kreative & digitale Mikrodienstleistungen in der DACH-Region. Vertrauen, Einfachheit, Rechtssicherheit.
         </motion.p>
@@ -48,7 +48,7 @@ export default function HeroSection() {
           <Link href="/marketplace">
             <Button
               size="lg"
-              className="bg-blue-600 hover:bg-blue-700 text-white text-lg px-10 py-7 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white text-base md:text-lg px-8 md:px-12 py-6 md:py-7 rounded-xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 active:scale-95 font-semibold"
               aria-label="Gig finden - Durchsuche unseren Marktplatz"
             >
               <span aria-hidden="true">🔍</span> Gig finden
@@ -59,7 +59,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className="text-lg px-10 py-7 rounded-xl border-2 border-slate-300 hover:border-green-600 hover:bg-green-50 transition-all duration-200"
+              className="text-base md:text-lg px-8 md:px-12 py-6 md:py-7 rounded-xl border-2 border-slate-300 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 transition-all duration-300 hover:scale-105 active:scale-95 font-semibold"
               aria-label="Gig anbieten - Starte als Verkäufer"
             >
               <span aria-hidden="true">⭐</span> Gig anbieten

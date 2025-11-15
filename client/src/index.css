@@ -121,7 +121,17 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  
+  /* Enhanced Focus States for Accessibility */
+  *:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary ring-4 ring-primary/30;
+  }
+  
+  button:focus-visible,
+  a:focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent ring-4 ring-accent/30;
   }
   body {
     @apply bg-background text-foreground;

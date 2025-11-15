@@ -149,7 +149,7 @@ export default function Home() {
       <HeroSection />
 
       {/* Services Section with WebGL Video Background */}
-      <section className="relative py-32 overflow-hidden -mt-48">
+      <section className="relative py-32 overflow-hidden -mt-48 z-40">
         {/* Video Background */}
         <div className="absolute inset-0 z-0">
           <VideoScene
@@ -185,17 +185,17 @@ export default function Home() {
           >
             <button
               onClick={() => window.location.href = '/marketplace'}
-              className="group inline-flex items-center gap-3 bg-accent hover:bg-accent/90 text-white font-bold px-8 py-4 rounded-full shadow-lg shadow-accent/30 hover:shadow-accent/50 hover:scale-105 transition-all duration-300"
+              className="group inline-flex items-center gap-3 bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white font-bold px-10 py-5 rounded-full shadow-2xl shadow-accent/40 hover:shadow-[0_20px_60px_rgba(255,107,53,0.5)] hover:scale-110 transition-all duration-300 active:scale-95 border-2 border-accent/30"
             >
-              <span className="text-lg">Alle Kategorien entdecken</span>
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+              <span className="text-xl">Alle Kategorien entdecken</span>
+              <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform duration-300" />
             </button>
           </motion.div>
         </div>
       </section>
 
       {/* Testimonials Section with FLINKLY Video Background */}
-      <section className="relative py-32 overflow-hidden -mt-48">
+      <section className="relative py-32 overflow-hidden -mt-48 z-30">
         {/* FLINKLY Video Background (HELLER!) */}
         <div className="absolute inset-0 z-0">
           <VideoScene
@@ -317,7 +317,7 @@ export default function Home() {
       <CTASection />
 
       {/* Footer */}
-      <footer className="relative py-12 border-t border-slate-800">
+      <footer className="relative py-12 border-t border-slate-800 -mt-48 z-10">
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
@@ -367,7 +367,7 @@ export default function Home() {
  */
 function CTASection() {
   return (
-    <section className="relative py-32 overflow-hidden">
+    <section className="relative py-32 overflow-hidden -mt-48 z-20">
       {/* F1-Canvas-Animation-Hintergrund */}
       <div className="absolute inset-0 z-0">
         <F1RaceStart />
