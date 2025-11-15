@@ -1942,3 +1942,20 @@
 - [x] Neue Bilder in ValueCardCarousel einbinden
 - [x] 3 Slides: Deutschland (Fernsehturm), Schweiz (Matterhorn), Österreich (Stephansdom)
 - [x] Checkpoint speichern
+
+
+---
+
+## 🎬 CREATE-GIG-PAGE: FLINKLY-BRANDED VIDEO
+
+### Phase 1: Video generieren
+- [x] FLINKLY-Logo prominent im Video
+- [x] Verkäufer-Perspektive (Erfolg, Geld verdienen, Wachstum)
+- [x] Szenen: Freelancer erstellt Gig, Wachstums-Charts, Geld-Symbole
+- [x] Orange/Violett Brand-Colors
+- [x] Video gespeichert: /public/videos/create-gig-flinkly.mp4
+
+### Phase 2: CreateGig.tsx anpassen
+- [x] Neues Video eingebunden (create-gig-flinkly.mp4)
+- [x] VideoScene-Props angepasst (opacity 0.2, brightness 1.4, contrast 1.3)
+- [x] Checkpoint speichern

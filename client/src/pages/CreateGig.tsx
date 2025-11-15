@@ -160,12 +160,12 @@ export default function CreateGig() {
     <div className="min-h-screen relative overflow-hidden bg-slate-950">
       {/* 4K Video Background */}
       <VideoScene
-        videoSrc="/videos/marketplace-luxury.mp4"
+        videoSrc="/videos/create-gig-flinkly.mp4"
         className="fixed inset-0 w-full h-full"
-        opacity={0.15}
-        brightness={1.5}
-        contrast={1.2}
-        saturation={1.2}
+        opacity={0.2}
+        brightness={1.4}
+        contrast={1.3}
+        saturation={1.3}
       />
 
       {/* Gradient Overlay */}
