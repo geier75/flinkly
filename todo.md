@@ -28,13 +28,13 @@
 
 - [x] **Cookie-Consent & DSGVO** (16h)
   - [x] Cookie-Banner mit Opt-in/Opt-out
-  - [ ] Datenschutzerklärung aktualisieren
+  - [x] Datenschutzerklärung aktualisieren
   - [ ] Datenexport-Funktion (Art. 20 DSGVO)
   - [ ] Account-Löschung mit 30-Tage-Wartezeit
 
-- [ ] **Widerrufsbelehrung & AGB** (24h)
-  - [ ] AGB erstellen (Anwalt konsultieren)
-  - [ ] Widerrufsbelehrung mit Muster-Formular
+- [x] **Widerrufsbelehrung & AGB** (24h)
+  - [x] AGB erstellen (Anwalt konsultieren)
+  - [x] Widerrufsbelehrung mit Muster-Formular
   - [ ] Anzeige vor Checkout
   - [ ] Impressumspflicht für gewerbliche Seller
 
@@ -2232,3 +2232,32 @@
 - [ ] Profile.tsx - Perfektionieren (Chrome-Text, Intensive Shadows)
 - [ ] AdminDashboard.tsx - Cyberpunk-Perfektion
 - [ ] Alle Buttons - Grün/Orange Gradient statt Teal/Orange
+
+---
+
+## 📋 CURRENT SPRINT: Pre-Launch Rechtliches & Optimierungen
+
+### Rechtliche Seiten (DACH-konform)
+- [ ] AGB-Seite erstellen (DACH-spezifisch, Anwalt konsultieren)
+- [ ] Widerrufsbelehrung erstellen (14-Tage-Frist, EU-Recht)
+- [ ] Impressum aktualisieren (Vollständige Anbieterdaten)
+- [ ] Datenschutzerklärung prüfen und aktualisieren
+- [ ] Cyberpunk-Styling auf alle rechtlichen Seiten anwenden
+
+### Payment & Security
+- [ ] Stripe Live-Keys Anleitung dokumentieren
+- [ ] Webhook-URL Dokumentation erstellen
+- [ ] Test-Checkout-Flow dokumentieren
+- [ ] Security-Checkliste (HTTPS, Env-Vars, Rate-Limiting, CSRF)
+
+### Performance-Optimierungen
+- [ ] WebP-Images konvertieren (Hero-Images, Gig-Images)
+- [ ] Code-Splitting implementieren (React.lazy)
+- [ ] Lighthouse-Audit durchführen (Ziel: >90)
+- [ ] CDN-Konfiguration dokumentieren
+
+### Testing
+- [ ] Manual-Testing aller User-Flows
+- [ ] Cross-Browser-Testing (Chrome, Firefox, Safari, Edge)
+- [ ] Mobile-Testing (iOS, Android)
+- [ ] Edge-Cases testen (Empty States, Error States, Offline)
