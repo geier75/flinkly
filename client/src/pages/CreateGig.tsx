@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VideoScene } from "@/components/webgl/VideoScene";
+import { PopOutLogo } from "@/components/3d/PopOutLogo";
 
 export default function CreateGig() {
   const { user, isAuthenticated } = useAuth();
@@ -170,6 +171,13 @@ export default function CreateGig() {
 
       {/* Gradient Overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/60 via-slate-900/80 to-slate-950/90 pointer-events-none" />
+
+      {/* 3D Pop-Out Logo */}
+      <PopOutLogo 
+        className="top-32 left-24 z-20" 
+        size={140} 
+        delay={0.8}
+      />
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-12">
