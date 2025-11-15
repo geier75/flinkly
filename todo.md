@@ -1888,3 +1888,57 @@
 - [x] Performance: 60fps (GPU-beschleunigt)
 - [x] Test-Gig erstellt (ID 1)
 - [x] Checkpoint speichern
+
+
+---
+
+## 🎨 CREATE-GIG-PAGE: ULTRA-LUXUS-DESIGN
+
+### Phase 1: Page-Struktur
+- [ ] CreateGig.tsx im Ultra-Luxus-Design neu schreiben
+- [ ] 4K-Video-Background (gleicher wie Marketplace)
+- [ ] Violett-Gradient-Overlay
+- [ ] 2-Column-Layout (Form + Live-Preview)
+
+### Phase 2: Multi-Step-Form
+- [ ] Step-Indicator (Grundlagen → Preisgestaltung → Details)
+- [ ] Step 1: Grundlagen (Titel, Beschreibung, Kategorie)
+- [ ] Step 2: Preisgestaltung (Basic, Standard, Premium Packages)
+- [ ] Step 3: Details (Lieferzeit, Features, Bilder)
+- [ ] Glassmorphism-Form-Cards
+- [ ] Premium-Input-Fields (mit Focus-Glow)
+
+### Phase 3: Live-Preview-Sidebar
+- [ ] Live-Preview-Card (Sticky, rechts)
+- [ ] Real-Time-Updates (Titel, Preis, Lieferzeit)
+- [ ] Glassmorphism-Design
+- [ ] "Jetzt buchen" Button (Orange, Floating-Animation)
+
+### Phase 4: Premium-Animations
+- [ ] Stagger-Animations für Form-Fields
+- [ ] Step-Transition-Animations
+- [ ] Live-Preview-Update-Animations
+- [ ] Floating-Submit-Button
+
+### Phase 5: Testing
+- [ ] TypeScript: 0 Errors
+- [ ] Mobile-Responsive
+- [ ] Form-Validation
+- [ ] Checkpoint speichern
+
+
+---
+
+## 🇨🇭🇦🇹 HOMEPAGE: DACH-REGION NEUTRALISIEREN
+
+### Phase 1: Neue Bilder generieren
+- [x] Bild 1: Schweiz (Matterhorn, Business-Handshake)
+- [x] Bild 2: Österreich (Wiener Stephansdom, Business-Handshake)
+- [x] Bilder gespeichert: /public/images/dach-switzerland.jpg, /public/images/dach-austria.jpg
+
+### Phase 2: Home.tsx anpassen
+- [x] Deutschland-Flagge entfernen (Icon: 🇩🇪 → 🌍)
+- [x] Badge ändern: "Made in Germany" → "DACH-Region"
+- [x] Neue Bilder in ValueCardCarousel einbinden
+- [x] 3 Slides: Deutschland (Fernsehturm), Schweiz (Matterhorn), Österreich (Stephansdom)
+- [x] Checkpoint speichern

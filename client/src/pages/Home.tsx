@@ -228,14 +228,14 @@ export default function Home() {
                 ]
               },
               {
-                icon: "🇩🇪",
+                icon: "🌍",
                 title: "DACH-Fokus",
                 text: "Deutsch, Qualität, DSGVO-konform. Für den deutschsprachigen Markt gebaut.",
-                highlight: "Made in Germany",
+                highlight: "DACH-Region",
                 images: [
                   "/images/value-dach-focus-1.jpg",
-                  "/images/value-dach-focus-2.jpg",
-                  "/images/value-dach-focus-3.jpg"
+                  "/images/dach-switzerland.jpg",
+                  "/images/dach-austria.jpg"
                 ]
               },
               {
