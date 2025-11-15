@@ -171,19 +171,6 @@ export default function Home() {
           </div>
 
           <ServiceCardsFan />
-
-
-          <div className="text-center mt-16">
-            <Link href="/marketplace">
-              <Button 
-                size="lg"
-                className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white text-lg px-12 py-7 rounded-2xl shadow-2xl shadow-teal-500/20 hover:shadow-teal-500/40 transition-all duration-300 font-bold"
-              >
-                Alle Kategorien entdecken
-                <ArrowRight className="ml-3 h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
         </div>
       </section>
 

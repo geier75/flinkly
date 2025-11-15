@@ -1844,3 +1844,13 @@
 - [x] Mobile-Responsiveness (Glassmorphism funktioniert)
 - [x] Browser-Compatibility (Chrome, Safari, Firefox)
 - [x] Checkpoint speichern
+
+
+---
+
+## 🔧 HOMEPAGE: BUTTON-KORREKTUR
+
+### Service-Cards-Section
+- [x] Orange "Alle Kategorien entdecken" Button UNTER die Card verschieben (war schon richtig)
+- [x] Grün "Alle Kategorien entdecken" Button entfernen (doppelt)
+- [x] Nur 1 Button behalten (Orange, zentriert unter Cards)
