@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Search, MessageSquare, CreditCard, CheckCircle, Star, Shield } from "lucide-react";
 import { Link } from "wouter";

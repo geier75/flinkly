@@ -1,210 +1,334 @@
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const services = [
   {
     image: "/images/service-design.jpg",
     title: "Design & Kreation",
     description: "Logo-Design, Branding, UI/UX, Illustration, Video-Editing",
-    color: "from-purple-500 to-pink-500",
     category: "design"
   },
   {
     image: "/images/service-development.jpg",
     title: "Development",
     description: "Web-Development, App-Development, WordPress, Shopify",
-    color: "from-blue-500 to-cyan-500",
     category: "development"
   },
   {
     image: "/images/service-marketing.jpg",
     title: "Marketing",
     description: "Social Media, SEO, Content-Marketing, Google Ads",
-    color: "from-orange-500 to-red-500",
     category: "marketing"
   },
   {
     image: "/images/service-content.jpg",
     title: "Content & Text",
     description: "Copywriting, Blog-Artikel, Übersetzungen, Lektorat",
-    color: "from-green-500 to-teal-500",
     category: "content"
   },
   {
     image: "/images/service-business.jpg",
     title: "Business",
     description: "Virtuelle Assistenz, Buchhaltung, Projektmanagement",
-    color: "from-violet-500 to-purple-500",
     category: "business"
   },
   {
     image: "/images/service-technology.jpg",
     title: "Technologie",
     description: "Data Science, AI/ML, Blockchain, Cloud-Services",
-    color: "from-yellow-500 to-orange-500",
     category: "technology"
   }
 ];
 
 /**
- * ServiceCardsFan - Auto-Sliding-Carousel von links nach rechts
- * Cards gleiten automatisch mit Premium-Effekten
+ * 🎠 ECHTES 3D-KARUSSELL mit GRAFFITI-STYLE
+ * 
+ * - MEHRERE Cards gleichzeitig sichtbar (3-4 Cards)
+ * - Schnellere Rotation (3 Sekunden)
+ * - FLINKLY-Graffiti UNTER den Karten
+ * - Pausieren nur bei Card-Hover
  */
 export function ServiceCardsFan() {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [rotation, setRotation] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [manualControl, setManualControl] = useState(false);
   
-  const cardsPerView = 3; // Show 3 cards at once
-
-  // Auto-slide every 4 seconds
+  const rotateLeft = () => {
+    setRotation((prev) => prev - (360 / services.length));
+    setManualControl(true);
+    setTimeout(() => setManualControl(false), 5000); // Resume auto-rotation after 5s
+  };
+  
+  const rotateRight = () => {
+    setRotation((prev) => prev + (360 / services.length));
+    setManualControl(true);
+    setTimeout(() => setManualControl(false), 5000); // Resume auto-rotation after 5s
+  };
+  
+  // Auto-rotate every 3 seconds
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || manualControl) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const next = prev + 1;
-        // Loop back to start when reaching the end
-        if (next >= services.length) {
-          return 0;
-        }
-        return next;
-      });
-    }, 4000);
+      setRotation((prev) => prev + (360 / services.length));
+    }, 3000);
 
     return () => clearInterval(interval);
   }, [isPaused]);
 
-  // Get visible cards with wrapping
-  const getVisibleCards = () => {
-    const cards = [];
-    for (let i = 0; i < cardsPerView; i++) {
-      const index = (currentIndex + i) % services.length;
-      cards.push({ ...services[index], key: `${index}-${currentIndex}` });
-    }
-    return cards;
-  };
-
-  const visibleCards = getVisibleCards();
-
   return (
-    <div 
-      className="relative w-full max-w-7xl mx-auto px-4 py-12"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
-      {/* Cards Container */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence mode="popLayout">
-          {visibleCards.map((service, index) => (
-            <motion.div
-              key={service.key}
-              initial={{ 
-                opacity: 0, 
-                x: 100,
-                scale: 0.9
-              }}
-              animate={{ 
-                opacity: 1, 
-                x: 0,
-                scale: 1
-              }}
-              exit={{ 
-                opacity: 0, 
-                x: -100,
-                scale: 0.9
-              }}
-              transition={{
-                duration: 0.6,
-                delay: index * 0.1,
-                ease: [0.43, 0.13, 0.23, 0.96] // Custom easing
-              }}
-            >
-              <Card 
-                className="group relative bg-slate-900/40 backdrop-blur-xl border-2 border-slate-700/50 hover:border-primary rounded-2xl overflow-hidden cursor-pointer shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(139,92,246,0.5),0_0_100px_rgba(139,92,246,0.3)] transition-all duration-500"
-                onClick={() => window.location.href = `/marketplace?category=${service.category}`}
+    <div className="relative w-full max-w-7xl mx-auto px-4 py-24">
+      {/* FLINKLY GRAFFITI - ALS HINTERGRUND UNTER DEN CARDS */}
+      <motion.div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+        initial={{ opacity: 0, scale: 0.8, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.3, type: "spring", bounce: 0.4 }}
+      >
+        <motion.img
+          src="/images/flinkly-graffiti.png"
+          alt="FLINKLY"
+          className="w-[3600px] h-auto opacity-40"
+          style={{
+            filter: "drop-shadow(0 0 60px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 80px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.9))"
+          }}
+          animate={{
+            filter: [
+              "drop-shadow(0 0 60px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 80px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.9))",
+              "drop-shadow(0 0 80px rgba(255, 107, 53, 1)) drop-shadow(0 0 100px rgba(78, 205, 196, 1)) drop-shadow(0 0 120px rgba(139, 92, 246, 1))",
+              "drop-shadow(0 0 60px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 80px rgba(78, 205, 196, 0.8)) drop-shadow(0 0 100px rgba(139, 92, 246, 0.9))"
+            ],
+            scale: [1, 1.02, 1],
+            opacity: [0.4, 0.5, 0.4]
+          }}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </motion.div>
+
+      {/* 3D Carousel Container - SCHWEBT ÜBER FLINKLY */}
+      <div 
+        className="relative h-[550px] flex items-center justify-center z-10"
+        style={{
+          perspective: "1200px",
+          perspectiveOrigin: "50% 50%"
+        }}
+      >
+        {/* Rotating Carousel */}
+        <motion.div
+          className="relative w-full h-full"
+          style={{
+            transformStyle: "preserve-3d",
+          }}
+          animate={{
+            rotateY: rotation
+          }}
+          transition={{
+            duration: 0.8,
+            ease: "easeInOut"
+          }}
+        >
+          {services.map((service, index) => {
+            const totalCards = services.length;
+            const anglePerCard = 360 / totalCards;
+            const angle = index * anglePerCard;
+            const angleRad = (angle * Math.PI) / 180;
+            
+            // Radius: distance from center
+            const radius = 500;
+            
+            // Calculate 3D position
+            const x = Math.sin(angleRad) * radius;
+            const z = Math.cos(angleRad) * radius;
+            
+            return (
+              <motion.div
+                key={service.category}
+                className="absolute left-1/2 top-1/2"
+                style={{
+                  transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${-angle}deg)`,
+                  transformStyle: "preserve-3d",
+                }}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
               >
-                {/* Animated Gradient Border Glow */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 -z-10`} />
-                
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                
-                <CardContent className="p-0 relative z-10">
-                  {/* Image Container */}
-                  <div className="relative h-64 overflow-hidden">
-                    <motion.img 
+                <Card 
+                  className="w-[280px] h-[380px] overflow-hidden backdrop-blur-xl bg-slate-900/40 border-2 border-white/10 hover:border-primary/50 transition-all duration-500 group cursor-pointer shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.6)]"
+                >
+                  {/* Image */}
+                  <div className="relative h-56 overflow-hidden">
+                    <img
                       src={service.image}
                       alt={service.title}
-                      className="w-full h-full object-cover"
-                      whileHover={{ 
-                        scale: 1.1,
-                        transition: { duration: 0.5 }
-                      }}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    {/* Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-70 group-hover:opacity-40 transition-opacity duration-500" />
+                    {/* Simple Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 to-transparent" />
+                    
+                    {/* Glow Effect on Hover */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
                   </div>
-                  
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-extrabold text-white mb-3 tracking-tight group-hover:text-primary transition-colors duration-300">
+
+                  <CardContent className="p-5 relative">
+                    {/* Title with GRAFFITI-STYLE */}
+                    <h3 
+                      className="text-2xl font-black uppercase mb-3 transition-all duration-500"
+                      style={{
+                        fontFamily: "'Impact', 'Arial Black', sans-serif",
+                        textShadow: "2px 2px 0 rgba(139, 92, 246, 0.3)",
+                        background: "linear-gradient(135deg, #FF6B35 0%, #4ECDC4 50%, #8B5CF6 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
                       {service.title}
                     </h3>
-                    <p className="text-slate-300 text-base leading-relaxed group-hover:text-slate-200 transition-colors duration-300">
+
+                    {/* Description */}
+                    <p className="text-slate-300 text-sm leading-relaxed">
                       {service.description}
                     </p>
-                    
-                    {/* Hover Arrow */}
+
+                    {/* Shimmer Effect on Hover */}
                     <motion.div 
-                      className="mt-4 flex items-center gap-2 text-accent opacity-0 group-hover:opacity-100 transition-all duration-300"
-                      initial={{ x: 0 }}
-                      whileHover={{ x: 8 }}
-                    >
-                      <span className="text-sm font-bold">Mehr erfahren</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </motion.div>
-                  </div>
-                </CardContent>
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none opacity-0 group-hover:opacity-100"
+                      animate={{
+                        x: ["-100%", "100%"],
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity,
+                        repeatDelay: 2,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  </CardContent>
 
-                {/* Hover Glow Effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+                  {/* Multi-Layer Border Glow on Hover */}
+                  <div className="absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+                    style={{
+                      boxShadow: `
+                        0 0 20px rgba(255, 107, 53, 0.4),
+                        0 0 40px rgba(78, 205, 196, 0.4),
+                        0 0 60px rgba(139, 92, 246, 0.4)
+                      `
+                    }}
+                  />
+                </Card>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
 
-      {/* Progress Dots */}
-      <div className="flex justify-center gap-2 mt-8">
-        {services.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentIndex(index)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              index === currentIndex
-                ? "bg-primary w-8"
-                : "bg-slate-700 w-2 hover:bg-slate-600"
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
+      {/* MANUELLE STEUERUNG - Links/Rechts-Pfeile */}
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 z-20">
+        <Button
+          onClick={rotateLeft}
+          size="icon"
+          className="w-14 h-14 rounded-full backdrop-blur-xl bg-slate-900/60 hover:bg-slate-900/80 border-2 border-white/20 hover:border-primary/50 transition-all duration-300 shadow-2xl hover:shadow-[0_0_30px_rgba(139,92,246,0.6)]"
+          aria-label="Vorherige Card"
+        >
+          <ChevronLeft className="w-8 h-8 text-white" />
+        </Button>
+      </div>
+      
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-20">
+        <Button
+          onClick={rotateRight}
+          size="icon"
+          className="w-14 h-14 rounded-full backdrop-blur-xl bg-slate-900/60 hover:bg-slate-900/80 border-2 border-white/20 hover:border-primary/50 transition-all duration-300 shadow-2xl hover:shadow-[0_0_30px_rgba(139,92,246,0.6)]"
+          aria-label="Nächste Card"
+        >
+          <ChevronRight className="w-8 h-8 text-white" />
+        </Button>
       </div>
 
-      {/* Pause Indicator */}
+      {/* Progress Dots with GLOW - DIREKT UNTER CAROUSEL */}
+      <div className="flex justify-center gap-3 mt-8">
+        {services.map((_, index) => {
+          const currentCard = Math.round((rotation / (360 / services.length)) % services.length);
+          return (
+            <motion.button
+              key={index}
+              onClick={() => setRotation(index * (360 / services.length))}
+              className={`transition-all duration-300 rounded-full ${
+                index === currentCard
+                  ? "w-12 h-3"
+                  : "w-3 h-3 bg-white/30 hover:bg-white/50"
+              }`}
+              style={
+                index === currentCard
+                  ? {
+                      background: "linear-gradient(90deg, #FF6B35 0%, #4ECDC4 50%, #8B5CF6 100%)",
+                      boxShadow: "0 0 20px rgba(139, 92, 246, 0.6)"
+                    }
+                  : {}
+              }
+              animate={
+                index === currentCard
+                  ? {
+                      boxShadow: [
+                        "0 0 20px rgba(139, 92, 246, 0.6)",
+                        "0 0 30px rgba(139, 92, 246, 0.8)",
+                        "0 0 20px rgba(139, 92, 246, 0.6)"
+                      ]
+                    }
+                  : {}
+              }
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              aria-label={`Go to service ${index + 1}`}
+            />
+          );
+        })}
+      </div>
+
+      {/* Pause Indicator with GLOW - nur wenn pausiert */}
       {isPaused && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
-          className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-12 text-primary text-sm font-bold bg-slate-900/80 px-4 py-2 rounded-full border border-primary/30 backdrop-blur-sm"
+          className="absolute top-4 right-4 px-4 py-2 rounded-full text-white text-sm font-bold"
+          style={{
+            background: "linear-gradient(135deg, #FF6B35 0%, #4ECDC4 50%, #8B5CF6 100%)",
+            boxShadow: "0 0 30px rgba(139, 92, 246, 0.6)"
+          }}
         >
-          Pausiert - Bewege Maus weg zum Fortsetzen
+          ⏸️ PAUSIERT
         </motion.div>
       )}
+
+      {/* Floating Background Glow - HELLER */}
+      <motion.div
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(78, 205, 196, 0.15) 40%, transparent 70%)",
+          filter: "blur(80px)"
+        }}
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.4, 0.7, 0.4]
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
     </div>
   );
 }

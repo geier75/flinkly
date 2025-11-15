@@ -2083,3 +2083,90 @@
 - [x] Cards flach (0° Rotation), 3D-Hover-Effects (scale 1.05, y -10)
 - [x] Navigation: Pfeile links/rechts + Dots unten
 - [x] Checkpoint speichern
+
+
+---
+
+## 🎠 ECHTES 3D-KARUSSELL (AKTUELL - FIX)
+
+### Problem:
+- ❌ Nur 1 Card sichtbar (sollte 3-4 sein)
+- ❌ Cards drehen sich nicht wie echtes Karussell
+- ❌ Bilder haben falsche Overlays
+
+### Lösung:
+- [x] **MEHRERE Cards gleichzeitig sichtbar** (3-4 Cards)
+- [x] **Alle Cards drehen sich im Kreis** (echtes Karussell)
+- [x] **Automatische Rotation** des gesamten Karussells
+- [x] **Originale Bilder** ohne kaputte Overlays
+- [x] **Vorne groß, hinten klein** (Perspective-Effekt)
+
+### Finale Optimierungen:
+- [x] **Schnellere Rotation** (3s statt 4s)
+- [x] **GRAFFITI-SCHRIFT** mit Hauptseiten-Farben (Orange/Grün/Violett)
+- [x] **Kleinere Cards** (320x420 statt 350x450)
+- [x] **Mehr Glow-Effekte**
+
+### Fixes:
+- [x] **Pausieren nur bei Card-Hover** (nicht bei Container-Hover)
+- [x] **"FLINKLY" statt "UNSERE SERVICES"** (MEGA GRÖßER)
+- [x] **Text UNTER den Karten** (nicht oben)
+- [x] **Graffiti-Bild generieren** (FLINKLY in Orange/Türkis/Violett)
+
+### Finale Politur:
+- [x] **FLINKLY noch GRÖßER** (max-w-4xl statt max-w-2xl)
+- [x] **LED-Glow HELLER** (stärkere Schatten + Leuchten)
+- [x] **Ansicht optimieren** (besseres Spacing)
+
+### Layout-Optimierung:
+- [x] **FLINKLY als Hintergrund** (absolute Position)
+- [x] **Cards schweben DARÜBER** (z-index)
+- [x] **Seite kürzer** (kein extra Platz)
+- [x] **FLINKLY noch größer** (1800px)
+
+### Manuelle Steuerung:
+- [x] **Links/Rechts-Pfeile** zum manuellen Drehen
+- [x] **Auto-Rotation pausiert** bei manueller Steuerung
+- [x] **Keyboard-Support** (bereits vorhanden)
+
+### Finale Perfektion:
+- [x] **Cards KLEINER** (280x380 statt 320x420)
+- [x] **FLINKLY DOPPELT SO GROß** (3600px statt 1800px)
+
+---
+
+## 🏎️ FORMEL-1-AMPEL-ANIMATION (NEU)
+
+### "BEREIT ZU STARTEN?"-Section:
+- [ ] **Formel-1-Start-Ampel-Video** erstellen
+- [ ] **5 rote Lichter** erscheinen nacheinander
+- [ ] **Alle Lichter aus** (GO!-Moment)
+- [ ] **Grünes Licht** + "START!"-Text
+- [ ] **Geschwindigkeits-Effekt** (Zoom, Motion-Blur)
+- [ ] **Buttons erscheinen** nach Animation
+
+### Phase 2: Experten-Team-Optimierungen
+- [ ] **3D-Graphics-Specialist:**
+  - [ ] Z-Axis-Extrusion (Cards kommen aus PC heraus)
+  - [ ] Perspective 800px (stärkerer 3D-Effekt)
+  - [ ] Transform-Origin-Optimization
+
+- [ ] **Motion-Designer:**
+  - [ ] Cubic-Bezier-Easing (natürliche Bewegung)
+  - [ ] Stagger-Animations (versetzt)
+  - [ ] Parallax-Background-Effect
+
+- [ ] **Visual-Effects-Artist:**
+  - [ ] Depth-of-Field (Blur für entfernte Cards)
+  - [ ] Dynamic-Lighting (Schatten basierend auf Position)
+  - [ ] Particle-System (Floating-Particles)
+
+- [ ] **UX-Engineer:**
+  - [ ] Touch-Swipe-Support (Drag-to-Rotate)
+  - [ ] Keyboard-Navigation (Arrow-Keys)
+  - [ ] Accessibility (ARIA-Labels, Focus-States)
+
+- [ ] **Performance-Engineer:**
+  - [ ] GPU-Acceleration (will-change, transform3d)
+  - [ ] Reduced-Motion-Support
+  - [ ] Image-Lazy-Loading

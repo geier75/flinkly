@@ -1,4 +1,5 @@
 import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
