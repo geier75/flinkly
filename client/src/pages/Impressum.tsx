@@ -84,6 +84,27 @@ export default function Impressum() {
                     <span className="cyber-neon-orange font-semibold">Michael Bemler</span> (Geschäftsführer)
                   </p>
                 </div>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                    <FileText className="h-6 w-6 text-emerald-500" />
+                    Registereintrag:
+                  </h3>
+                  <div className="space-y-2">
+                    <p>
+                      <span className="font-semibold text-white">Handelsregister:</span> <span className="cyber-neon-green">Amtsgericht Stuttgart</span>
+                    </p>
+                    <p>
+                      <span className="font-semibold text-white">Registernummer:</span> <span className="cyber-neon-green">HRB [NUMMER EINTRAGEN]</span>
+                    </p>
+                    <p>
+                      <span className="font-semibold text-white">Umsatzsteuer-Identifikationsnummer:</span> <span className="cyber-neon-orange">DE [UST-ID EINTRAGEN]</span>
+                    </p>
+                    <p className="text-sm text-slate-400 mt-3">
+                      Gemäß § 27a Umsatzsteuergesetz (UStG)
+                    </p>
+                  </div>
+                </div>
               </div>
             </Card>
 
@@ -256,6 +277,37 @@ export default function Impressum() {
                       <span>Verträge kommen direkt zwischen Käufer und Verkäufer zustande</span>
                     </li>
                   </ul>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Impressumspflicht für Verkäufer (§ 5 TMG):</h3>
+                  <p className="mb-3">
+                    <span className="cyber-neon-orange font-semibold">Gewerbliche Verkäufer</span> sind verpflichtet, ein vollständiges Impressum auf ihrem Profil anzugeben.
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold text-white">Pflichtangaben:</span>
+                  </p>
+                  <ul className="space-y-2 text-sm">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>Name und Anschrift (ladungsfähige Anschrift)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>E-Mail-Adresse und Telefonnummer</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>Handelsregister-Nummer (falls eingetragen)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>Umsatzsteuer-Identifikationsnummer (bei Umsatz &gt; 22.000€/Jahr)</span>
+                    </li>
+                  </ul>
+                  <p className="mt-4 text-sm text-slate-400">
+                    Private Verkäufer (Hobby-Seller) sind von der Impressumspflicht befreit, sofern sie keine gewerbliche Tätigkeit ausüben.
+                  </p>
                 </div>
 
                 <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
