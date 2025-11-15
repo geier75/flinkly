@@ -2067,3 +2067,19 @@
 - [x] LoginBackground aus App.tsx entfernen (Import + Komponente)
 - [x] LoginBackground.tsx Komponente gelöscht
 - [x] Checkpoint speichern
+
+
+---
+
+## 🗑️ PARTICLESYSTEM ENTFERNEN + SERVICE-CARDS REDESIGN
+
+### Phase 1: ParticleSystem entfernen
+- [x] ParticleSystem aus Home.tsx entfernen
+- [ ] ParticleSystem aus Marketplace.tsx entfernen (falls vorhanden)
+
+### Phase 2: Service-Cards-Fan neu gestalten
+- [x] Aktuelles Problem: Cards sind 90° rotiert, Text schwer lesbar
+- [x] Lösung: Horizontal-Carousel mit 3 Cards nebeneinander
+- [x] Cards flach (0° Rotation), 3D-Hover-Effects (scale 1.05, y -10)
+- [x] Navigation: Pfeile links/rechts + Dots unten
+- [x] Checkpoint speichern

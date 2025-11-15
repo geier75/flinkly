@@ -1,238 +1,162 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
-import { VideoScene } from "@/components/webgl/VideoScene";
+import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { Link } from "wouter";
 
 const services = [
   {
-    image: "/images/service-design.jpg",
+    id: 1,
     title: "Design & Kreation",
     description: "Logo-Design, Branding, UI/UX, Illustration, Video-Editing",
-    color: "from-purple-500 to-pink-500",
-    category: "design"
+    image: "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=800&h=600&fit=crop",
+    category: "design",
   },
   {
-    image: "/images/service-development.jpg",
+    id: 2,
     title: "Development",
-    description: "Web-Development, App-Development, WordPress, Shopify",
-    color: "from-blue-500 to-cyan-500",
-    category: "development"
+    description: "Web-Development, App-Development, E-Commerce, WordPress",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop",
+    category: "development",
   },
   {
-    image: "/images/service-marketing.jpg",
+    id: 3,
     title: "Marketing",
-    description: "Social Media, SEO, Content-Marketing, Google Ads",
-    color: "from-orange-500 to-red-500",
-    category: "marketing"
+    description: "Social Media, SEO, Content Marketing, Email Marketing",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
+    category: "marketing",
   },
   {
-    image: "/images/service-content.jpg",
+    id: 4,
     title: "Content & Text",
-    description: "Copywriting, Blog-Artikel, Übersetzungen, Lektorat",
-    color: "from-green-500 to-teal-500",
-    category: "content"
+    description: "Copywriting, Blogartikel, Übersetzungen, Lektorat",
+    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=600&fit=crop",
+    category: "writing",
   },
   {
-    image: "/images/service-business.jpg",
-    title: "Business",
-    description: "Virtuelle Assistenz, Buchhaltung, Projektmanagement",
-    color: "from-violet-500 to-purple-500",
-    category: "business"
-  },
-  {
-    image: "/images/service-technology.jpg",
+    id: 5,
     title: "Technologie",
-    description: "Data Science, AI/ML, Blockchain, Cloud-Services",
-    color: "from-yellow-500 to-orange-500",
-    category: "technology"
-  }
+    description: "Data Science, AI/ML, Blockchain, Cloud Services",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&h=600&fit=crop",
+    category: "tech",
+  },
+  {
+    id: 6,
+    title: "Business",
+    description: "Beratung, Projektmanagement, Virtuelle Assistenz",
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&h=600&fit=crop",
+    category: "business",
+  },
 ];
 
 /**
- * ServiceCardsFan - Fächer-Effekt für Service-Cards
- * Cards liegen gestapelt und fächern sich beim Hover radial auf
+ * Horizontal Service Cards Carousel with better readability
+ * Replaces vertical fan layout with flat horizontal cards
  */
 export function ServiceCardsFan() {
-  const [isFanned, setIsFanned] = useState(false);
-  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const cardsPerView = 3; // Show 3 cards at once
 
-  // Detect mobile devices
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
-
-  // Auto-open on mobile after 2s
-  useEffect(() => {
-    if (isMobile) {
-      const timer = setTimeout(() => {
-        setIsFanned(true);
-      }, 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [isMobile]);
-
-  // Calculate fan-out positions
-  const getFanTransform = (index: number, totalCards: number) => {
-    if (!isFanned) {
-      // Stacked state - slight offset for depth
-      return {
-        rotate: 0,
-        x: 0,
-        y: index * 8, // Slight vertical offset
-        scale: 1 - index * 0.02, // Slight scale decrease for depth
-        zIndex: totalCards - index
-      };
-    }
-
-    // Fanned state - radial spread
-    const totalAngle = isMobile ? 160 : 200; // Smaller spread on mobile
-    const angleStep = totalAngle / (totalCards - 1);
-    const angle = (isMobile ? -80 : -100) + (index * angleStep); // Adjusted for mobile
-    
-    // Calculate position on arc
-    const radius = isMobile ? 250 : 350; // Smaller radius on mobile
-    const radians = (angle * Math.PI) / 180;
-    const x = Math.sin(radians) * radius;
-    const y = -Math.abs(Math.cos(radians)) * (isMobile ? 120 : 180); // Less arc height on mobile
-
-    return {
-      rotate: angle * 0.7, // More rotation for dramatic effect
-      x,
-      y,
-      scale: hoveredCard === index ? 1.15 : 1, // Bigger scale on hover
-      zIndex: hoveredCard === index ? totalCards + 1 : index
-    };
+  const nextSlide = () => {
+    setCurrentIndex((prev) => 
+      prev + cardsPerView >= services.length ? 0 : prev + 1
+    );
   };
 
+  const prevSlide = () => {
+    setCurrentIndex((prev) => 
+      prev === 0 ? Math.max(0, services.length - cardsPerView) : prev - 1
+    );
+  };
+
+  const visibleCards = services.slice(currentIndex, currentIndex + cardsPerView);
+  // Fill remaining slots if at the end
+  if (visibleCards.length < cardsPerView) {
+    visibleCards.push(...services.slice(0, cardsPerView - visibleCards.length));
+  }
+
   return (
-    <div 
-      className="relative flex flex-col items-center justify-center min-h-[600px] max-w-5xl mx-auto"
-      onMouseEnter={() => !isMobile && setIsFanned(true)}
-      onMouseLeave={() => {
-        if (!isMobile) {
-          setIsFanned(false);
-          setHoveredCard(null);
-        }
-      }}
-      onTouchStart={() => isMobile && setIsFanned(true)}
-    >
-      {/* WebGL Video Background (visible when stacked) */}
-      <motion.div 
-        className="absolute inset-0 -z-10 rounded-3xl overflow-hidden"
-        animate={{
-          opacity: isFanned ? 0.05 : 0.2,
-        }}
-        transition={{ duration: 0.6 }}
+    <div className="relative w-full max-w-7xl mx-auto px-4">
+      {/* Navigation Buttons */}
+      <button
+        onClick={prevSlide}
+        className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-slate-900/80 hover:bg-slate-800 backdrop-blur-xl border-2 border-slate-700/50 rounded-full p-3 transition-all duration-300 hover:scale-110 hover:border-primary/50"
+        aria-label="Previous"
       >
-        <VideoScene
-          videoSrc="/videos/services-expertise.mp4"
-          blendMode="overlay"
-          opacity={0.3}
-          className="w-full h-full scale-110"
-        />
-      </motion.div>
+        <ChevronLeft className="w-6 h-6 text-white" />
+      </button>
 
-      {/* Hint Text */}
-      <AnimatePresence>
-        {!isFanned && (
+      <button
+        onClick={nextSlide}
+        className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-slate-900/80 hover:bg-slate-800 backdrop-blur-xl border-2 border-slate-700/50 rounded-full p-3 transition-all duration-300 hover:scale-110 hover:border-primary/50"
+        aria-label="Next"
+      >
+        <ChevronRight className="w-6 h-6 text-white" />
+      </button>
+
+      {/* Cards Container */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 px-12">
+        {visibleCards.map((service, index) => (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            key={`${service.id}-${currentIndex}`}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-16 text-teal-400 text-base font-bold flex items-center gap-2 bg-slate-900/80 px-6 py-3 rounded-full border border-teal-500/30 backdrop-blur-sm z-10"
+            transition={{ duration: 0.5, delay: index * 0.1 }}
           >
-            <span>Bewege die Maus über die Cards</span>
-            <motion.div
-              animate={{ y: [0, 5, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              ↓
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Cards Stack */}
-      <div className="relative w-full max-w-md">
-        {services.map((service, index) => {
-          const transform = getFanTransform(index, services.length);
-          
-          return (
-            <motion.div
-              key={index}
-              className="absolute left-1/2 top-1/2"
-              style={{
-                width: '100%',
-                maxWidth: '400px',
-                marginLeft: '-200px',
-                marginTop: '-200px',
-              }}
-              animate={{
-                rotate: transform.rotate,
-                x: transform.x,
-                y: transform.y,
-                scale: transform.scale,
-                zIndex: transform.zIndex,
-              }}
-              transition={{
-                type: "spring",
-                stiffness: 260,
-                damping: 20,
-                delay: isFanned ? index * 0.05 : 0, // Stagger on fan-out
-              }}
-              onMouseEnter={() => setHoveredCard(index)}
-              onMouseLeave={() => setHoveredCard(null)}
-            >
-              <Card 
-                className="relative bg-slate-900/90 border-2 border-slate-700/50 hover:border-primary backdrop-blur-xl group overflow-hidden shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(139,92,246,0.5),0_0_100px_rgba(139,92,246,0.3)] cursor-pointer transition-all duration-500"
-                onClick={() => window.location.href = `/marketplace?category=${service.category}`}
+            <Link href={`/marketplace?category=${service.category}`}>
+              <motion.div
+                className="group relative bg-slate-900/40 backdrop-blur-xl border-2 border-slate-700/50 rounded-2xl overflow-hidden cursor-pointer"
+                whileHover={{ 
+                  scale: 1.05, 
+                  y: -10,
+                  borderColor: "rgba(139, 92, 246, 0.5)",
+                }}
+                transition={{ duration: 0.3 }}
               >
-                {/* Animated Gradient Border Glow */}
-                <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-20 transition-opacity duration-500 -z-10`} />
-                
-                {/* Shimmer Effect */}
-                <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                
-                <CardContent className="p-0 relative z-10">
-                  {/* Image Container */}
-                  <div className="relative aspect-video overflow-hidden">
-                    <img 
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-110 group-hover:brightness-110"
-                    />
-                    {/* Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-70 group-hover:opacity-40 transition-opacity duration-500" />
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-extrabold text-white mb-3 tracking-tight group-hover:text-teal-400 transition-colors duration-300">
-                      {service.title}
-                    </h3>
-                    <p className="text-slate-300 text-base leading-relaxed group-hover:text-slate-200 transition-colors duration-300">
-                      {service.description}
-                    </p>
-                    
-                    {/* Hover Arrow */}
-                    <div className="mt-4 flex items-center gap-2 text-teal-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-2 transition-all duration-300">
-                      <span className="text-sm font-bold">Mehr erfahren</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
+                {/* Image */}
+                <div className="relative h-64 overflow-hidden">
+                  <img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent" />
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-primary transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-slate-300 text-sm leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
+
+                {/* Hover Glow Effect */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10" />
+                  <div className="absolute inset-0 shadow-[0_0_80px_rgba(139,92,246,0.3)]" />
+                </div>
+              </motion.div>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Dots Indicator */}
+      <div className="flex justify-center gap-2 mt-8">
+        {Array.from({ length: Math.ceil(services.length / cardsPerView) }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index * cardsPerView)}
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              Math.floor(currentIndex / cardsPerView) === index
+                ? "bg-primary w-8"
+                : "bg-slate-700 hover:bg-slate-600"
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
       </div>
     </div>
   );

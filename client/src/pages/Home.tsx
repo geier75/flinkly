@@ -11,7 +11,7 @@ import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScr
 import { motion } from "framer-motion";
 import { ServiceCardsFan } from "@/components/ServiceCardsFan";
 import { ValueCardCarousel } from "@/components/ValueCardCarousel";
-import { ParticleSystem } from "@/components/3d/ParticleSystem";
+
 
 function HeroSection() {
   const { ref, scrollYProgress } = useParallaxScroll();
@@ -49,12 +49,7 @@ function HeroSection() {
         }}
       />
 
-      {/* Particle System */}
-      <ParticleSystem 
-        count={80} 
-        colors={["#8B5CF6", "#F97316", "#14B8A6"]} 
-        className="z-[5]"
-      />
+
 
       {/* Content Layer (Fastest Parallax) */}
       <motion.div 
