@@ -1,4 +1,4 @@
-import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, boolean } from "drizzle-orm/mysql-core";
+import { mysqlEnum, mysqlTable, text, timestamp, varchar, int, boolean, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -48,7 +48,11 @@ export const gigs = mysqlTable("gigs", {
   averageRating: int("averageRating").default(0), // stored as int (0-500) for 0.00-5.00 rating
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (table) => ({
+  categoryIdx: index("category_idx").on(table.category),
+  sellerIdIdx: index("seller_id_idx").on(table.sellerId),
+  statusIdx: index("status_idx").on(table.status),
+}));
 
 export type Gig = typeof gigs.$inferSelect;
 export type InsertGig = typeof gigs.$inferInsert;
@@ -69,7 +73,12 @@ export const orders = mysqlTable("orders", {
   completedAt: timestamp("completedAt"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+}, (table) => ({
+  statusIdx: index("orders_status_idx").on(table.status),
+  buyerIdIdx: index("orders_buyer_id_idx").on(table.buyerId),
+  sellerIdIdx: index("orders_seller_id_idx").on(table.sellerId),
+  gigIdIdx: index("orders_gig_id_idx").on(table.gigId),
+}));
 
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = typeof orders.$inferInsert;
@@ -85,7 +94,10 @@ export const reviews = mysqlTable("reviews", {
   rating: int("rating").notNull(), // 1-5
   comment: text("comment"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
+}, (table) => ({
+  gigIdIdx: index("reviews_gig_id_idx").on(table.gigId),
+  reviewerIdIdx: index("reviews_reviewer_id_idx").on(table.reviewerId),
+}));
 
 export type Review = typeof reviews.$inferSelect;
 export type InsertReview = typeof reviews.$inferInsert;
@@ -230,7 +242,10 @@ export const favorites = mysqlTable("favorites", {
   userId: int("userId").notNull(),
   gigId: int("gigId").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
+}, (table) => ({
+  userIdIdx: index("favorites_user_id_idx").on(table.userId),
+  gigIdIdx: index("favorites_gig_id_idx").on(table.gigId),
+}));
 
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = typeof favorites.$inferInsert;

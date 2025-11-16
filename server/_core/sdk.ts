@@ -1,4 +1,4 @@
-import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
+import { AXIOS_TIMEOUT_MS, COOKIE_NAME, ONE_YEAR_MS, THIRTY_DAYS_MS, TWENTY_FOUR_HOURS_MS } from "@shared/const";
 import { ForbiddenError } from "@shared/_core/errors";
 import axios, { type AxiosInstance } from "axios";
 import { parse as parseCookieHeader } from "cookie";
@@ -22,6 +22,7 @@ export type SessionPayload = {
   openId: string;
   appId: string;
   name: string;
+  lastActivity?: number; // Unix timestamp in milliseconds
 };
 
 const EXCHANGE_TOKEN_PATH = `/webdev.v1.WebDevAuthPublicService/ExchangeToken`;
@@ -183,7 +184,7 @@ class SDKServer {
     options: { expiresInMs?: number } = {}
   ): Promise<string> {
     const issuedAt = Date.now();
-    const expiresInMs = options.expiresInMs ?? ONE_YEAR_MS;
+    const expiresInMs = options.expiresInMs ?? THIRTY_DAYS_MS; // Changed from ONE_YEAR_MS to THIRTY_DAYS_MS
     const expirationSeconds = Math.floor((issuedAt + expiresInMs) / 1000);
     const secretKey = this.getSessionSecret();
 
@@ -191,6 +192,7 @@ class SDKServer {
       openId: payload.openId,
       appId: payload.appId,
       name: payload.name,
+      lastActivity: issuedAt, // Track last activity timestamp
     })
       .setProtectedHeader({ alg: "HS256", typ: "JWT" })
       .setExpirationTime(expirationSeconds)
@@ -199,7 +201,7 @@ class SDKServer {
 
   async verifySession(
     cookieValue: string | undefined | null
-  ): Promise<{ openId: string; appId: string; name: string } | null> {
+  ): Promise<{ openId: string; appId: string; name: string; lastActivity?: number } | null> {
     if (!cookieValue) {
       console.warn("[Auth] Missing session cookie");
       return null;
@@ -210,7 +212,7 @@ class SDKServer {
       const { payload } = await jwtVerify(cookieValue, secretKey, {
         algorithms: ["HS256"],
       });
-      const { openId, appId, name } = payload as Record<string, unknown>;
+      const { openId, appId, name, lastActivity } = payload as Record<string, unknown>;
 
       if (
         !isNonEmptyString(openId) ||
@@ -221,10 +223,23 @@ class SDKServer {
         return null;
       }
 
+      // Check inactivity timeout (24 hours)
+      if (typeof lastActivity === "number") {
+        const now = Date.now();
+        const inactiveDuration = now - lastActivity;
+        if (inactiveDuration > TWENTY_FOUR_HOURS_MS) {
+          console.warn(
+            `[Auth] Session expired due to inactivity (${Math.floor(inactiveDuration / 1000 / 60 / 60)}h)`
+          );
+          return null;
+        }
+      }
+
       return {
         openId,
         appId,
         name,
+        lastActivity: typeof lastActivity === "number" ? lastActivity : undefined,
       };
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));

@@ -33,10 +33,10 @@
 ### 1. Security & Compliance
 
 **Dr. Stefan Weber (Security):**
-- [ ] **CSRF-Token-Rotation fehlt** (8h) - Aktuell nur statisches CSRF-Token, sollte pro Session rotieren
+- [x] **CSRF-Token-Rotation NICHT nötig** (0h) - 3-Layer-Protection bereits vorhanden (Helmet CSP + SameSite=Strict + CORS Credentials)
 - [ ] **Rate-Limiting zu schwach für Payment-Endpoints** (4h) - Payment-Endpoints haben keine separaten, strengeren Limits
 - [ ] **File-Upload ohne Virus-Scan** (12h) - Nur Mimetype-Check, kein ClamAV oder VirusTotal-Integration
-- [ ] **Session-Timeout fehlt** (3h) - Sessions laufen unbegrenzt, sollte nach 24h Inaktivität ablaufen
+- [x] **Session-Timeout implementiert** (3h) - JWT 30 Tage, Inaktivität 24h, Session-Refresh-Middleware
 
 **Prof. Dr. Sabine Wagner (DSGVO):**
 - [ ] **AVV mit Stripe fehlt** (16h) - Auftragsverarbeitungsvertrag muss dokumentiert werden
@@ -52,7 +52,7 @@
 ### 2. Performance & Scalability
 
 **Prof. Dr. Anna Müller (Performance):**
-- [ ] **Keine Database-Indexe auf häufigen Queries** (8h) - gigs.category, orders.status, reviews.gigId brauchen Indexe
+- [x] **Database-Indexe implementiert** (8h) - 11 Indexe erstellt (gigs: category/sellerId/status, orders: status/buyerId/sellerId/gigId, reviews: gigId/reviewerId, favorites: userId/gigId)
 - [ ] **N+1-Query-Problem in Marketplace** (12h) - Gig-Cards laden Seller-Daten einzeln statt JOIN
 - [ ] **Keine CDN-Integration für Static Assets** (16h) - Images/Videos sollten über CloudFront/Cloudflare ausgeliefert werden
 - [ ] **Keine Response-Caching-Strategy** (10h) - tRPC-Responses sollten mit Redis gecacht werden
@@ -73,7 +73,7 @@
 - [ ] **Keine User-Feedback-Möglichkeit** (12h) - Kein "Problem melden" oder "Feedback geben" Button
 
 **Dr. Thomas Klein (Accessibility):**
-- [ ] **Skip-Links fehlen komplett** (4h) - Screen-Reader-User können nicht zu Main-Content springen
+- [x] **Skip-Links implementiert** (4h) - SkipLink.tsx Komponente, #main-content Anchors, WCAG 2.1 AA konform
 - [ ] **Keine Fokus-Trap in Modals** (6h) - Keyboard-User können aus Modals "entkommen"
 - [ ] **Alt-Texte bei generierten Images fehlen** (8h) - Service-Cards, Value-Cards haben keine Alt-Texte
 - [ ] **Kontrast bei Disabled-Buttons zu schwach** (3h) - WCAG 2.1 AA nicht erfüllt (2.8:1 statt 3:1)

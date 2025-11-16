@@ -11,6 +11,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { initializeSocketIO } from "./socket";
+import { sessionRefreshMiddleware } from "./sessionRefreshMiddleware";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -70,6 +71,9 @@ async function startServer() {
 
   // CORS
   app.use(cors({ origin: true, credentials: true }));
+
+  // Session refresh middleware (before rate limiting to ensure sessions are updated)
+  app.use(sessionRefreshMiddleware);
 
   // Rate limiting (before body parser to protect against large payloads)
   app.use("/api", authRateLimiter);

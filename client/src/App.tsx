@@ -9,6 +9,7 @@ import GlobalHeader from "./components/GlobalHeader";
 import MobileActionBar from "./components/MobileActionBar";
 import CookieConsent from "./components/CookieConsent";
 import Footer from "./components/Footer";
+import SkipLink from "./components/SkipLink";
 import { lazy, Suspense } from "react";
 import Home from "./pages/Home";
 
@@ -89,6 +90,7 @@ function App() {
       >
         <TooltipProvider>
           <Toaster />
+          <SkipLink />
           <GlobalHeader />
           <Onboarding />
           <Router />

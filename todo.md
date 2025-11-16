@@ -2687,3 +2687,86 @@
 - [ ] Dashboard-Charts mit Mock-Daten testen
 - [ ] Time-Range-Filter testen
 - [ ] Mobile-Responsive-Design prüfen
+
+
+---
+
+## 🔥 SPRINT 1: CRITICAL SECURITY & COMPLIANCE (67h)
+
+**Zeitrahmen:** Woche 1-2  
+**Team:** Dr. Stefan Weber (Security), Prof. Dr. Anna Müller (Performance), Dr. Thomas Klein (Accessibility)
+
+### Session-Timeout (3h)
+- [x] Session-Timeout-Logic in server/_core/sdk.ts (verifySession)
+- [x] 24h Inaktivitäts-Check (TWENTY_FOUR_HOURS_MS)
+- [x] Auto-Logout bei Timeout (Cookie wird cleared)
+- [x] Session-Refresh-Middleware (sessionRefreshMiddleware.ts)
+- [x] JWT-Expiration auf 30 Tage reduziert (statt 1 Jahr)
+- [x] lastActivity-Timestamp in SessionPayload
+- [x] Session-Refresh nur alle 1h (Performance-Optimization)
+
+### CSRF-Token-Rotation (8h)
+- [x] NICHT NÖTIG - 3-Layer-Protection bereits vorhanden:
+  - [x] Helmet.js CSP (Content-Security-Policy)
+  - [x] SameSite=Strict Cookies (verhindert Cross-Site-Cookie-Sending)
+  - [x] CORS mit Credentials (nur gleiche Origin)
+- [x] csrfMiddleware.ts erstellt (falls später benötigt)
+- [x] Dokumentiert in FLINKLY_COMPLETE_AUDIT.md
+
+### Database-Indexe (8h)
+- [x] Index auf gigs.category erstellen (category_idx)
+- [x] Index auf gigs.sellerId erstellen (seller_id_idx)
+- [x] Index auf gigs.status erstellen (status_idx)
+- [x] Index auf orders.status erstellen (orders_status_idx)
+- [x] Index auf orders.buyerId erstellen (orders_buyer_id_idx)
+- [x] Index auf orders.sellerId erstellen (orders_seller_id_idx)
+- [x] Index auf orders.gigId erstellen (orders_gig_id_idx)
+- [x] Index auf reviews.gigId erstellen (reviews_gig_id_idx)
+- [x] Index auf reviews.reviewerId erstellen (reviews_reviewer_id_idx)
+- [x] Index auf favorites.userId erstellen (favorites_user_id_idx)
+- [x] Index auf favorites.gigId erstellen (favorites_gig_id_idx)
+- [x] Migration ausgeführt (pnpm db:push) - drizzle/0009_lean_deadpool.sql
+- [x] 11 Indexe erfolgreich erstellt
+
+### Skip-Links (4h)
+- [x] Skip-Link-Komponente erstellt (SkipLink.tsx)
+- [x] "Skip to main content" Link in App.tsx integriert (vor GlobalHeader)
+- [x] #main-content Anchor in Home.tsx hinzugefügt
+- [x] #main-content Anchor in Marketplace.tsx hinzugefügt
+- [x] sr-only + focus:not-sr-only Pattern (nur bei Tab-Focus sichtbar)
+- [x] WCAG 2.1 AA konform (z-index 9999, Ring-Offset, Keyboard-Accessible)
+
+### Pagination-Limit-Enforcement (4h)
+- [ ] Max-Limit (100) in Marketplace-Query
+- [ ] Max-Limit in Reviews-Query
+- [ ] Max-Limit in Messages-Query
+- [ ] Error-Message bei Limit-Überschreitung
+- [ ] Testing mit großen Limit-Werten
+
+### File-Upload Virus-Scan (12h)
+- [ ] ClamAV-Integration recherchieren
+- [ ] Alternative: VirusTotal-API
+- [ ] Virus-Scan-Middleware erstellen
+- [ ] File-Upload in CreateGig.tsx integrieren
+- [ ] File-Upload in Messages.tsx integrieren
+- [ ] Quarantine-Logic für infizierte Files
+- [ ] Admin-Notification bei Virus-Fund
+- [ ] Testing mit EICAR-Test-File
+
+### Health-Check-Endpoints (6h)
+- [ ] /health Endpoint erstellen (server/_core/index.ts)
+- [ ] /ready Endpoint erstellen
+- [ ] Database-Connection-Check
+- [ ] Redis-Connection-Check (falls vorhanden)
+- [ ] Response-Format: { status: "ok", timestamp, uptime }
+- [ ] Testing mit curl/Postman
+
+### Graceful-Shutdown (8h)
+- [ ] SIGTERM-Handler in server/_core/index.ts
+- [ ] SIGINT-Handler (Ctrl+C)
+- [ ] Requests sauber beenden (max 30s)
+- [ ] Database-Connections schließen
+- [ ] Socket.io-Connections schließen
+- [ ] Testing mit kill -SIGTERM <pid>
+
+---
