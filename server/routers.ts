@@ -18,6 +18,7 @@ import { favoritesRouter } from "./routers/favorites";
 import { disputesRouter } from "./routers/disputes";
 import { moderationRouter } from "./routers/moderation";
 import { templatesRouter } from "./routers/templates";
+import { analyticsRouter } from "./routers/analytics";
 
 export const appRouter = router({
   system: systemRouter,
@@ -33,6 +34,7 @@ export const appRouter = router({
   disputes: disputesRouter,
   moderation: moderationRouter,
   templates: templatesRouter,
+  analytics: analyticsRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

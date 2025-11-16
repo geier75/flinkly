@@ -2642,3 +2642,44 @@
 - [x] Loading-Spinner am Ende der Liste
 - [x] "Alle Gigs geladen"-Message
 - [x] Scroll-to-Top-Button (ab 1000px Scroll)
+
+
+---
+
+## 📊 SELLER-DASHBOARD-ANALYTICS (User-Request)
+
+### DB-Schema erweitern (4h)
+- [x] gigViews-Tabelle (gigId, viewedAt, userId, ipHash)
+- [x] gigStats-Tabelle (gigId, date, views, orders, revenue)
+- [x] Migration ausführen (pnpm db:push)
+
+### Analytics-tRPC-Procedures (8h)
+- [x] analytics.getGigStats (gigId, timeRange: 7/30/90 days)
+- [x] analytics.getRevenue (sellerId, timeRange)
+- [x] analytics.getPerformance (sellerId) - Response-Time, Completion-Rate
+- [x] analytics.getTopGigs (sellerId, limit: 5)
+- [x] analytics.trackGigView (gigId) - View-Tracking-Procedure
+
+### Chart-Components (6h)
+- [x] Recharts installieren (pnpm add recharts)
+- [x] GigViewsChart.tsx (Line-Chart für Views over Time)
+- [x] ConversionRateChart.tsx (Bar-Chart für Conversion)
+- [x] RevenueChart.tsx (Area-Chart für Revenue)
+- [ ] TopGigsTable.tsx (Tabelle mit Top-Performing-Gigs)
+
+### SellerDashboard.tsx (12h)
+- [x] Dashboard-Layout mit Grid (Stats-Cards + Charts)
+- [x] Stats-Cards (Total-Views, Total-Orders, Total-Revenue, Avg-Conversion)
+- [x] Time-Range-Selector (7/30/90 Tage)
+- [x] Gig-Views-Chart-Section
+- [x] Conversion-Rate-Chart-Section
+- [x] Revenue-Chart-Section
+- [x] Top-Performing-Gigs-Section
+- [x] Performance-Metrics-Section (Response-Time, Completion-Rate)
+- [ ] Route registrieren (/seller/dashboard)
+
+### Testing (2h)
+- [ ] View-Tracking testen (GigDetail-Page öffnen)
+- [ ] Dashboard-Charts mit Mock-Daten testen
+- [ ] Time-Range-Filter testen
+- [ ] Mobile-Responsive-Design prüfen

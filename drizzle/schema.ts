@@ -314,3 +314,37 @@ export const fraudAlerts = mysqlTable("fraudAlerts", {
 
 export type FraudAlert = typeof fraudAlerts.$inferSelect;
 export type InsertFraudAlert = typeof fraudAlerts.$inferInsert;
+
+/**
+ * Gig-Views-Tracking für Analytics
+ * Tracks every view of a gig for analytics purposes
+ */
+export const gigViews = mysqlTable("gigViews", {
+  id: int("id").autoincrement().primaryKey(),
+  gigId: int("gigId").notNull(),
+  userId: int("userId"), // null if anonymous
+  ipHash: varchar("ipHash", { length: 64 }), // hashed IP for GDPR compliance
+  viewedAt: timestamp("viewedAt").defaultNow().notNull(),
+});
+
+export type GigView = typeof gigViews.$inferSelect;
+export type InsertGigView = typeof gigViews.$inferInsert;
+
+/**
+ * Gig-Stats-Aggregation für Dashboard-Performance
+ * Daily aggregated stats for fast dashboard queries
+ */
+export const gigStats = mysqlTable("gigStats", {
+  id: int("id").autoincrement().primaryKey(),
+  gigId: int("gigId").notNull(),
+  date: timestamp("date").notNull(), // YYYY-MM-DD 00:00:00
+  views: int("views").default(0).notNull(),
+  orders: int("orders").default(0).notNull(),
+  revenue: int("revenue").default(0).notNull(), // in cents
+  conversionRate: int("conversionRate").default(0), // stored as int (0-10000) for 0.00%-100.00%
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type GigStats = typeof gigStats.$inferSelect;
+export type InsertGigStats = typeof gigStats.$inferInsert;
