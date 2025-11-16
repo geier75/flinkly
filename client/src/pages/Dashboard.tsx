@@ -22,13 +22,13 @@ export default function Dashboard() {
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
-      pending: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/60 shadow-[0_0_20px_rgba(234,179,8,0.4)]",
-      in_progress: "bg-primary/20 text-primary border border-primary/60 shadow-[0_0_20px_oklch(0.70_0.25_150_/_0.4)]",
-      completed: "bg-green-500/20 text-green-300 border border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)]",
-      cancelled: "bg-red-500/20 text-red-300 border border-red-500/60 shadow-[0_0_20px_rgba(239,68,68,0.4)]",
-      disputed: "bg-accent/20 text-accent border border-accent/60 shadow-[0_0_20px_oklch(0.70_0.20_35_/_0.4)]",
+      pending: "bg-yellow-500/20 text-yellow-300 border border-yellow-500/60 shadow-md",
+      in_progress: "bg-primary/20 text-primary border border-primary/60 shadow-md",
+      completed: "bg-green-500/20 text-green-300 border border-green-500/60 shadow-md",
+      cancelled: "bg-red-500/20 text-red-300 border border-red-500/60 shadow-md",
+      disputed: "bg-accent/20 text-accent border border-accent/60 shadow-md",
     };
-    return colors[status] || "bg-slate-700/50 text-slate-300 border border-slate-600";
+    return colors[status] || "bg-slate-700/50 text-slate-700 border border-slate-600";
   };
 
   return (
@@ -37,7 +37,7 @@ export default function Dashboard() {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
       
       {/* Cyberpunk Neon Header */}
-      <div className="relative z-10 cyber-neon-border bg-slate-900/80 backdrop-blur-xl">
+      <div className="relative z-10 cyber-neon-border bg-white/80 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-12">
           <motion.div 
             className="flex justify-between items-start"
@@ -46,22 +46,22 @@ export default function Dashboard() {
             transition={{ duration: 0.6 }}
           >
             <div>
-              <h1 className="text-6xl font-extrabold mb-3 tracking-tight cyber-chrome-text flex items-center gap-4">
+              <h1 className="text-6xl font-extrabold mb-3 tracking-tight text-slate-900 font-bold flex items-center gap-4">
                 <Zap className="h-12 w-12 text-primary animate-pulse" />
-                Willkommen bei <span className="cyber-neon-green">Flinkly</span>
+                Willkommen bei <span className="text-emerald-600">Flinkly</span>
               </h1>
-              <p className="text-slate-300 text-xl font-light tracking-wide">
+              <p className="text-slate-700 text-xl font-light tracking-wide">
                 Verwalte deine Gigs, Bestellungen und Verdienste
               </p>
             </div>
             <div className="flex gap-4">
               <Link href="/profile">
-                <Button variant="outline" className="border-2 border-slate-600 text-white hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300 backdrop-blur-xl">
+                <Button variant="outline" className="border-2 border-slate-600 text-slate-900 hover:border-primary hover:bg-primary/10 hover:shadow-md transition-all duration-300 backdrop-blur-xl">
                   Profil
                 </Button>
               </Link>
               <Link href="/create-gig">
-                <Button className="cyber-neon-button text-white font-bold px-8 py-3 text-lg">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 text-slate-900 font-bold px-8 py-3 text-lg">
                   <Plus className="h-5 w-5 mr-2" />
                   Neuer Gig
                 </Button>
@@ -74,24 +74,24 @@ export default function Dashboard() {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-12 relative z-10">
         <Tabs defaultValue="overview" className="space-y-10">
-          <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-2 border-slate-700 backdrop-blur-xl p-2 rounded-2xl shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+          <TabsList className="grid w-full grid-cols-3 bg-slate-800/50 border-2 border-slate-700 backdrop-blur-xl p-2 rounded-2xl shadow-md">
             <TabsTrigger 
               value="overview" 
-              className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+              className="data-[state=active]:bg-emerald-600 hover:bg-emerald-700 text-slate-900 data-[state=active]:text-slate-900 rounded-xl transition-all duration-300 text-slate-700 font-semibold text-lg"
             >
               <TrendingUp className="h-5 w-5 mr-2" />
               Übersicht
             </TabsTrigger>
             <TabsTrigger 
               value="gigs" 
-              className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+              className="data-[state=active]:bg-emerald-600 hover:bg-emerald-700 text-slate-900 data-[state=active]:text-slate-900 rounded-xl transition-all duration-300 text-slate-700 font-semibold text-lg"
             >
               <Package className="h-5 w-5 mr-2" />
               Meine Gigs
             </TabsTrigger>
             <TabsTrigger 
               value="orders" 
-              className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+              className="data-[state=active]:bg-emerald-600 hover:bg-emerald-700 text-slate-900 data-[state=active]:text-slate-900 rounded-xl transition-all duration-300 text-slate-700 font-semibold text-lg"
             >
               <ShoppingCart className="h-5 w-5 mr-2" />
               Bestellungen
@@ -111,14 +111,14 @@ export default function Dashboard() {
                 whileHover={{ scale: 1.05, y: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="cyber-glass-card border-2 border-primary/40 group transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)]">
+                <Card className="bg-white shadow-sm border-2 border-primary/40 group transition-all duration-500 hover:shadow-md">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                     <CardTitle className="text-lg font-bold text-slate-200">Aktive Gigs</CardTitle>
                     <Package className="h-8 w-8 text-primary animate-pulse" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-5xl font-extrabold cyber-neon-green mb-2">{myGigs?.length || 0}</div>
-                    <p className="text-sm text-slate-400 font-medium">
+                    <div className="text-5xl font-extrabold text-emerald-600 mb-2">{myGigs?.length || 0}</div>
+                    <p className="text-sm text-slate-600 font-medium">
                       {myGigs?.filter((g) => g.active).length || 0} aktiv • {myGigs?.filter((g) => !g.active).length || 0} inaktiv
                     </p>
                   </CardContent>
@@ -130,16 +130,16 @@ export default function Dashboard() {
                 whileHover={{ scale: 1.05, y: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="cyber-glass-card border-2 border-accent/40 group transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.20_35_/_0.6)]">
+                <Card className="bg-white shadow-sm border-2 border-accent/40 group transition-all duration-500 hover:shadow-md">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                     <CardTitle className="text-lg font-bold text-slate-200">Bestellungen</CardTitle>
                     <ShoppingCart className="h-8 w-8 text-accent animate-pulse" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-5xl font-extrabold cyber-neon-orange mb-2">
+                    <div className="text-5xl font-extrabold text-orange-600 font-bold mb-2">
                       {(myPurchases?.length || 0) + (mySales?.length || 0)}
                     </div>
-                    <p className="text-sm text-slate-400 font-medium">
+                    <p className="text-sm text-slate-600 font-medium">
                       {myPurchases?.filter((o) => o.status === "completed").length || 0} abgeschlossen
                     </p>
                   </CardContent>
@@ -151,14 +151,14 @@ export default function Dashboard() {
                 whileHover={{ scale: 1.05, y: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="cyber-glass-card border-2 border-yellow-500/40 group transition-all duration-500 hover:shadow-[0_0_60px_rgba(234,179,8,0.6)]">
+                <Card className="bg-white shadow-sm border-2 border-yellow-500/40 group transition-all duration-500 hover:shadow-md">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                     <CardTitle className="text-lg font-bold text-slate-200">Bewertung</CardTitle>
                     <Star className="h-8 w-8 text-yellow-500 animate-pulse" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-5xl font-extrabold text-yellow-400 mb-2" style={{textShadow: '0 0 20px rgba(234, 179, 8, 0.8)'}}>4.8</div>
-                    <p className="text-sm text-slate-400 font-medium">basierend auf 12 Bewertungen</p>
+                    <p className="text-sm text-slate-600 font-medium">basierend auf 12 Bewertungen</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -170,24 +170,24 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Card className="cyber-glass-card border-2 border-slate-700/50">
+              <Card className="bg-white shadow-sm border-2 border-slate-700/50">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold cyber-chrome-text">Schnellstart</CardTitle>
+                  <CardTitle className="text-2xl font-bold text-slate-900 font-bold">Schnellstart</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <Link href="/marketplace">
-                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-white hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300 py-6">
+                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-slate-900 hover:border-primary hover:bg-primary/10 hover:shadow-md transition-all duration-300 py-6">
                       <Zap className="h-5 w-5 mr-3 text-primary" />
                       Marketplace erkunden
                     </Button>
                   </Link>
                   <Link href="/create-gig">
-                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-white hover:border-accent hover:bg-accent/10 hover:shadow-[0_0_30px_oklch(0.70_0.20_35_/_0.4)] transition-all duration-300 py-6">
+                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-slate-900 hover:border-accent hover:bg-accent/10 hover:shadow-md transition-all duration-300 py-6">
                       <Plus className="h-5 w-5 mr-3 text-accent" />
                       Erstes Gig erstellen
                     </Button>
                   </Link>
-                  <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-white hover:border-primary hover:bg-primary/10 hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300 py-6">
+                  <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-slate-900 hover:border-primary hover:bg-primary/10 hover:shadow-md transition-all duration-300 py-6">
                     <Star className="h-5 w-5 mr-3 text-yellow-500" />
                     Profil bearbeiten
                   </Button>
@@ -199,9 +199,9 @@ export default function Dashboard() {
           {/* Gigs Tab */}
           <TabsContent value="gigs" className="space-y-8">
             <div className="flex justify-between items-center">
-              <h2 className="text-4xl font-extrabold cyber-chrome-text">Meine Gigs</h2>
+              <h2 className="text-4xl font-extrabold text-slate-900 font-bold">Meine Gigs</h2>
               <Link href="/create-gig">
-                <Button className="cyber-neon-button text-white font-bold px-8 py-4 text-lg">
+                <Button className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 text-slate-900 font-bold px-8 py-4 text-lg">
                   <Plus className="h-5 w-5 mr-2" />
                   Neuer Gig
                 </Button>
@@ -209,14 +209,14 @@ export default function Dashboard() {
             </div>
 
             {!myGigs || myGigs.length === 0 ? (
-              <Card className="cyber-glass-card border-2 border-slate-700/50">
+              <Card className="bg-white shadow-sm border-2 border-slate-700/50">
                 <CardContent className="pt-12 pb-12 text-center">
                   <Package className="h-24 w-24 mx-auto mb-6 text-slate-600" />
-                  <p className="text-slate-300 mb-6 text-xl font-medium">
+                  <p className="text-slate-700 mb-6 text-xl font-medium">
                     Du hast noch keine Gigs erstellt
                   </p>
                   <Link href="/create-gig">
-                    <Button className="cyber-neon-button text-white font-bold px-10 py-4 text-lg">
+                    <Button className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 text-slate-900 font-bold px-10 py-4 text-lg">
                       Erstes Gig erstellen
                     </Button>
                   </Link>
@@ -232,19 +232,19 @@ export default function Dashboard() {
                     transition={{ duration: 0.4, delay: index * 0.1 }}
                     whileHover={{ scale: 1.02, x: 10 }}
                   >
-                    <Card className="cyber-glass-card border-2 border-primary/40 hover:border-primary/80 transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)]">
+                    <Card className="bg-white shadow-sm border-2 border-primary/40 hover:border-primary/80 transition-all duration-500 hover:shadow-md">
                       <CardContent className="pt-8 pb-8">
                         <div className="flex justify-between items-start">
                           <div className="flex-1">
-                            <h3 className="font-extrabold text-2xl mb-3 text-white">{gig.title}</h3>
-                            <p className="text-base text-slate-400 mb-4 leading-relaxed">
+                            <h3 className="font-extrabold text-2xl mb-3 text-slate-900">{gig.title}</h3>
+                            <p className="text-base text-slate-600 mb-4 leading-relaxed">
                               {gig.description.substring(0, 150)}...
                             </p>
                             <div className="flex gap-6 text-base">
-                              <span className="cyber-neon-orange font-bold text-xl">
+                              <span className="text-orange-600 font-bold font-bold text-xl">
                                 €{(gig.price / 100).toFixed(2)}
                               </span>
-                              <span className="text-slate-400 font-medium">
+                              <span className="text-slate-600 font-medium">
                                 {gig.completedOrders} Bestellungen
                               </span>
                               {gig.averageRating && (
@@ -258,13 +258,13 @@ export default function Dashboard() {
                             <span
                               className={`px-4 py-2 rounded-full text-sm font-bold border-2 ${
                                 gig.active
-                                  ? "bg-green-500/20 text-green-300 border-green-500/60 shadow-[0_0_20px_rgba(34,197,94,0.4)]"
-                                  : "bg-slate-700/50 text-slate-300 border-slate-600"
+                                  ? "bg-green-500/20 text-green-300 border-green-500/60 shadow-md"
+                                  : "bg-slate-700/50 text-slate-700 border-slate-600"
                               }`}
                             >
                               {gig.active ? "Aktiv" : "Inaktiv"}
                             </span>
-                            <Button variant="outline" size="sm" className="border-2 border-slate-600 text-white hover:border-accent hover:bg-accent/10 hover:shadow-[0_0_20px_oklch(0.70_0.20_35_/_0.4)] font-semibold px-6">
+                            <Button variant="outline" size="sm" className="border-2 border-slate-600 text-slate-900 hover:border-accent hover:bg-accent/10 hover:shadow-md font-semibold px-6">
                               Bearbeiten
                             </Button>
                           </div>
@@ -283,13 +283,13 @@ export default function Dashboard() {
               <TabsList className="grid w-full grid-cols-2 bg-slate-800/50 border-2 border-slate-700 backdrop-blur-xl p-2 rounded-2xl">
                 <TabsTrigger 
                   value="purchases" 
-                  className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+                  className="data-[state=active]:bg-emerald-600 hover:bg-emerald-700 text-slate-900 data-[state=active]:text-slate-900 rounded-xl transition-all duration-300 text-slate-700 font-semibold text-lg"
                 >
                   Meine Käufe
                 </TabsTrigger>
                 <TabsTrigger 
                   value="sales" 
-                  className="data-[state=active]:cyber-neon-button data-[state=active]:text-white rounded-xl transition-all duration-300 text-slate-300 font-semibold text-lg"
+                  className="data-[state=active]:bg-emerald-600 hover:bg-emerald-700 text-slate-900 data-[state=active]:text-slate-900 rounded-xl transition-all duration-300 text-slate-700 font-semibold text-lg"
                 >
                   Meine Verkäufe
                 </TabsTrigger>
@@ -298,14 +298,14 @@ export default function Dashboard() {
               {/* Purchases */}
               <TabsContent value="purchases" className="space-y-6 mt-8">
                 {!myPurchases || myPurchases.length === 0 ? (
-                  <Card className="cyber-glass-card border-2 border-slate-700/50">
+                  <Card className="bg-white shadow-sm border-2 border-slate-700/50">
                     <CardContent className="pt-12 pb-12 text-center">
                       <ShoppingCart className="h-24 w-24 mx-auto mb-6 text-slate-600" />
-                      <p className="text-slate-300 mb-6 text-xl font-medium">
+                      <p className="text-slate-700 mb-6 text-xl font-medium">
                         Du hast noch keine Gigs gekauft
                       </p>
                       <Link href="/marketplace">
-                        <Button className="cyber-neon-button text-white font-bold px-10 py-4 text-lg">
+                        <Button className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 text-slate-900 font-bold px-10 py-4 text-lg">
                           Marketplace erkunden
                         </Button>
                       </Link>
@@ -320,13 +320,13 @@ export default function Dashboard() {
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       whileHover={{ scale: 1.02 }}
                     >
-                      <Card className="cyber-glass-card border-2 border-accent/40 hover:border-accent/80 transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.20_35_/_0.6)]">
+                      <Card className="bg-white shadow-sm border-2 border-accent/40 hover:border-accent/80 transition-all duration-500 hover:shadow-md">
                         <CardContent className="pt-8 pb-8">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <h3 className="font-bold mb-3 text-white text-xl">Bestellung #{order.id}</h3>
-                              <div className="space-y-2 text-base text-slate-400 font-medium">
-                                <p className="cyber-neon-orange font-bold text-2xl">€{(order.totalPrice / 100).toFixed(2)}</p>
+                              <h3 className="font-bold mb-3 text-slate-900 text-xl">Bestellung #{order.id}</h3>
+                              <div className="space-y-2 text-base text-slate-600 font-medium">
+                                <p className="text-orange-600 font-bold font-bold text-2xl">€{(order.totalPrice / 100).toFixed(2)}</p>
                                 <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
                               </div>
                             </div>
@@ -348,14 +348,14 @@ export default function Dashboard() {
               {/* Sales */}
               <TabsContent value="sales" className="space-y-6 mt-8">
                 {!mySales || mySales.length === 0 ? (
-                  <Card className="cyber-glass-card border-2 border-slate-700/50">
+                  <Card className="bg-white shadow-sm border-2 border-slate-700/50">
                     <CardContent className="pt-12 pb-12 text-center">
                       <Package className="h-24 w-24 mx-auto mb-6 text-slate-600" />
-                      <p className="text-slate-300 mb-6 text-xl font-medium">
+                      <p className="text-slate-700 mb-6 text-xl font-medium">
                         Du hast noch keine Gigs verkauft
                       </p>
                       <Link href="/create-gig">
-                        <Button className="cyber-neon-button text-white font-bold px-10 py-4 text-lg">
+                        <Button className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 text-slate-900 font-bold px-10 py-4 text-lg">
                           Gig erstellen
                         </Button>
                       </Link>
@@ -370,13 +370,13 @@ export default function Dashboard() {
                       transition={{ duration: 0.4, delay: index * 0.1 }}
                       whileHover={{ scale: 1.02 }}
                     >
-                      <Card className="cyber-glass-card border-2 border-primary/40 hover:border-primary/80 transition-all duration-500 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)]">
+                      <Card className="bg-white shadow-sm border-2 border-primary/40 hover:border-primary/80 transition-all duration-500 hover:shadow-md">
                         <CardContent className="pt-8 pb-8">
                           <div className="flex justify-between items-start">
                             <div className="flex-1">
-                              <h3 className="font-bold mb-3 text-white text-xl">Bestellung #{order.id}</h3>
-                              <div className="space-y-2 text-base text-slate-400 font-medium">
-                                <p className="cyber-neon-green font-bold text-2xl">€{(order.totalPrice / 100).toFixed(2)}</p>
+                              <h3 className="font-bold mb-3 text-slate-900 text-xl">Bestellung #{order.id}</h3>
+                              <div className="space-y-2 text-base text-slate-600 font-medium">
+                                <p className="text-emerald-600 font-bold text-2xl">€{(order.totalPrice / 100).toFixed(2)}</p>
                                 <p>Erstellt: {order.createdAt ? new Date(order.createdAt).toLocaleDateString("de-DE") : "N/A"}</p>
                               </div>
                             </div>

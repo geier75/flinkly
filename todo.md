@@ -2775,3 +2775,17 @@
 - [ ] Testing mit kill -SIGTERM <pid>
 
 ---
+
+
+---
+
+## 🎨 DRINGEND: Cyberpunk-LED-Design entfernen (User-Request)
+
+- [x] Dashboard (SellerDashboard.tsx, Dashboard.tsx) - Cyberpunk-LED-Styles entfernt
+- [x] Admin-Bereich (AdminDashboard.tsx) - Cyberpunk-LED-Styles entfernt
+- [x] Lesbare Schriftfarben verwendet (text-slate-900 statt neon)
+- [x] Hintergründe auf bg-white/bg-gray-50 geändert
+- [x] Borders auf border-slate-200 geändert
+- [x] Neon-Shadows entfernt (shadow-md statt shadow-[0_0_40px...])
+- [x] Gradients entfernt (bg-emerald-600 statt bg-gradient-to-r)
+- [x] Alle cyber-* und neon-* Klassen ersetzt
