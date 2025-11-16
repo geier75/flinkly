@@ -84,6 +84,37 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // Health-Check-Endpoints (for Load-Balancers, Kubernetes, etc.)
+  app.get("/health", (req, res) => {
+    // Liveness-Check: Server is running
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
+  app.get("/ready", async (req, res) => {
+    // Readiness-Check: Server is ready to accept traffic (DB connection OK)
+    try {
+      const { getDb } = await import("../db");
+      const db = await getDb();
+      if (!db) {
+        return res.status(503).json({ 
+          status: "not_ready", 
+          reason: "database_unavailable",
+          timestamp: new Date().toISOString() 
+        });
+      }
+      // Simple DB ping
+      await db.execute("SELECT 1");
+      res.status(200).json({ status: "ready", timestamp: new Date().toISOString() });
+    } catch (error) {
+      res.status(503).json({ 
+        status: "not_ready", 
+        reason: "database_error",
+        error: String(error),
+        timestamp: new Date().toISOString() 
+      });
+    }
+  });
   // Sitemap & Robots.txt (SEO)
   app.get("/sitemap.xml", async (req, res) => {
     const { generateSitemap } = await import("../sitemap");

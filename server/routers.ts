@@ -50,15 +50,17 @@ export const appRouter = router({
   gigs: router({
     list: publicProcedure
       .input(z.object({ 
-        limit: z.number().default(20), 
-        offset: z.number().default(0),
+        limit: z.number().min(1).max(100).default(20), // DoS-Prevention: Max 100 items per request
+        offset: z.number().min(0).default(0),
         category: z.string().optional(),
         minPrice: z.number().optional(),
         maxPrice: z.number().optional(),
       }))
       .query(async ({ input }) => {
+        // Enforce max limit server-side (defense in depth)
+        const safeLimit = Math.min(input.limit, 100);
         // TODO: Add filtering by category and price
-        return await db.getGigs(input.limit, input.offset);
+        return await db.getGigs(safeLimit, input.offset);
       }),
 
     getById: publicProcedure
@@ -66,7 +68,15 @@ export const appRouter = router({
       .query(({ input }) => db.getGigById(input.id)),
 
     myGigs: protectedProcedure
-      .query(({ ctx }) => db.getSellerGigs(ctx.user.id)),
+      .input(z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(({ ctx, input }) => {
+        const limit = input?.limit ? Math.min(input.limit, 100) : 50;
+        const offset = input?.offset || 0;
+        return db.getSellerGigs(ctx.user.id, limit, offset);
+      }),
 
     create: protectedProcedure
       .input(z.object({
@@ -153,10 +163,26 @@ export const appRouter = router({
 
   orders: router({
     myPurchases: protectedProcedure
-      .query(({ ctx }) => db.getBuyerOrders(ctx.user.id)),
+      .input(z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(({ ctx, input }) => {
+        const limit = input?.limit ? Math.min(input.limit, 100) : 50;
+        const offset = input?.offset || 0;
+        return db.getBuyerOrders(ctx.user.id, limit, offset);
+      }),
 
     mySales: protectedProcedure
-      .query(({ ctx }) => db.getSellerOrders(ctx.user.id)),
+      .input(z.object({
+        limit: z.number().min(1).max(100).default(50),
+        offset: z.number().min(0).default(0),
+      }).optional())
+      .query(({ ctx, input }) => {
+        const limit = input?.limit ? Math.min(input.limit, 100) : 50;
+        const offset = input?.offset || 0;
+        return db.getSellerOrders(ctx.user.id, limit, offset);
+      }),
 
     getById: protectedProcedure
       .input(z.object({ id: z.number() }))
@@ -226,8 +252,15 @@ export const appRouter = router({
 
   reviews: router({
     getGigReviews: publicProcedure
-      .input(z.object({ gigId: z.number() }))
-      .query(({ input }) => db.getGigReviews(input.gigId)),
+      .input(z.object({ 
+        gigId: z.number(),
+        limit: z.number().min(1).max(100).default(50), // DoS-Prevention: Max 100 reviews per request
+        offset: z.number().min(0).default(0),
+      }))
+      .query(({ input }) => {
+        const safeLimit = Math.min(input.limit, 100);
+        return db.getGigReviews(input.gigId, safeLimit, input.offset);
+      }),
 
     create: protectedProcedure
       .input(z.object({

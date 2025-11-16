@@ -7,6 +7,7 @@ import { z } from "zod";
 import * as db from "../db";
 import { sanitizeMessage } from "@shared/sanitize";
 import { storagePut } from "../storage";
+import { scanFileForVirus } from "../_core/virusScan";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { conversations, messages } from "../../drizzle/schema";
@@ -237,6 +238,17 @@ export const messagesRouter = router({
       }
       
       const fileBuffer = Buffer.from(input.fileData, "base64");
+      
+      // Virus-Scan BEFORE uploading to S3
+      const scanResult = await scanFileForVirus(fileBuffer, input.fileName);
+      
+      if (!scanResult.isClean) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: `Virus detected: ${scanResult.viruses.join(", ")}` 
+        });
+      }
+      
       const randomId = Math.random().toString(36).substring(7);
       const fileKey = `messages/${input.conversationId}/${randomId}-${input.fileName}`;
       

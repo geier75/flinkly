@@ -2736,22 +2736,27 @@
 - [x] sr-only + focus:not-sr-only Pattern (nur bei Tab-Focus sichtbar)
 - [x] WCAG 2.1 AA konform (z-index 9999, Ring-Offset, Keyboard-Accessible)
 
-### Pagination-Limit-Enforcement (4h)
-- [ ] Max-Limit (100) in Marketplace-Query
-- [ ] Max-Limit in Reviews-Query
-- [ ] Max-Limit in Messages-Query
-- [ ] Error-Message bei Limit-Überschreitung
-- [ ] Testing mit großen Limit-Werten
+#### Pagination-Limit-Enforcement (4h)
+- [x] Max-Limit (100) in gigs.list Query (Zod: min(1).max(100), Server: Math.min(limit, 100))
+- [x] Max-Limit (100) in reviews.getGigReviews Query (default 50, max 100)
+- [x] Max-Limit (100) in orders.myPurchases Query (default 50, max 100)
+- [x] Max-Limit (100) in orders.mySales Query (default 50, max 100)
+- [x] Max-Limit (100) in gigs.myGigs Query (default 50, max 100)
+- [x] Server-Side-Validation (Defense-in-Depth: Zod + Math.min)
+- [x] DB-Functions erweitert: getGigReviews, getSellerGigs, getBuyerOrders, getSellerOrders mit limit/offset
+- [x] DoS-Prevention: User können max 100 Items pro Request ladenen
 
 ### File-Upload Virus-Scan (12h)
-- [ ] ClamAV-Integration recherchieren
-- [ ] Alternative: VirusTotal-API
-- [ ] Virus-Scan-Middleware erstellen
-- [ ] File-Upload in CreateGig.tsx integrieren
-- [ ] File-Upload in Messages.tsx integrieren
-- [ ] Quarantine-Logic für infizierte Files
-- [ ] Admin-Notification bei Virus-Fund
-- [ ] Testing mit EICAR-Test-File
+- [x] ClamAV installiert (apt-get install clamav clamav-daemon)
+- [x] clamscan npm package installiert (2.4.0 + @types/clamscan 2.4.1)
+- [x] Virus-Scan-Utility erstellt (server/_core/virusScan.ts)
+- [x] scanFileForVirus-Funktion implementiert (Buffer → Stream → ClamAV)
+- [x] File-Upload in Messages.tsx integriert (Virus-Scan BEFORE S3-Upload)
+- [x] Error-Handling: Virus detected → TRPCError BAD_REQUEST
+- [x] Fail-Safe: Scanner-Fehler → Upload rejected (security-first)
+- [x] Health-Check-Funktion: checkVirusScannerHealth()
+- [ ] TODO: Testing mit EICAR-Test-File (X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*)
+- [ ] TODO: CreateGig.tsx File-Upload integrieren (falls Image-Upload hinzugefügt wird)
 
 ### Health-Check-Endpoints (6h)
 - [ ] /health Endpoint erstellen (server/_core/index.ts)

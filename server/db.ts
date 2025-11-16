@@ -118,12 +118,14 @@ export async function getGigById(id: number) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function getSellerGigs(sellerId: number) {
+export async function getSellerGigs(sellerId: number, limit: number = 50, offset: number = 0) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(gigs)
     .where(eq(gigs.sellerId, sellerId))
-    .orderBy(desc(gigs.createdAt));
+    .orderBy(desc(gigs.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
 // Alias for data export
@@ -162,20 +164,24 @@ export async function publishGig(id: number) {
 }
 
 // Order queries
-export async function getBuyerOrders(buyerId: number) {
+export async function getBuyerOrders(buyerId: number, limit: number = 50, offset: number = 0) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(orders)
     .where(eq(orders.buyerId, buyerId))
-    .orderBy(desc(orders.createdAt));
+    .orderBy(desc(orders.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
-export async function getSellerOrders(sellerId: number) {
+export async function getSellerOrders(sellerId: number, limit: number = 50, offset: number = 0) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(orders)
     .where(eq(orders.sellerId, sellerId))
-    .orderBy(desc(orders.createdAt));
+    .orderBy(desc(orders.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function getOrderById(id: number) {
@@ -200,12 +206,14 @@ export async function updateOrderStatus(id: number, status: string) {
 }
 
 // Review queries
-export async function getGigReviews(gigId: number) {
+export async function getGigReviews(gigId: number, limit: number = 50, offset: number = 0) {
   const db = await getDb();
   if (!db) return [];
   return db.select().from(reviews)
     .where(eq(reviews.gigId, gigId))
-    .orderBy(desc(reviews.createdAt));
+    .orderBy(desc(reviews.createdAt))
+    .limit(limit)
+    .offset(offset);
 }
 
 export async function createReview(review: InsertReview) {

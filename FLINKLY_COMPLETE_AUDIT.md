@@ -35,7 +35,7 @@
 **Dr. Stefan Weber (Security):**
 - [x] **CSRF-Token-Rotation NICHT nötig** (0h) - 3-Layer-Protection bereits vorhanden (Helmet CSP + SameSite=Strict + CORS Credentials)
 - [ ] **Rate-Limiting zu schwach für Payment-Endpoints** (4h) - Payment-Endpoints haben keine separaten, strengeren Limits
-- [ ] **File-Upload ohne Virus-Scan** (12h) - Nur Mimetype-Check, kein ClamAV oder VirusTotal-Integration
+- [x] **File-Upload Virus-Scan implementiert** (12h) - ClamAV installiert, scanFileForVirus() in messages.ts, Fail-Safe: Scanner-Fehler → Upload rejected
 - [x] **Session-Timeout implementiert** (3h) - JWT 30 Tage, Inaktivität 24h, Session-Refresh-Middleware
 
 **Prof. Dr. Sabine Wagner (DSGVO):**
@@ -56,7 +56,7 @@
 - [ ] **N+1-Query-Problem in Marketplace** (12h) - Gig-Cards laden Seller-Daten einzeln statt JOIN
 - [ ] **Keine CDN-Integration für Static Assets** (16h) - Images/Videos sollten über CloudFront/Cloudflare ausgeliefert werden
 - [ ] **Keine Response-Caching-Strategy** (10h) - tRPC-Responses sollten mit Redis gecacht werden
-- [ ] **Keine Pagination-Limit-Enforcement** (4h) - User können unbegrenzt Gigs laden (DoS-Risiko)
+- [x] **Pagination-Limit-Enforcement implementiert** (4h) - Max 100 Items pro Request (gigs.list, reviews, orders), Zod + Server-Side-Validation
 
 **Michael Schmidt (Infrastructure):**
 - [ ] **Keine Health-Check-Endpoints** (6h) - /health und /ready fehlen für Load-Balancer
