@@ -2614,3 +2614,31 @@
 - [ ] Slow-3G-Network-Throttling testen
 - [ ] Loading-State-Transitions prüfen
 - [ ] Mobile + Desktop testen
+
+
+---
+
+## 🎯 NEXT FEATURES (Continuation)
+
+### Filter nach Sternen (Review-Section) (4h)
+- [x] Star-Rating-Filter-Buttons (5★, 4★, 3★, 2★, 1★)
+- [x] Count-Display pro Filter (z.B. "5★ (12)")
+- [x] Active-State-Highlighting (variant="default" vs "outline")
+- [ ] Filter-State in URL-Query-Params
+- [x] Reset-Filter-Button ("Alle"-Button)
+
+### Quick-View-Modal (Marketplace) (8h)
+- [x] Quick-View-Button auf Gig-Card-Hover
+- [x] Modal-Komponente (GigQuickView.tsx)
+- [x] Modal-Content (Image, Title, Description, Pricing, CTA)
+- [x] Close-Button + ESC-Key-Handler
+- [x] Backdrop-Click-to-Close
+- [x] Smooth-Open/Close-Animation (Dialog-Component)
+
+### Infinite-Scroll (Marketplace) (6h)
+- [x] Intersection-Observer für Scroll-Detection
+- [x] Load-More beim Scrollen (statt Pagination)
+- [x] +12 Gigs pro Batch
+- [x] Loading-Spinner am Ende der Liste
+- [x] "Alle Gigs geladen"-Message
+- [x] Scroll-to-Top-Button (ab 1000px Scroll)

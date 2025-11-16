@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import { ParticleSystem } from "@/components/3d/ParticleSystem";
 import { MagneticButton } from "@/components/3d/MagneticButton";
 import { TiltCard } from "@/components/3d/TiltCard";
 import GigCardSkeleton from "@/components/GigCardSkeleton";
+import GigQuickView from "@/components/GigQuickView";
 
 export default function Marketplace() {
   const [location] = useLocation();
@@ -31,6 +32,9 @@ export default function Marketplace() {
   const [maxPrice, setMaxPrice] = useState<number>(250);
   const [sortBy, setSortBy] = useState<"relevance" | "price" | "delivery" | "rating">("relevance");
   const [showFilters, setShowFilters] = useState(false);
+  const [quickViewGig, setQuickViewGig] = useState<any | null>(null);
+  const [displayCount, setDisplayCount] = useState(12); // Infinite-Scroll: Start with 12 gigs
+  const [showScrollTop, setShowScrollTop] = useState(false);
 
   const { data: gigs, isLoading } = trpc.gigs.list.useQuery({});
   const utils = trpc.useUtils();
@@ -93,6 +97,38 @@ export default function Marketplace() {
         return 0;
     }
   });
+
+  // Infinite-Scroll: Display limited gigs
+  const displayedGigs = sortedGigs.slice(0, displayCount);
+  const hasMoreGigs = sortedGigs.length > displayCount;
+
+  // Intersection Observer for Infinite-Scroll
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMoreGigs) {
+          setDisplayCount((prev) => prev + 12);
+        }
+      },
+      { threshold: 0.5 }
+    );
+
+    const sentinel = document.getElementById("scroll-sentinel");
+    if (sentinel) observer.observe(sentinel);
+
+    return () => {
+      if (sentinel) observer.unobserve(sentinel);
+    };
+  }, [hasMoreGigs]);
+
+  // Scroll-to-Top visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 1000);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
@@ -256,7 +292,7 @@ export default function Marketplace() {
                   <GigCardSkeleton key={i} />
                 ))}
               </div>
-            ) : sortedGigs.length === 0 ? (
+            ) : displayedGigs.length === 0 ? (
               <div className="text-center py-20">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-full mb-6">
                   <Search className="h-10 w-10 text-slate-400" />
@@ -275,7 +311,7 @@ export default function Marketplace() {
               </div>
             ) : (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                {sortedGigs.map((gig, index) => (
+                {displayedGigs.map((gig, index) => (
                   <motion.div
                     key={gig.id}
                     initial={{ opacity: 0, y: 40 }}
@@ -346,14 +382,26 @@ export default function Marketplace() {
                             </div>
                           </div>
 
-                          {/* Price */}
+                          {/* Price + Quick-View-Button */}
                           <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
-                            <span className="text-slate-400 text-sm">Ab</span>
-                            <div className="text-right">
+                            <div className="flex items-center gap-2">
+                              <span className="text-slate-400 text-sm">Ab</span>
                               <span className="text-3xl font-black text-white group-hover:text-success transition-colors duration-300">
                                 {gig.price}€
                               </span>
                             </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setQuickViewGig(gig);
+                              }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-slate-800/50 border-slate-700 hover:bg-accent hover:border-accent text-xs"
+                            >
+                              Quick View
+                            </Button>
                           </div>
                         </div>
                       </CardContent>
@@ -363,9 +411,52 @@ export default function Marketplace() {
                 ))}
               </div>
             )}
+
+            {/* Infinite-Scroll Sentinel */}
+            {!isLoading && hasMoreGigs && (
+              <div id="scroll-sentinel" className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-accent"></div>
+              </div>
+            )}
+
+            {/* All Gigs Loaded Message */}
+            {!isLoading && !hasMoreGigs && displayedGigs.length > 0 && (
+              <div className="text-center py-12 text-slate-400">
+                Alle Gigs geladen ({displayedGigs.length})
+              </div>
+            )}
           </div>
         </section>
       </div>
+
+      {/* Scroll-to-Top Button */}
+      {showScrollTop && (
+        <Button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="fixed bottom-8 right-8 z-50 w-12 h-12 rounded-full bg-accent hover:bg-accent/90 shadow-lg shadow-accent/30"
+          size="icon"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+          </svg>
+        </Button>
+      )}
+
+      {/* Quick-View-Modal */}
+      {quickViewGig && (
+        <GigQuickView
+          gig={quickViewGig}
+          open={!!quickViewGig}
+          onClose={() => setQuickViewGig(null)}
+        />
+      )}
     </div>
   );
 }

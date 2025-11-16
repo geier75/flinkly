@@ -35,6 +35,7 @@ export default function GigDetail() {
 
   const [reviewsToShow, setReviewsToShow] = useState(5);
   const [reviewSort, setReviewSort] = useState<"recent" | "rating">("recent");
+  const [starFilter, setStarFilter] = useState<number | null>(null); // null = all, 1-5 = filter by stars
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: gigId });
   const { data: allReviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
@@ -43,9 +44,14 @@ export default function GigDetail() {
     { enabled: !!gigId }
   );
 
-  // Sort and paginate reviews
+  // Filter, sort and paginate reviews
   const reviews = allReviews
     ? [...allReviews]
+        .filter((review) => {
+          // Star filter
+          if (starFilter === null) return true;
+          return review.rating === starFilter;
+        })
         .sort((a, b) => {
           if (reviewSort === "rating") {
             return b.rating - a.rating;
@@ -53,6 +59,14 @@ export default function GigDetail() {
           return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         })
         .slice(0, reviewsToShow)
+    : [];
+
+  // Calculate star counts for filter buttons
+  const starCounts = allReviews
+    ? [1, 2, 3, 4, 5].map((star) => ({
+        star,
+        count: allReviews.filter((r) => r.rating === star).length,
+      }))
     : [];
 
   const hasMoreReviews = allReviews && allReviews.length > reviewsToShow;
@@ -394,19 +408,52 @@ export default function GigDetail() {
                 >
                   <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
                     <CardContent className="p-8">
-                      <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-white">Bewertungen</h2>
+                      <div className="mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <h2 className="text-2xl font-bold text-white">Bewertungen</h2>
+                          {allReviews && allReviews.length > 0 && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-slate-400">Sortieren:</span>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setReviewSort(reviewSort === "recent" ? "rating" : "recent")}
+                                className="text-xs"
+                              >
+                                {reviewSort === "recent" ? "Neueste" : "Beste Bewertung"}
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Star Filter Buttons */}
                         {allReviews && allReviews.length > 0 && (
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-slate-400">Sortieren:</span>
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Button
-                              variant="outline"
+                              variant={starFilter === null ? "default" : "outline"}
                               size="sm"
-                              onClick={() => setReviewSort(reviewSort === "recent" ? "rating" : "recent")}
+                              onClick={() => setStarFilter(null)}
                               className="text-xs"
                             >
-                              {reviewSort === "recent" ? "Neueste" : "Beste Bewertung"}
+                              Alle ({allReviews.length})
                             </Button>
+                            {[5, 4, 3, 2, 1].map((star) => {
+                              const starData = starCounts.find((s) => s.star === star);
+                              const count = starData?.count || 0;
+                              if (count === 0) return null;
+                              return (
+                                <Button
+                                  key={star}
+                                  variant={starFilter === star ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setStarFilter(star)}
+                                  className="text-xs"
+                                >
+                                  <Star className="h-3 w-3 mr-1 fill-current" />
+                                  {star}★ ({count})
+                                </Button>
+                              );
+                            })}
                           </div>
                         )}
                       </div>
