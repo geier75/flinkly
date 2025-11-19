@@ -19,6 +19,10 @@ import { disputesRouter } from "./routers/disputes";
 import { moderationRouter } from "./routers/moderation";
 import { templatesRouter } from "./routers/templates";
 import { analyticsRouter } from "./routers/analytics";
+import { featureFlagsRouter } from "./routers/featureFlags";
+import { sendEmail } from "./_core/email";
+import { orderConfirmationTemplate } from "./_core/emailTemplates";
+import { trackPaymentSuccess } from "./_core/analytics";
 
 export const appRouter = router({
   system: systemRouter,
@@ -35,6 +39,7 @@ export const appRouter = router({
   moderation: moderationRouter,
   templates: templatesRouter,
   analytics: analyticsRouter,
+  featureFlags: featureFlagsRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -214,6 +219,30 @@ export const appRouter = router({
           buyerId: ctx.user.id,
           sellerId: gig.sellerId,
         });
+
+        // Track payment success event
+        trackPaymentSuccess(ctx.user.id, order!.id, gig.id, gig.price);
+        
+        // Send order confirmation email to buyer
+        const buyer = await db.getUserById(ctx.user.id);
+        const seller = await db.getUserById(gig.sellerId);
+        
+        if (buyer?.email) {
+          const emailHtml = orderConfirmationTemplate({
+            buyerName: buyer.name || 'Kunde',
+            orderId: order!.id,
+            gigTitle: gig.title,
+            price: gig.price,
+            sellerName: seller?.name || 'Seller',
+            deliveryDays: gig.deliveryDays,
+          });
+          
+          await sendEmail({
+            to: buyer.email,
+            subject: `Bestellung bestätigt - ${gig.title} (#${order!.id})`,
+            html: emailHtml,
+          });
+        }
 
         return { success: true, orderId: order!.id };
       }),

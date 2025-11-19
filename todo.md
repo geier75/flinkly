@@ -2853,3 +2853,31 @@
 ### Nicht implementiert (Niedrige Priorität)
 - [ ] **Email-Config** - Keine Email-Konfiguration gefunden (nodemailer nicht installiert)
   - 📝 Empfehlung: Email-Service später hinzufügen wenn benötigt
+
+
+---
+
+## 🚀 Post-QA Features (19. November 2025)
+
+### Email-Benachrichtigungen
+- [x] Nodemailer installieren und SMTP konfigurieren
+- [x] Email-Templates erstellen (Order-Confirmation, Message-Notification, Dispute-Alert)
+- [x] Email-Versand in tRPC-Procedures integrieren
+  - [x] Order-Confirmation nach erfolgreicher Zahlung
+  - [x] Message-Notification bei neuer Chat-Nachricht
+  - [x] Dispute-Alert bei Dispute-Eröffnung
+
+### Performance-Monitoring
+- [x] Sentry für Error-Tracking einrichten
+- [x] PostHog für Event-Tracking konfigurieren
+- [x] Conversion-Funnel-Events implementieren
+  - [x] Gig-View
+  - [x] Add-to-Cart
+  - [x] Checkout-Start
+  - [x] Payment-Success
+
+### A/B-Testing
+- [x] Feature-Flags-System einrichten
+- [x] CTA-Text-Varianten testen
+- [x] Pricing-Darstellung-Experimente
+- [x] Checkout-Flow-Optimierung

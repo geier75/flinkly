@@ -8,6 +8,8 @@ import * as db from "../db";
 import { sanitizeMessage } from "@shared/sanitize";
 import { storagePut } from "../storage";
 import { scanFileForVirus } from "../_core/virusScan";
+import { sendEmail } from "../_core/email";
+import { messageNotificationTemplate } from "../_core/emailTemplates";
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import { conversations, messages } from "../../drizzle/schema";
@@ -142,6 +144,30 @@ export const messagesRouter = router({
         fileSize: input.fileSize,
         fileMimeType: input.fileMimeType,
       });
+      
+      // Send email notification to recipient
+      const recipientId = conversation.buyerId === userId ? conversation.sellerId : conversation.buyerId;
+      const recipient = await db.getUserById(recipientId);
+      const sender = await db.getUserById(userId);
+      
+      if (recipient?.email && input.type === 'text') {
+        const messagePreview = input.content.length > 100 
+          ? input.content.substring(0, 100) + '...' 
+          : input.content;
+        
+        const emailHtml = messageNotificationTemplate({
+          recipientName: recipient.name || 'Nutzer',
+          senderName: sender?.name || 'Ein Nutzer',
+          messagePreview,
+          conversationId: input.conversationId,
+        });
+        
+        await sendEmail({
+          to: recipient.email,
+          subject: `Neue Nachricht von ${sender?.name || 'einem Nutzer'}`,
+          html: emailHtml,
+        });
+      }
       
       return { success: true };
     }),

@@ -13,6 +13,9 @@ import { getDb } from "../db";
 import { disputes, fraudAlerts } from "../../drizzle/schema";
 import { eq, and, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
+import { sendEmail } from "../_core/email";
+import { disputeAlertTemplate } from "../_core/emailTemplates";
+import { getUserById, getGigById } from "../db";
 
 export const disputesRouter = router({
   /**
@@ -53,6 +56,53 @@ export const disputesRouter = router({
         status: "open",
         resolution: "pending",
       });
+
+      // Send email alerts to both buyer and seller
+      const buyer = await getUserById(ctx.user.id);
+      const seller = await getUserById(input.sellerId);
+      const gig = await getGigById(input.gigId);
+      
+      const reasonMap: Record<string, string> = {
+        not_delivered: 'Nicht geliefert',
+        poor_quality: 'Schlechte Qualität',
+        wrong_service: 'Falsche Dienstleistung',
+        communication_issue: 'Kommunikationsproblem',
+        other: 'Sonstiges',
+      };
+      
+      // Email to buyer (confirmation)
+      if (buyer?.email && gig) {
+        const buyerEmailHtml = disputeAlertTemplate({
+          userName: buyer.name || 'Kunde',
+          orderId: input.orderId,
+          gigTitle: gig.title,
+          disputeReason: reasonMap[input.reason] || input.reason,
+          role: 'buyer',
+        });
+        
+        await sendEmail({
+          to: buyer.email,
+          subject: `Dispute eröffnet - Bestellung #${input.orderId}`,
+          html: buyerEmailHtml,
+        });
+      }
+      
+      // Email to seller (alert)
+      if (seller?.email && gig) {
+        const sellerEmailHtml = disputeAlertTemplate({
+          userName: seller.name || 'Seller',
+          orderId: input.orderId,
+          gigTitle: gig.title,
+          disputeReason: reasonMap[input.reason] || input.reason,
+          role: 'seller',
+        });
+        
+        await sendEmail({
+          to: seller.email,
+          subject: `⚠️ Dispute eröffnet - Bestellung #${input.orderId}`,
+          html: sellerEmailHtml,
+        });
+      }
 
       return { success: true };
     }),
