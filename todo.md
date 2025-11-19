@@ -2789,3 +2789,30 @@
 - [x] Neon-Shadows entfernt (shadow-md statt shadow-[0_0_40px...])
 - [x] Gradients entfernt (bg-emerald-600 statt bg-gradient-to-r)
 - [x] Alle cyber-* und neon-* Klassen ersetzt
+
+
+---
+
+## 🔥 QA-REPORT: KRITISCHE BUGS VOR LAUNCH
+
+### CRITICAL (BLOCKER)
+- [ ] **Seed-Daten erstellen** (50-100 Test-Gigs mit echten Daten) - 4h
+- [ ] **"Gig finden" Link fixen** (Header-Link funktioniert nicht) - 30min
+- [ ] **Hardcoded Placeholder-Zahlen durch echte Daten ersetzen** (573 Experten ist fake) - 2h
+- [ ] **Dev-Server EMFILE-Problem beheben** (too many open files) - 2h
+
+### HIGH (WICHTIG)
+- [ ] **Health-Check-Endpoints implementieren** (/health Liveness, /ready Readiness) - 6h
+- [ ] **Graceful-Shutdown implementieren** (SIGTERM-Handler) - 8h
+- [ ] **Onboarding-Modal nur einmal zeigen** (LocalStorage-Flag) - 1h
+- [ ] **N+1-Query-Problem beheben** (Gig-Cards mit JOIN statt einzeln) - 12h
+
+### MEDIUM (NICE-TO-HAVE)
+- [ ] **ARIA-Labels für Kategorie-Badges** - 1h
+- [ ] **Carousel-Dots aussagekräftige Labels** - 1h
+- [ ] **Email-Notifications konfigurieren** (SMTP-ENV-Vars) - 4h
+- [ ] **ClamAV ENV-Vars konfigurieren** (CLAMAV_HOST, CLAMAV_PORT) - 1h
+
+**Deployment-Readiness-Score:** 65/100 🟡 (NICHT production-ready)  
+**Geschätzter Aufwand bis Launch:** 20.5h  
+**Nach Fixes:** 85/100 ✅

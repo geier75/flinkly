@@ -1,0 +1,14 @@
+{
+  "query": "SELECT status, COUNT(*) as count FROM gigs GROUP BY status;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT status, COUNT(*) as count FROM gigs GROUP BY status;",
+  "rows": [
+    {
+      "status": "published",
+      "count": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "status\tcount\npublished\t1\n",
+  "stderr": "",
+  "execution_time_ms": 521
+}
