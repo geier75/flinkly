@@ -1259,3 +1259,77 @@ export async function deleteGigExtra(id: number) {
   if (!db) throw new Error("Database not available");
   await db.update(gigExtras).set({ active: false }).where(eq(gigExtras.id, id));
 }
+
+
+/**
+ * Calculate Seller Level based on performance metrics
+ * 
+ * Level Requirements:
+ * - NEW: Default (0-9 completed orders)
+ * - RISING: 10+ orders, 4.5+ rating, <24h response time
+ * - LEVEL_ONE: 50+ orders, 4.7+ rating, <12h response time, 90%+ on-time delivery
+ * - TOP_RATED: 200+ orders, 4.9+ rating, <6h response time, 95%+ on-time delivery
+ */
+export async function calculateSellerLevel(userId: number): Promise<"new" | "rising" | "level_one" | "top_rated"> {
+  const db = await getDb();
+  if (!db) return "new";
+
+  const user = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+  if (!user || user.length === 0) return "new";
+
+  const {
+    completedOrders = 0,
+    averageRating = 0,
+    responseTimeHours = 24,
+    onTimeDeliveryRate = 100,
+  } = user[0];
+
+  const rating = averageRating / 100; // Convert back to 0-5 scale
+
+  // TOP_RATED: 200+ orders, 4.9+ rating, <6h response, 95%+ on-time
+  if (
+    completedOrders >= 200 &&
+    rating >= 4.9 &&
+    responseTimeHours <= 6 &&
+    onTimeDeliveryRate >= 95
+  ) {
+    return "top_rated";
+  }
+
+  // LEVEL_ONE: 50+ orders, 4.7+ rating, <12h response, 90%+ on-time
+  if (
+    completedOrders >= 50 &&
+    rating >= 4.7 &&
+    responseTimeHours <= 12 &&
+    onTimeDeliveryRate >= 90
+  ) {
+    return "level_one";
+  }
+
+  // RISING: 10+ orders, 4.5+ rating, <24h response
+  if (
+    completedOrders >= 10 &&
+    rating >= 4.5 &&
+    responseTimeHours <= 24
+  ) {
+    return "rising";
+  }
+
+  // NEW: Default
+  return "new";
+}
+
+/**
+ * Update Seller Level for a user
+ * Should be called after order completion, review submission, or stats update
+ */
+export async function updateSellerLevel(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+
+  const newLevel = await calculateSellerLevel(userId);
+
+  await db.update(users).set({ sellerLevel: newLevel }).where(eq(users.id, userId));
+
+  console.log(`[Seller Level] User ${userId} updated to ${newLevel}`);
+}

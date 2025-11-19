@@ -8,6 +8,8 @@ import { trpc } from "@/lib/trpc";
 
 interface ExitIntentModalProps {
   inCheckout: boolean;
+  gigId?: number;
+  gigPrice?: number;
   onContinue?: () => void;
 }
 
@@ -22,11 +24,13 @@ interface ExitIntentModalProps {
  * - A/B testing ready (variant: "control" | "discount")
  * - Telemetry events: triggered, shown, accepted, dismissed
  */
-export function ExitIntentModal({ inCheckout, onContinue }: ExitIntentModalProps) {
+export function ExitIntentModal({ inCheckout, gigId, gigPrice, onContinue }: ExitIntentModalProps) {
   const [open, setOpen] = useState(false);
   const [variant] = useState<"control" | "discount">("discount"); // TODO: A/B testing with feature flags
   const [discountCode, setDiscountCode] = useState<string | null>(null);
   const [isCreatingDiscount, setIsCreatingDiscount] = useState(false);
+  const [email, setEmail] = useState("");
+  const [showEmailCapture, setShowEmailCapture] = useState(false);
 
   const createDiscountMutation = trpc.discount.createExitIntentDiscount.useMutation();
 
@@ -59,8 +63,8 @@ export function ExitIntentModal({ inCheckout, onContinue }: ExitIntentModalProps
       setIsCreatingDiscount(true);
       try {
         const result = await createDiscountMutation.mutateAsync({
-          gigId: 0, // TODO: Pass actual gigId from Checkout
-          gigPrice: 0, // TODO: Pass actual gigPrice from Checkout
+          gigId: gigId || 0,
+          gigPrice: gigPrice || 0,
         });
         
         setDiscountCode(result.code);
@@ -82,8 +86,20 @@ export function ExitIntentModal({ inCheckout, onContinue }: ExitIntentModalProps
   };
 
   const handleDismiss = () => {
+    if (!showEmailCapture && variant === "discount") {
+      // Show email capture before dismissing
+      setShowEmailCapture(true);
+      return;
+    }
+
     // Track exit intent dismissed
     A.exitIntentDismissed({ v: 1, variant });
+    
+    // Store email for remarketing
+    if (email) {
+      sessionStorage.setItem('exit_intent_email', email);
+      console.log('[Exit Intent] Email captured for remarketing:', email);
+    }
     
     setOpen(false);
   };
@@ -119,25 +135,56 @@ export function ExitIntentModal({ inCheckout, onContinue }: ExitIntentModalProps
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-3 mt-4">
-          <Button
-            size="lg"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
-            onClick={handleAccept}
-          >
-            {variant === "discount" ? "Rabatt einlösen & weiter" : "Weiter zur Zahlung"}
-          </Button>
-          
-          <Button
-            variant="ghost"
-            size="lg"
-            className="w-full"
-            onClick={handleDismiss}
-          >
-            <X className="h-4 w-4 mr-2" />
-            Später fortsetzen
-          </Button>
-        </div>
+        {showEmailCapture ? (
+          <div className="flex flex-col gap-3 mt-4">
+            <p className="text-sm text-slate-600">
+              Kein Problem! Wir senden dir den Rabatt-Code per E-Mail, damit du später weitermachen kannst.
+            </p>
+            <input
+              type="email"
+              placeholder="deine@email.de"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            />
+            <Button
+              size="lg"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              onClick={handleDismiss}
+              disabled={!email || !email.includes('@')}
+            >
+              Rabatt-Code per E-Mail senden
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full"
+              onClick={() => setOpen(false)}
+            >
+              Nein danke
+            </Button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-3 mt-4">
+            <Button
+              size="lg"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold"
+              onClick={handleAccept}
+            >
+              {variant === "discount" ? "Rabatt einlösen & weiter" : "Weiter zur Zahlung"}
+            </Button>
+            
+            <Button
+              variant="ghost"
+              size="lg"
+              className="w-full"
+              onClick={handleDismiss}
+            >
+              <X className="h-4 w-4 mr-2" />
+              Später fortsetzen
+            </Button>
+          </div>
+        )}
 
         {variant === "discount" && (
           <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">

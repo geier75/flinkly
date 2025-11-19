@@ -21,6 +21,11 @@ export const users = mysqlTable("users", {
   phone: varchar("phone", { length: 20 }),
   adminApproved: boolean("adminApproved").default(false),
   verificationLevel: mysqlEnum("verificationLevel", ["none", "email", "phone", "admin"]).default("none"),
+  sellerLevel: mysqlEnum("sellerLevel", ["new", "rising", "level_one", "top_rated"]).default("new"),
+  completedOrders: int("completedOrders").default(0).notNull(),
+  averageRating: int("averageRating").default(0), // Stored as int (0-500 = 0.0-5.0 stars, multiply by 100)
+  responseTimeHours: int("responseTimeHours").default(24), // Average response time in hours
+  onTimeDeliveryRate: int("onTimeDeliveryRate").default(100), // Percentage (0-100)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

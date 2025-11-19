@@ -30,6 +30,7 @@ import {
   Clock,
   Banknote,
   Smartphone,
+  Gift,
 } from "lucide-react";
 
 export default function Checkout() {
@@ -38,6 +39,8 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [showExitIntent, setShowExitIntent] = useState(true);
+  const [discountCode, setDiscountCode] = useState<string | null>(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
   
   // Analytics
   const { trackFocus, trackBlur, trackSubmit, trackError } = useFormTracking('checkout_form');
@@ -54,6 +57,16 @@ export default function Checkout() {
       });
     }
   }, [gig]);
+
+  // Load discount code from sessionStorage (Exit Intent)
+  useEffect(() => {
+    const code = sessionStorage.getItem('exit_intent_discount_code');
+    if (code) {
+      setDiscountCode(code);
+      setDiscountAmount(500); // 5€ in cents
+      console.log('[Checkout] Discount code loaded from sessionStorage:', code);
+    }
+  }, []);
 
   // Form states
   const [briefing, setBriefing] = useState({
@@ -597,6 +610,15 @@ export default function Checkout() {
                       <span className="text-slate-600">Gig-Preis</span>
                       <span className="font-semibold">{Number(gig.price)}€</span>
                     </div>
+                    {discountCode && (
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-600 flex items-center gap-1">
+                          <Gift className="h-4 w-4" />
+                          Rabatt ({discountCode})
+                        </span>
+                        <span className="font-semibold text-green-600">-{(discountAmount / 100).toFixed(2)}€</span>
+                      </div>
+                    )}
                     <div className="flex justify-between text-sm">
                       <span className="text-slate-600">Servicegebühr</span>
                       <span className="font-semibold">0€</span>
@@ -608,7 +630,7 @@ export default function Checkout() {
                   <div className="flex justify-between">
                     <span className="font-semibold text-slate-900">Gesamt</span>
                     <span className="text-2xl font-bold text-primary">
-                      {Number(gig.price)}€
+                      {Math.max(Number(gig.price) - (discountAmount / 100), 0).toFixed(2)}€
                     </span>
                   </div>
 
@@ -629,7 +651,9 @@ export default function Checkout() {
 
       {/* Exit Intent Modal */}
       <ExitIntentModal 
-        inCheckout={showExitIntent} 
+        inCheckout={showExitIntent}
+        gigId={gig?.id}
+        gigPrice={gig?.price}
         onContinue={() => {
           // Continue to payment
           setCurrentStep(3);
