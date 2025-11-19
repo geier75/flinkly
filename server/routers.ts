@@ -20,6 +20,7 @@ import { moderationRouter } from "./routers/moderation";
 import { templatesRouter } from "./routers/templates";
 import { analyticsRouter } from "./routers/analytics";
 import { featureFlagsRouter } from "./routers/featureFlags";
+import { passwordResetRouter } from "./routers/passwordReset";
 import { sendEmail } from "./_core/email";
 import { orderConfirmationTemplate } from "./_core/emailTemplates";
 import { trackPaymentSuccess } from "./_core/analytics";
@@ -40,6 +41,7 @@ export const appRouter = router({
   templates: templatesRouter,
   analytics: analyticsRouter,
   featureFlags: featureFlagsRouter,
+  passwordReset: passwordResetRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),

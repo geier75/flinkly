@@ -71,6 +71,13 @@
       "when": 1763257289837,
       "tag": "0009_lean_deadpool",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1763563860630,
+      "tag": "0010_cold_wrecker",
+      "breakpoints": true
     }
   ]
 }

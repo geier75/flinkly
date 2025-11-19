@@ -363,3 +363,19 @@ export const gigStats = mysqlTable("gigStats", {
 
 export type GigStats = typeof gigStats.$inferSelect;
 export type InsertGigStats = typeof gigStats.$inferInsert;
+
+/**
+ * Password-Reset-Tokens
+ * Stores tokens for password reset flow
+ */
+export const passwordResetTokens = mysqlTable("passwordResetTokens", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expiresAt").notNull(),
+  used: boolean("used").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
