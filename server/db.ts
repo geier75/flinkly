@@ -188,6 +188,9 @@ export async function getSellerGigs(sellerId: number, limit: number = 50, offset
 // Alias for data export
 export const getGigsBySellerId = getSellerGigs;
 
+// Export cursor-based pagination
+export { getGigsPaginated } from "./db_pagination";
+
 export async function getSellerDrafts(sellerId: number) {
   const db = await getDb();
   if (!db) return [];

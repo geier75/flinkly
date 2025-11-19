@@ -97,7 +97,8 @@ export default function Marketplace() {
 
   const getCategoryCount = (categoryName: string) => {
     const dbCategory = categoryMapping[categoryName];
-    return gigs?.filter(g => g.category === dbCategory).length || 0;
+    const allGigs = gigs?.gigs || [];
+    return allGigs.filter((g: any) => g.category === dbCategory).length || 0;
   };
 
   const categories = [
@@ -110,7 +111,8 @@ export default function Marketplace() {
   ];
 
   // Filter gigs
-  const filteredGigs = gigs?.filter((gig) => {
+  const allGigs = gigs?.gigs || [];
+  const filteredGigs = allGigs.filter((gig: any) => {
     const matchesSearch = !searchQuery || 
       gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       gig.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -213,7 +215,7 @@ export default function Marketplace() {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <Sparkles className="h-5 w-5 text-success" />
-                <span className="text-success font-bold">{gigs?.length || 0} Premium-Experten verfügbar</span>
+                <span className="text-success font-bold">{gigs?.gigs?.length || 0} Premium-Experten verfügbar</span>
               </motion.div>
 
               <h1 className="text-6xl md:text-7xl font-black text-white mb-6" style={{

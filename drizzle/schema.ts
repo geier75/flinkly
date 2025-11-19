@@ -57,6 +57,8 @@ export const gigs = mysqlTable("gigs", {
   categoryIdx: index("category_idx").on(table.category),
   sellerIdIdx: index("seller_id_idx").on(table.sellerId),
   statusIdx: index("status_idx").on(table.status),
+  priceIdx: index("price_idx").on(table.price),
+  ratingIdx: index("rating_idx").on(table.averageRating),
 }));
 
 export type Gig = typeof gigs.$inferSelect;

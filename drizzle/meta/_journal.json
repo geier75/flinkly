@@ -92,6 +92,13 @@
       "when": 1763591877034,
       "tag": "0012_fast_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "5",
+      "when": 1763592374528,
+      "tag": "0013_secret_captain_midlands",
+      "breakpoints": true
     }
   ]
 }

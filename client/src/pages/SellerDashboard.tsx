@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import SellerLevelProgress from "@/components/SellerLevelProgress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -316,12 +317,28 @@ export default function SellerDashboard() {
         </div>
 
         <div className="container mx-auto px-4 py-8">
+          {/* Seller Level Progress */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            <SellerLevelProgress
+              currentLevel={(user?.sellerLevel as any) || "new"}
+              completedOrders={user?.completedOrders || 0}
+              averageRating={user?.averageRating || 0}
+              responseTimeHours={user?.responseTimeHours || 24}
+              onTimeDeliveryRate={user?.onTimeDeliveryRate || 100}
+            />
+          </motion.div>
+
           {/* Performance Metrics */}
           <motion.div
             className="grid md:grid-cols-4 gap-6 mb-8"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
           >
             <Card className="bg-white shadow-sm border-2 border-slate-200 hover:border-slate-300 transition-all duration-300 hover:shadow-md">
               <CardContent className="pt-6">

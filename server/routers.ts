@@ -58,7 +58,7 @@ export const appRouter = router({
     list: publicProcedure
       .input(z.object({ 
         limit: z.number().min(1).max(100).default(20), // DoS-Prevention: Max 100 items per request
-        offset: z.number().min(0).default(0),
+        cursor: z.number().optional(), // Cursor-based pagination (last seen gig ID)
         category: z.string().optional(),
         minPrice: z.number().optional(),
         maxPrice: z.number().optional(),
@@ -66,8 +66,21 @@ export const appRouter = router({
       .query(async ({ input }) => {
         // Enforce max limit server-side (defense in depth)
         const safeLimit = Math.min(input.limit, 100);
-        // TODO: Add filtering by category and price
-        return await db.getGigs(safeLimit, input.offset);
+        const gigs = await db.getGigsPaginated({
+          limit: safeLimit,
+          cursor: input.cursor,
+          category: input.category,
+          minPrice: input.minPrice,
+          maxPrice: input.maxPrice,
+        });
+        
+        // Return cursor for next page (last gig ID)
+        const nextCursor = gigs.length === safeLimit ? gigs[gigs.length - 1].id : undefined;
+        
+        return {
+          gigs,
+          nextCursor,
+        };
       }),
 
     getById: publicProcedure
