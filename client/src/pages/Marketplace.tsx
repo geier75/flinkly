@@ -22,10 +22,20 @@ import { MagneticButton } from "@/components/3d/MagneticButton";
 import { TiltCard } from "@/components/3d/TiltCard";
 import GigCardSkeleton from "@/components/GigCardSkeleton";
 import GigQuickView from "@/components/GigQuickView";
+import { useFilterTracking, useSearchTracking, useNavigationClick } from "@/hooks/useAnalytics";
+import { usePricingFormat } from "@/hooks/useFeatureFlags";
 
 export default function Marketplace() {
   const [location] = useLocation();
   const searchParams = new URLSearchParams(location.split("?")[1]);
+  
+  // Analytics
+  const trackFilter = useFilterTracking();
+  const trackSearch = useSearchTracking();
+  const trackNav = useNavigationClick();
+  
+  // A/B-Tests
+  const formatPrice = usePricingFormat();
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
@@ -237,6 +247,10 @@ export default function Marketplace() {
                     <MagneticButton 
                       intensity={0.4}
                       className="bg-accent hover:bg-accent/90 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 text-lg"
+                      onClick={() => {
+                        const resultsCount = filteredGigs.length;
+                        trackSearch(searchQuery, resultsCount);
+                      }}
                     >
                       Suchen
                     </MagneticButton>
@@ -254,7 +268,10 @@ export default function Marketplace() {
               >
                 <Button
                   variant={!category ? "default" : "outline"}
-                  onClick={() => setCategory("")}
+                  onClick={() => {
+                    setCategory("");
+                    trackFilter('category', 'all');
+                  }}
                   className={!category ? "bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white shadow-lg shadow-accent/30" : "border-slate-700 hover:border-accent text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
                 >
                   Alle Kategorien
@@ -269,7 +286,10 @@ export default function Marketplace() {
                 >
                   <Button
                     variant={category === cat.name ? "default" : "outline"}
-                    onClick={() => setCategory(cat.name)}
+                    onClick={() => {
+                      setCategory(cat.name);
+                      trackFilter('category', cat.name);
+                    }}
                     className={category === cat.name ? "bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white shadow-lg shadow-accent/30" : "border-slate-700 hover:border-accent text-slate-300 hover:text-white bg-slate-900/40 backdrop-blur-sm"}
                   >
                     <span className="mr-2">{cat.icon}</span>
@@ -347,7 +367,10 @@ export default function Marketplace() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, delay: 0.1 * index }}
                   >
-                    <Link href={`/gig/${gig.id}`}>
+                    <Link 
+                      href={`/gig/${gig.id}`}
+                      onClick={() => trackNav(`gig_${gig.id}`, 'marketplace')}
+                    >
                     <Card className="group relative bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:-translate-y-2 shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(255,107,53,0.4),0_0_100px_rgba(255,107,53,0.2)]">
                       {/* Gradient Border Glow */}
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
@@ -416,7 +439,7 @@ export default function Marketplace() {
                             <div className="flex items-center gap-2">
                               <span className="text-slate-400 text-sm">Ab</span>
                               <span className="text-3xl font-black text-white group-hover:text-success transition-colors duration-300">
-                                {gig.price}€
+                                {formatPrice(gig.price)}
                               </span>
                             </div>
                             <Button

@@ -10,13 +10,15 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useParams, useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { CheckoutSkeleton } from "@/components/SkeletonUI";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { ExitIntentModal } from "@/components/ExitIntentModal";
+import { useFormTracking } from "@/hooks/useAnalytics";
+import { trackEvent } from "@/hooks/useAnalytics";
 import {
   CheckCircle,
   Upload,
@@ -36,8 +38,22 @@ export default function Checkout() {
   const { user, isAuthenticated } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [showExitIntent, setShowExitIntent] = useState(true);
+  
+  // Analytics
+  const { trackFocus, trackBlur, trackSubmit, trackError } = useFormTracking('checkout_form');
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: parseInt(id!) });
+  
+  // Track checkout started event
+  useEffect(() => {
+    if (gig) {
+      trackEvent('checkout_started', {
+        gig_id: gig.id,
+        gig_title: gig.title,
+        price: gig.price,
+      });
+    }
+  }, [gig]);
 
   // Form states
   const [briefing, setBriefing] = useState({
@@ -73,10 +89,18 @@ export default function Checkout() {
   const handleSubmit = () => {
     if (!isAuthenticated) {
       toast.error("Bitte melde dich an");
+      trackError('authentication', 'User not authenticated');
       return;
     }
 
     if (!gig) return;
+    
+    // Track form submission
+    trackSubmit({
+      gig_id: gig.id,
+      payment_method: payment.method,
+      needs_avv: legal.needsAVV,
+    });
 
     createOrderMutation.mutate({
       gigId: gig.id,

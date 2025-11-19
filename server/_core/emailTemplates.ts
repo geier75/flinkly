@@ -507,3 +507,150 @@ export function disputeAlertTemplate(data: DisputeAlertData): string {
 </html>
   `.trim();
 }
+
+
+export interface WeeklyDigestData {
+  userName: string;
+  newGigs: Array<{ id: number; title: string; category: string; price: number }>;
+  unreadMessages: number;
+  openOrders: Array<{ id: number; gigTitle: string; status: string }>;
+}
+
+export function weeklyDigestTemplate(data: WeeklyDigestData): string {
+  const { userName, newGigs, unreadMessages, openOrders } = data;
+  
+  const newGigsHtml = newGigs.length > 0 ? `
+    <tr>
+      <td style="padding: 0 40px 30px;">
+        <h2 style="margin: 0 0 16px; color: #1a1a1a; font-size: 20px; font-weight: 600;">🎨 Neue Gigs in deinen Lieblingskategorien</h2>
+        ${newGigs.map(gig => `
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; margin-bottom: 12px;">
+            <tr>
+              <td style="padding: 16px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="width: 70%;">
+                      <p style="margin: 0 0 4px; color: #1a1a1a; font-size: 16px; font-weight: 600;">${gig.title}</p>
+                      <p style="margin: 0; color: #6b7280; font-size: 14px;">${gig.category}</p>
+                    </td>
+                    <td style="width: 30%; text-align: right;">
+                      <p style="margin: 0; color: #ff6b35; font-size: 20px; font-weight: 700;">€${gig.price}</p>
+                    </td>
+                  </tr>
+                </table>
+                <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 12px;">
+                  <tr>
+                    <td>
+                      <a href="https://flinkly.de/gig/${gig.id}" style="display: inline-block; padding: 8px 16px; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">Jetzt ansehen</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        `).join('')}
+      </td>
+    </tr>
+  ` : '';
+  
+  const unreadMessagesHtml = unreadMessages > 0 ? `
+    <tr>
+      <td style="padding: 0 40px 30px;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #eff6ff; border-radius: 8px;">
+          <tr>
+            <td style="padding: 20px;">
+              <h2 style="margin: 0 0 8px; color: #1e40af; font-size: 18px; font-weight: 600;">💬 ${unreadMessages} ungelesene Nachricht${unreadMessages > 1 ? 'en' : ''}</h2>
+              <p style="margin: 0 0 12px; color: #1e40af; font-size: 14px;">Du hast neue Nachrichten in deinem Posteingang.</p>
+              <a href="https://flinkly.de/messages" style="display: inline-block; padding: 10px 20px; background: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600;">Nachrichten lesen</a>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  ` : '';
+  
+  const openOrdersHtml = openOrders.length > 0 ? `
+    <tr>
+      <td style="padding: 0 40px 30px;">
+        <h2 style="margin: 0 0 16px; color: #1a1a1a; font-size: 20px; font-weight: 600;">📦 Offene Aufträge (${openOrders.length})</h2>
+        ${openOrders.map(order => `
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fefce8; border-radius: 8px; margin-bottom: 12px;">
+            <tr>
+              <td style="padding: 16px;">
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="width: 70%;">
+                      <p style="margin: 0 0 4px; color: #854d0e; font-size: 16px; font-weight: 600;">${order.gigTitle}</p>
+                      <span style="display: inline-block; padding: 4px 8px; background: #fbbf24; color: #78350f; border-radius: 4px; font-size: 12px; font-weight: 600;">${order.status}</span>
+                    </td>
+                    <td style="width: 30%; text-align: right;">
+                      <a href="https://flinkly.de/dashboard" style="color: #854d0e; text-decoration: none; font-size: 14px; font-weight: 600;">Details →</a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        `).join('')}
+      </td>
+    </tr>
+  ` : '';
+  
+  const hasContent = newGigs.length > 0 || unreadMessages > 0 || openOrders.length > 0;
+  
+  const noContentHtml = !hasContent ? `
+    <tr>
+      <td style="padding: 40px; text-align: center;">
+        <p style="margin: 0 0 16px; color: #6b7280; font-size: 16px;">Keine neuen Updates diese Woche.</p>
+        <a href="https://flinkly.de/marketplace" style="display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); color: #ffffff; text-decoration: none; border-radius: 8px; font-size: 16px; font-weight: 600;">Marketplace durchstöbern</a>
+      </td>
+    </tr>
+  ` : '';
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flinkly Weekly Digest</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%); border-radius: 8px 8px 0 0;">
+              <h1 style="margin: 0 0 8px; color: #ffffff; font-size: 28px; font-weight: 700;">📬 Dein Weekly Digest</h1>
+              <p style="margin: 0; color: rgba(255, 255, 255, 0.9); font-size: 16px;">Hallo ${userName}, hier ist deine wöchentliche Zusammenfassung!</p>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          ${newGigsHtml}
+          ${unreadMessagesHtml}
+          ${openOrdersHtml}
+          ${noContentHtml}
+          
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f9fafb; border-radius: 0 0 8px 8px; border-top: 1px solid #e5e7eb;">
+              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px; text-align: center;">
+                Du erhältst diese E-Mail, weil du bei Flinkly registriert bist.
+              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px; text-align: center;">
+                <a href="https://flinkly.de/settings" style="color: #ff6b35; text-decoration: none;">E-Mail-Einstellungen ändern</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+}
+

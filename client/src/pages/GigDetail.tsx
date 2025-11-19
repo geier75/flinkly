@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useParams, useLocation, Link } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -27,17 +27,40 @@ import {
   ChevronRight
 } from "lucide-react";
 import GigDetailSkeleton from "@/components/GigDetailSkeleton";
+import { useCTAClick, useScrollDepth } from "@/hooks/useAnalytics";
+import { trackEvent } from "@/hooks/useAnalytics";
+import { useCTAButtonText, useTrustBadge } from "@/hooks/useFeatureFlags";
 
 export default function GigDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
   const gigId = id ? parseInt(id) : 0;
+  
+  // Analytics
+  const trackCTA = useCTAClick();
+  useScrollDepth('gig_detail');
+  
+  // A/B-Tests
+  const ctaButtonText = useCTAButtonText();
+  const trustBadgeText = useTrustBadge();
 
   const [reviewsToShow, setReviewsToShow] = useState(5);
   const [reviewSort, setReviewSort] = useState<"recent" | "rating">("recent");
   const [starFilter, setStarFilter] = useState<number | null>(null); // null = all, 1-5 = filter by stars
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: gigId });
+  
+  // Track gig view event
+  useEffect(() => {
+    if (gig) {
+      trackEvent('gig_viewed', {
+        gig_id: gig.id,
+        gig_title: gig.title,
+        category: gig.category,
+        price: gig.price,
+      });
+    }
+  }, [gig]);
   const { data: allReviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
   const { data: similarGigs } = trpc.similarGigs.byGigId.useQuery(
     { gigId, k: 6 },
@@ -577,8 +600,16 @@ export default function GigDetail() {
                         <Button 
                           size="lg"
                           className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
+                          onClick={() => {
+                            trackCTA('projekt_starten', {
+                              gig_id: gig.id,
+                              gig_title: gig.title,
+                              price: selectedPkg.price,
+                              package: selectedPkg.name,
+                            });
+                          }}
                         >
-                          Projekt starten
+                          {ctaButtonText}
                         </Button>
                       </motion.div>
 
@@ -643,7 +674,7 @@ export default function GigDetail() {
                           </div>
                           <div>
                             <p className="font-bold text-white">Käuferschutz</p>
-                            <p className="text-sm text-slate-400">Geld-zurück-Garantie</p>
+                            <p className="text-sm text-slate-400">{trustBadgeText}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">

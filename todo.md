@@ -2906,3 +2906,51 @@
 - [x] Pricing-Format-Varianten im Frontend anzeigen
 - [x] Checkout-Flow-Varianten implementieren
 - [x] PostHog-Dashboard-Setup-Guide erstellen
+
+
+---
+
+## 🚀 Analytics-Integration & Weekly-Digest (19. November 2025 - Round 3)
+
+### Analytics-Events in kritische User-Flows integrieren
+- [ ] GigDetail: CTA-Click-Tracking hinzufügen
+- [ ] GigDetail: Scroll-Depth-Tracking hinzufügen
+- [ ] GigDetail: Gig-View-Event tracken
+- [ ] Checkout: Form-Tracking hinzufügen
+- [ ] Checkout: Checkout-Started-Event tracken
+- [ ] Marketplace: Filter-Tracking hinzufügen
+- [ ] Marketplace: Search-Tracking hinzufügen
+- [ ] Marketplace: Navigation-Tracking hinzufügen
+
+### A/B-Tests live schalten
+- [ ] CTA-Text-Varianten in GigDetail integrieren
+- [ ] Pricing-Format-Varianten in Marketplace integrieren
+- [ ] Trust-Badge-Varianten in GigDetail integrieren
+
+### Weekly-Digest-Email
+- [ ] Weekly-Digest-Email-Template erstellen
+- [ ] Digest-Content-Aggregation implementieren
+  - [ ] Neue Gigs in favorisierten Kategorien
+  - [ ] Ungelesene Messages
+  - [ ] Offene Orders
+- [ ] Cron-Job für wöchentlichen Versand (Montag 9 Uhr)
+
+
+---
+
+## 🚀 Analytics-Integration & Conversion-Optimierung (19. Januar 2025)
+
+### Analytics-Integration in kritische User-Flows
+- [x] GigDetail: CTA-Click-Tracking, Scroll-Depth, Gig-View-Event
+- [x] Checkout: Form-Tracking, Checkout-Started-Event
+- [x] Marketplace: Filter-Tracking, Search-Tracking, Navigation-Tracking
+
+### A/B-Tests live schalten
+- [x] CTA-Text-Varianten in GigDetail integrieren
+- [x] Pricing-Format-Varianten in Marketplace integrieren
+- [x] Trust-Badge-Varianten in GigDetail integrieren
+
+### Weekly-Digest-Email
+- [x] Weekly-Digest-Email-Template erstellen
+- [x] Digest-Content-Aggregation (neue Gigs, ungelesene Messages, offene Orders)
+- [x] Cron-Job für wöchentlichen Versand (jeden Montag 9 Uhr)

@@ -14,6 +14,7 @@ import { initializeSocketIO } from "./socket";
 import { sessionRefreshMiddleware } from "./sessionRefreshMiddleware";
 import { initSentry } from "./sentry";
 import { initPostHog } from "./analytics";
+import { initCronJobs } from "./cronJobs";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -40,6 +41,9 @@ async function startServer() {
   
   // Initialize PostHog
   initPostHog();
+  
+  // Initialize Cron-Jobs
+  initCronJobs();
   
   const app = express();
   const server = createServer(app);
