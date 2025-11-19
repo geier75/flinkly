@@ -27,6 +27,7 @@ import {
   ChevronRight
 } from "lucide-react";
 import GigDetailSkeleton from "@/components/GigDetailSkeleton";
+import GigExtrasCard from "@/components/GigExtrasCard";
 import { useCTAClick, useScrollDepth } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/hooks/useAnalytics";
 import { useCTAButtonText, useTrustBadge } from "@/hooks/useFeatureFlags";
@@ -47,6 +48,8 @@ export default function GigDetail() {
   const [reviewsToShow, setReviewsToShow] = useState(5);
   const [reviewSort, setReviewSort] = useState<"recent" | "rating">("recent");
   const [starFilter, setStarFilter] = useState<number | null>(null); // null = all, 1-5 = filter by stars
+  const [selectedExtras, setSelectedExtras] = useState<number[]>([]);
+  const [extrasTotal, setExtrasTotal] = useState(0);
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: gigId });
   
@@ -64,6 +67,10 @@ export default function GigDetail() {
   const { data: allReviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
   const { data: similarGigs } = trpc.similarGigs.byGigId.useQuery(
     { gigId, k: 6 },
+    { enabled: !!gigId }
+  );
+  const { data: gigPackages } = trpc.gigPackages.list.useQuery(
+    { gigId },
     { enabled: !!gigId }
   );
 
@@ -156,12 +163,21 @@ export default function GigDetail() {
     }
   ];
 
-  const packages = [
+  // Use real packages from DB or fallback to defaults
+  const packages = gigPackages && gigPackages.length > 0 ? gigPackages.map(pkg => ({
+    id: pkg.packageType,
+    name: pkg.name,
+    price: pkg.price / 100, // Convert cents to euros
+    deliveryDays: pkg.deliveryDays,
+    revisions: pkg.revisions,
+    features: pkg.features ? JSON.parse(pkg.features) : []
+  })) : [
     {
       id: "basic",
       name: "Basic",
       price: gig?.price || 0,
       deliveryDays: gig?.deliveryDays || 3,
+      revisions: 2,
       features: [
         "1 Konzept",
         "2 Revisionen",
@@ -174,6 +190,7 @@ export default function GigDetail() {
       name: "Standard",
       price: (gig?.price || 0) * 2,
       deliveryDays: Math.max((gig?.deliveryDays || 3) - 1, 1),
+      revisions: 5,
       features: [
         "3 Konzepte",
         "5 Revisionen",
@@ -187,6 +204,7 @@ export default function GigDetail() {
       name: "Premium",
       price: (gig?.price || 0) * 3,
       deliveryDays: Math.max((gig?.deliveryDays || 3) - 2, 1),
+      revisions: 999,
       features: [
         "5 Konzepte",
         "Unbegrenzte Revisionen",
@@ -613,12 +631,17 @@ export default function GigDetail() {
                           <button
                             key={pkg.id}
                             onClick={() => setSelectedPackage(pkg.id as any)}
-                            className={`flex-1 py-2 px-4 rounded-lg font-bold transition-all duration-300 ${
+                            className={`relative flex-1 py-2 px-4 rounded-lg font-bold transition-all duration-300 ${
                               selectedPackage === pkg.id
                                 ? "bg-primary text-white shadow-lg shadow-primary/30"
                                 : "bg-slate-800/50 text-slate-400 hover:text-white"
                             }`}
                           >
+                            {pkg.id === "standard" && (
+                              <span className="absolute -top-2 -right-2 bg-accent text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-lg">
+                                Meist gewählt
+                              </span>
+                            )}
                             {pkg.name}
                           </button>
                         ))}
@@ -641,7 +664,7 @@ export default function GigDetail() {
 
                       {/* Features */}
                       <div className="space-y-3 mb-6">
-                        {selectedPkg.features.map((feature, index) => (
+                        {selectedPkg.features.map((feature: string, index: number) => (
                           <div key={index} className="flex items-start gap-2">
                             <Check className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
                             <span className="text-slate-300">{feature}</span>
@@ -682,6 +705,12 @@ export default function GigDetail() {
                       </Link>
                     </CardContent>
                   </Card>
+
+                  {/* Gig Extras / Add-ons */}
+                  <GigExtrasCard gigId={gigId} onExtrasChange={(extras: number[], total: number) => {
+                    setSelectedExtras(extras);
+                    setExtrasTotal(total);
+                  }} />
 
                   {/* Seller Stats */}
                   <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">

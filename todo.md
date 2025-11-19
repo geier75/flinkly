@@ -3132,3 +3132,131 @@
   - [ ] Avg-Rating 4.5+ Stars
   - [ ] Dispute-Rate <2%
   - [ ] On-Time-Delivery-Rate 95%+
+
+
+## 🎯 HIGH-PRIORITY ROADMAP (Business-Impact-Optimiert)
+
+**Strategie:** Quick-Wins zuerst, dann Foundation-Features für Skalierung
+
+### 🔥 PHASE 1: Revenue-Maximierung (Woche 1-2)
+
+**Ziel:** AOV (Average Order Value) um 30% erhöhen
+
+1. ✅ **Gig-Pakete-UI in GigDetail** (8h) - HIGHEST IMPACT - DONE
+   - ✅ Package-Selection-Tabs (Basic/Standard/Premium)
+   - ✅ Backend-Daten-Integration (trpc.gigPackages.list)
+   - ✅ "Meist gewählt"-Badge auf Standard
+   - **Expected Impact:** +25% AOV durch Upselling
+
+2. ✅ **Gig-Extras-UI in GigDetail** (6h) - DONE
+   - ✅ Checkbox-Liste für Add-ons (Express, Revisions, License, Source-Files)
+   - ✅ Dynamic-Total-Calculation
+   - ✅ GigExtrasCard-Component mit Icons
+   - **Expected Impact:** +15% AOV durch Add-on-Attach-Rate
+
+3. **Checkout Package/Extras-Display** (4h) - TODO
+   - [ ] Checkout-Flow erweitern um Package/Extras-Parameter
+   - [ ] Selected-Package-Summary in Bestellübersicht
+   - [ ] Upgrade-Prompt ("Für nur 20€ mehr → Premium")
+   - **Expected Impact:** +5% Last-Minute-Upgrades
+   - **Note:** Requires Checkout-Refactoring - postponed
+
+**Total:** 18h | **Expected Revenue-Lift:** +45% AOV
+
+### 🔥 PHASE 2: Conversion-Optimization (Woche 2-3)
+
+**Ziel:** Conversion-Rate um 20% erhöhen
+
+4. **A/B-Testing-Framework (PostHog)** (12h) - FOUNDATION
+   - Feature-Flags-Integration
+   - Event-Tracking (package_selected, extra_added)
+   - A/B-Test-Dashboard
+   - **Expected Impact:** Enables data-driven optimization
+
+5. **Exit-Intent-Popups** (8h)
+   - Exit-Intent-Detection
+   - "Warte! 10% Rabatt auf deine erste Bestellung"
+   - Email-Capture für Remarketing
+   - **Expected Impact:** +10% Conversion-Recovery
+
+6. **Cart-Abandonment-Recovery** (8h)
+   - Email-Trigger bei abgebrochenem Checkout
+   - "Du hast etwas vergessen"-Template
+   - 24h-Delay-Logic
+   - **Expected Impact:** +15% Abandoned-Cart-Recovery
+
+**Total:** 28h | **Expected Conversion-Lift:** +25%
+
+### 🔥 PHASE 3: Retention & Quality (Woche 3-4)
+
+**Ziel:** Seller-Retention um 40% erhöhen
+
+7. **Seller-Levels & Gamification** (20h)
+   - 4-Level-System (New → Rising → Level One → Top Rated)
+   - Level-Calculation-Logic (Orders, Revenue, Rating)
+   - Badge-System (Fast Responder, 100 Orders, etc.)
+   - Level-Progress-Dashboard
+   - **Expected Impact:** +40% Seller-Retention, +20% Quality
+
+8. **Performance-Dashboard für Seller** (12h)
+   - KPI-Cards (Revenue, Orders, Rating, Response-Time)
+   - Revenue-Chart (Last 30 Days)
+   - Next-Level-Requirements-Checklist
+   - **Expected Impact:** +30% Seller-Engagement
+
+**Total:** 32h | **Expected Retention-Lift:** +40%
+
+### 🔥 PHASE 4: Skalierung & Performance (Woche 4-5)
+
+**Ziel:** 10x Traffic ohne Performance-Degradation
+
+9. **Database-Optimierung** (12h)
+   - Indizes auf gigs (category, price, rating)
+   - Pagination für Marketplace (Cursor-based)
+   - Soft-Deletes statt Hard-Deletes
+   - **Expected Impact:** 5x faster queries
+
+10. **Redis-Caching** (16h)
+    - Cache: Gig-Liste (5min TTL)
+    - Cache: Seller-Profile (10min TTL)
+    - Cache: Category-Stats (1h TTL)
+    - **Expected Impact:** 10x faster page-loads
+
+11. **CDN für Images** (4h)
+    - CloudFront/Cloudflare-Integration
+    - Image-Optimization (WebP, Lazy-Loading)
+    - **Expected Impact:** 3x faster image-loads
+
+**Total:** 32h | **Expected Performance-Lift:** 10x
+
+---
+
+## 📊 EXPECTED CUMULATIVE IMPACT
+
+| Phase | Aufwand | Revenue-Lift | Conversion-Lift | Retention-Lift |
+|-------|---------|--------------|-----------------|----------------|
+| Phase 1 | 18h | +45% AOV | - | - |
+| Phase 2 | 28h | - | +25% CR | - |
+| Phase 3 | 32h | - | - | +40% Retention |
+| Phase 4 | 32h | - | - | - |
+| **TOTAL** | **110h** | **+45%** | **+25%** | **+40%** |
+
+**Projected GMV-Increase:** 45% (AOV) × 25% (CR) = **+81% GMV** 🚀
+
+---
+
+## ✅ EXECUTION ORDER (Start NOW)
+
+1. ✅ Gig-Pakete-Backend (DONE)
+2. ✅ Gig-Extras-Backend (DONE)
+3. 🔄 **Gig-Pakete-UI in GigDetail** ← START HERE
+4. Gig-Extras-UI in GigDetail
+5. Checkout Package/Extras-Display
+6. A/B-Testing-Framework (PostHog)
+7. Exit-Intent-Popups
+8. Cart-Abandonment-Recovery
+9. Seller-Levels & Gamification
+10. Performance-Dashboard
+11. Database-Optimierung
+12. Redis-Caching
+13. CDN-Integration
