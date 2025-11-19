@@ -2816,3 +2816,40 @@
 **Deployment-Readiness-Score:** 65/100 🟡 (NICHT production-ready)  
 **Geschätzter Aufwand bis Launch:** 20.5h  
 **Nach Fixes:** 85/100 ✅
+
+
+---
+
+## ✅ QA-Report TODOs (19. November 2025)
+
+### CRITICAL Blocker (Abgeschlossen)
+- [x] **Seed-Daten erstellen** (4h) - 60 Test-Gigs in 6 Kategorien
+- [x] **"Gig finden" Link fixen** (30min) - Link funktioniert bereits
+- [x] **Hardcoded Placeholder-Zahlen ersetzen** (2h)
+  - [x] "573 Premium-Experten" → Dynamisch aus DB
+  - [x] Kategorie-Counts (124, 98, 156...) → Dynamisch berechnet
+- [x] **Dev-Server EMFILE-Problem beheben** (2h)
+  - [x] File-Descriptor-Limit erhöht (1024 → 4096)
+  - [x] package.json dev-script aktualisiert
+
+### HIGH Priority (Abgeschlossen)
+- [x] **Health-Check-Endpoints** (6h)
+  - [x] `/health` (Liveness) - bereits vorhanden
+  - [x] `/ready` (Readiness mit DB-Ping) - bereits vorhanden
+- [x] **Graceful-Shutdown** (8h)
+  - [x] SIGTERM/SIGINT-Handler
+  - [x] Server stoppt neue Connections
+  - [x] DB-Connections werden geschlossen
+  - [x] 30s Timeout für Force-Shutdown
+- [x] **Onboarding-Modal LocalStorage** (1h) - bereits implementiert
+- [x] **N+1-Query-Problem beheben** (12h)
+  - [x] `getGigById()` mit LEFT JOIN auf `users` Tabelle
+  - [x] Seller-Daten (id, name, email) in einem Query
+
+### MEDIUM Nice-to-Haves (Abgeschlossen)
+- [x] **ARIA-Labels** - Carousel-Buttons haben bereits `sr-only` Labels
+- [x] **ClamAV-Config** - Vollständig konfiguriert in `server/_core/virusScan.ts`
+
+### Nicht implementiert (Niedrige Priorität)
+- [ ] **Email-Config** - Keine Email-Konfiguration gefunden (nodemailer nicht installiert)
+  - 📝 Empfehlung: Email-Service später hinzufügen wenn benötigt

@@ -114,8 +114,29 @@ export async function getGigs(limit = 20, offset = 0) {
 export async function getGigById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(gigs).where(eq(gigs.id, id)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  
+  // Join with users table to get seller info (prevents N+1 query problem)
+  const result = await db
+    .select({
+      gig: gigs,
+      seller: {
+        id: users.id,
+        name: users.name,
+        email: users.email,
+      },
+    })
+    .from(gigs)
+    .leftJoin(users, eq(gigs.sellerId, users.id))
+    .where(eq(gigs.id, id))
+    .limit(1);
+  
+  if (result.length === 0) return undefined;
+  
+  // Flatten structure for backward compatibility
+  return {
+    ...result[0].gig,
+    seller: result[0].seller,
+  };
 }
 
 export async function getSellerGigs(sellerId: number, limit: number = 50, offset: number = 0) {

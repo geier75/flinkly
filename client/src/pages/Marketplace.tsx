@@ -36,7 +36,7 @@ export default function Marketplace() {
   const [displayCount, setDisplayCount] = useState(12); // Infinite-Scroll: Start with 12 gigs
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  const { data: gigs, isLoading } = trpc.gigs.list.useQuery({});
+  const { data: gigs, isLoading } = trpc.gigs.list.useQuery({ limit: 100 });
   const utils = trpc.useUtils();
 
   // Favorites
@@ -65,13 +65,38 @@ export default function Marketplace() {
     }
   };
 
+  // Dynamic category counts from database
+  const categoryMapping: Record<string, string> = {
+    "Design & Kreation": "design",
+    "Development": "development",
+    "Marketing": "marketing",
+    "Content & Text": "content",
+    "Business": "business",
+    "Technologie": "technology",
+  };
+
+  // Reverse mapping for filtering (DB category → Display name)
+  const reverseCategoryMapping: Record<string, string> = {
+    "design": "Design & Kreation",
+    "development": "Development",
+    "marketing": "Marketing",
+    "content": "Content & Text",
+    "business": "Business",
+    "technology": "Technologie",
+  };
+
+  const getCategoryCount = (categoryName: string) => {
+    const dbCategory = categoryMapping[categoryName];
+    return gigs?.filter(g => g.category === dbCategory).length || 0;
+  };
+
   const categories = [
-    { name: "Design & Kreation", icon: "🎨", count: 124 },
-    { name: "Development", icon: "💻", count: 98 },
-    { name: "Marketing", icon: "📱", count: 156 },
-    { name: "Content & Text", icon: "✍️", count: 87 },
-    { name: "Business", icon: "💼", count: 65 },
-    { name: "Technologie", icon: "🤖", count: 43 },
+    { name: "Design & Kreation", icon: "🎨", count: getCategoryCount("Design & Kreation") },
+    { name: "Development", icon: "💻", count: getCategoryCount("Development") },
+    { name: "Marketing", icon: "📱", count: getCategoryCount("Marketing") },
+    { name: "Content & Text", icon: "✍️", count: getCategoryCount("Content & Text") },
+    { name: "Business", icon: "💼", count: getCategoryCount("Business") },
+    { name: "Technologie", icon: "🤖", count: getCategoryCount("Technologie") },
   ];
 
   // Filter gigs
@@ -79,7 +104,11 @@ export default function Marketplace() {
     const matchesSearch = !searchQuery || 
       gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       gig.description.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !category || gig.category === category;
+    
+    // Map display category name to DB category
+    const dbCategory = category ? categoryMapping[category] || category.toLowerCase() : null;
+    const matchesCategory = !dbCategory || gig.category === dbCategory;
+    
     const matchesPrice = gig.price <= maxPrice;
     return matchesSearch && matchesCategory && matchesPrice;
   }) || [];
@@ -174,7 +203,7 @@ export default function Marketplace() {
                 transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
               >
                 <Sparkles className="h-5 w-5 text-success" />
-                <span className="text-success font-bold">573 Premium-Experten verfügbar</span>
+                <span className="text-success font-bold">{gigs?.length || 0} Premium-Experten verfügbar</span>
               </motion.div>
 
               <h1 className="text-6xl md:text-7xl font-black text-white mb-6" style={{

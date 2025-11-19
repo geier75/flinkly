@@ -82,7 +82,7 @@ export default function GigDetail() {
     title: gig.title,
     description: gig.description,
     price: gig.price,
-    seller: { name: "Flinkly Seller" }, // TODO: Fetch seller name from sellerId
+    seller: { name: gig.seller?.name || "Flinkly Seller" },
     rating: avgRating,
     reviewCount: reviews?.length || 0,
   }) : undefined;

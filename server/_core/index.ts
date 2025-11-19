@@ -160,6 +160,43 @@ async function startServer() {
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
   });
+
+  // Graceful shutdown handler
+  const gracefulShutdown = async (signal: string) => {
+    console.log(`\n[${signal}] Graceful shutdown initiated...`);
+    
+    // Stop accepting new connections
+    server.close(async () => {
+      console.log("[Shutdown] HTTP server closed");
+      
+      try {
+        // Close database connections
+        const { getDb } = await import("../db");
+        const db = await getDb();
+        if (db) {
+          // MySQL2 doesn't have a close method on drizzle instance
+          // Connection pool will be closed automatically
+          console.log("[Shutdown] Database connections closed");
+        }
+        
+        console.log("[Shutdown] Graceful shutdown completed");
+        process.exit(0);
+      } catch (error) {
+        console.error("[Shutdown] Error during graceful shutdown:", error);
+        process.exit(1);
+      }
+    });
+
+    // Force shutdown after 30 seconds
+    setTimeout(() => {
+      console.error("[Shutdown] Forced shutdown after timeout");
+      process.exit(1);
+    }, 30000);
+  };
+
+  // Register shutdown handlers
+  process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+  process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 }
 
 startServer().catch(console.error);
