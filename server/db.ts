@@ -1284,14 +1284,16 @@ export async function calculateSellerLevel(userId: number): Promise<"new" | "ris
     onTimeDeliveryRate = 100,
   } = user[0];
 
-  const rating = averageRating / 100; // Convert back to 0-5 scale
+  const rating = (averageRating ?? 0) / 100; // Convert back to 0-5 scale
+  const responseTime = responseTimeHours ?? 24;
+  const onTimeRate = onTimeDeliveryRate ?? 100;
 
   // TOP_RATED: 200+ orders, 4.9+ rating, <6h response, 95%+ on-time
   if (
     completedOrders >= 200 &&
     rating >= 4.9 &&
-    responseTimeHours <= 6 &&
-    onTimeDeliveryRate >= 95
+    responseTime <= 6 &&
+    onTimeRate >= 95
   ) {
     return "top_rated";
   }
@@ -1300,8 +1302,8 @@ export async function calculateSellerLevel(userId: number): Promise<"new" | "ris
   if (
     completedOrders >= 50 &&
     rating >= 4.7 &&
-    responseTimeHours <= 12 &&
-    onTimeDeliveryRate >= 90
+    responseTime <= 12 &&
+    onTimeRate >= 90
   ) {
     return "level_one";
   }
@@ -1310,7 +1312,7 @@ export async function calculateSellerLevel(userId: number): Promise<"new" | "ris
   if (
     completedOrders >= 10 &&
     rating >= 4.5 &&
-    responseTimeHours <= 24
+    responseTime <= 24
   ) {
     return "rising";
   }
