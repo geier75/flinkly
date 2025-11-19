@@ -27,7 +27,7 @@ export default function OrderDetail() {
   const [message, setMessage] = useState("");
   const [revisionRequest, setRevisionRequest] = useState("");
 
-  const { data: order, isLoading } = trpc.orders.getById.useQuery({ id: parseInt(id!) });
+  const { data: order, isLoading } = trpc.orders.getById.useQuery({ orderId: parseInt(id!) });
 
   const acceptDeliveryMutation = trpc.orders.acceptDelivery.useMutation({
     onSuccess: () => {

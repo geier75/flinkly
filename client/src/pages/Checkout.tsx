@@ -79,7 +79,7 @@ export default function Checkout() {
   const createOrderMutation = trpc.orders.create.useMutation({
     onSuccess: (order) => {
       toast.success("Auftrag erfolgreich erstellt!");
-      setLocation(`/dashboard`); // Redirect to dashboard after order creation
+      setLocation(`/order/confirmation/${order.orderId}`); // Redirect to order confirmation page
     },
     onError: () => {
       toast.error("Fehler beim Erstellen des Auftrags");

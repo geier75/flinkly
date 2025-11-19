@@ -243,8 +243,31 @@ export async function getSellerOrders(sellerId: number, limit: number = 50, offs
 export async function getOrderById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(orders).where(eq(orders.id, id)).limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  const result = await db
+    .select({
+      order: orders,
+      gig: gigs,
+      seller: {
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        emailVerified: users.emailVerified,
+        role: users.role,
+      },
+    })
+    .from(orders)
+    .leftJoin(gigs, eq(orders.gigId, gigs.id))
+    .leftJoin(users, eq(orders.sellerId, users.id))
+    .where(eq(orders.id, id))
+    .limit(1);
+  
+  if (result.length === 0) return undefined;
+  
+  return {
+    ...result[0].order,
+    gig: result[0].gig,
+    seller: result[0].seller,
+  };
 }
 
 export async function createOrder(order: InsertOrder) {

@@ -192,9 +192,9 @@ export const appRouter = router({
       }),
 
     getById: protectedProcedure
-      .input(z.object({ id: z.number() }))
+      .input(z.object({ orderId: z.number() }))
       .query(async ({ input }) => {
-        return await db.getOrderById(input.id);
+        return await db.getOrderById(input.orderId);
       }),
 
     create: protectedProcedure
