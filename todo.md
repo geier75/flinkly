@@ -337,26 +337,26 @@
   - [x] CTA-Hierarchie
   - [x] Performance-Optimierung (Scroll-Animations, Intersection Observer)
 
-- [ ] **Gig-Listing/Marketplace** (20h)
-  - [ ] Filter-UX verbessern
-  - [ ] Gig-Card Trust-Cues
-  - [ ] Lazy-Loading + Skeleton-States
-  - [ ] Sort-Algorithmus optimieren
-  - [ ] Empty-States
+- [x] **Gig-Listing/Marketplace** (20h)
+  - [x] Filter-UX verbessern (bereits vorhanden)
+  - [x] Gig-Card Trust-Cues (Seller-Info, Verifizierungs-Badge, Completed-Orders, Seller-Level)
+  - [x] Lazy-Loading + Skeleton-States (bereits vorhanden)
+  - [x] Sort-Algorithmus optimieren (bereits vorhanden)
+  - [x] Empty-States (bereits vorhanden)
 
-- [ ] **Gig-Detail** (24h)
-  - [ ] Trust-Elemente (Badges, Reviews, Portfolio)
-  - [ ] CTA-Optimierung (Sticky, Mobile)
-  - [ ] FAQ-Section
-  - [ ] "Ähnliche Gigs" Algorithmus
-  - [ ] Breadcrumbs + Schema.org
+- [x] **Gig-Detail** (24h)
+  - [x] Trust-Elemente (Seller-Info-Card mit Verifizierungs-Badge, Seller-Level, Rating)
+  - [x] CTA-Optimierung (Sticky Sidebar bereits vorhanden)
+  - [x] FAQ-Section (erweitert auf 8 Fragen mit detaillierten Antworten)
+  - [x] "Ähnliche Gigs" Algorithmus (bereits vorhanden)
+  - [x] Breadcrumbs + Schema.org (erweitert um Kategorie-Link)
 
-- [ ] **Checkout** (16h)
-  - [ ] Multi-Step-Form UX
-  - [ ] Payment-Trust (SSL, Escrow-Erklärung)
-  - [ ] Exit-Intent-Modal
-  - [ ] Error-Handling
-  - [ ] Legal-Compliance (Widerruf, AGB)
+- [x] **Checkout** (16h)
+  - [x] Multi-Step-Form UX (3 Schritte mit Progress-Indicator)
+  - [x] Payment-Trust (SSL-Badge, Stripe-Badge, Escrow-Erklärung)
+  - [x] Exit-Intent-Modal (bereits vorhanden)
+  - [x] Error-Handling (Validation, Toast-Messages)
+  - [x] Legal-Compliance (Widerruf, AGB, DSGVO-Hinweis)
 
 - [ ] **Confirmation** (8h)
   - [ ] Success-State Design

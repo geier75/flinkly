@@ -198,6 +198,17 @@ export default function Checkout() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
+                  {/* DSGVO-Hinweis */}
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 mb-4">
+                    <p className="text-xs text-slate-600 flex items-start gap-2">
+                      <Shield className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                      <span>
+                        <strong>Datenschutz:</strong> Deine Daten werden DSGVO-konform verarbeitet und nur zur Auftragsabwicklung verwendet. 
+                        <a href="/datenschutz" className="text-primary hover:underline">Mehr erfahren</a>
+                      </span>
+                    </p>
+                  </div>
+
                   <div>
                     <Label htmlFor="projectName">
                       Projektname <span className="text-red-500">*</span>
@@ -315,7 +326,16 @@ export default function Checkout() {
                   <div className="space-y-4">
                     <div>
                       <Label className="text-base font-semibold mb-3 block">Wähle deine Zahlungsmethode</Label>
-                      <p className="text-sm text-slate-600 mb-4">Alle Zahlungen sind sicher und verschlüsselt</p>
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <Shield className="h-4 w-4 text-green-600" />
+                          <span>256-Bit SSL-Verschlüsselung</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <span>Powered by Stripe</span>
+                        </div>
+                      </div>
                     </div>
                     <div className="grid gap-3">
                       {[

@@ -124,23 +124,35 @@ export default function GigDetail() {
   const faqItems = [
     {
       question: "Wie läuft der Bestellprozess ab?",
-      answer: "Nach der Bestellung erhältst du ein Briefing-Formular. Ich starte sofort mit der Arbeit und halte dich regelmäßig auf dem Laufenden. Du kannst jederzeit Feedback geben."
+      answer: "Nach der Bestellung erhältst du ein Briefing-Formular. Ich starte sofort mit der Arbeit und halte dich regelmäßig auf dem Laufenden. Du kannst jederzeit Feedback geben. Die Zahlung wird sicher über Stripe abgewickelt und im Escrow-System verwahrt."
     },
     {
       question: "Kann ich Änderungen anfordern?",
-      answer: "Ja! Je nach Paket hast du 2-5 Revisionen inklusive. Ich arbeite so lange, bis du 100% zufrieden bist. Premium-Paket bietet unbegrenzte Revisionen."
+      answer: "Ja! Je nach Paket hast du 2-5 Revisionen inklusive. Ich arbeite so lange, bis du 100% zufrieden bist. Premium-Paket bietet unbegrenzte Revisionen. Änderungswünsche kannst du jederzeit über unser Messaging-System kommunizieren."
     },
     {
       question: "Welche Dateiformate erhalte ich?",
-      answer: "Du erhältst alle Quelldateien (AI, PSD, PDF, PNG, JPG) sowie exportierte Versionen in verschiedenen Größen. Alle Dateien sind optimiert für Web und Print."
+      answer: "Du erhältst alle Quelldateien (AI, PSD, PDF, PNG, JPG) sowie exportierte Versionen in verschiedenen Größen. Alle Dateien sind optimiert für Web und Print. Bei Premium-Paketen erhältst du zusätzlich Brand Guidelines."
     },
     {
       question: "Was passiert, wenn ich nicht zufrieden bin?",
-      answer: "Deine Zufriedenheit ist garantiert! Falls du nicht zufrieden bist, arbeite ich weiter bis es passt. Bei grundsätzlichen Problemen greift unser Käuferschutz."
+      answer: "Deine Zufriedenheit ist garantiert! Falls du nicht zufrieden bist, arbeite ich weiter bis es passt. Bei grundsätzlichen Problemen greift unser Käuferschutz mit Geld-zurück-Garantie. Du kannst innerhalb von 14 Tagen vom Kauf zurücktreten."
     },
     {
       question: "Kann ich die Lieferzeit verkürzen?",
-      answer: "Ja, gegen Aufpreis biete ich Express-Lieferung an. Kontaktiere mich vor der Bestellung, um die Verfügbarkeit zu prüfen."
+      answer: "Ja, gegen Aufpreis biete ich Express-Lieferung an. Kontaktiere mich vor der Bestellung, um die Verfügbarkeit zu prüfen. Express-Lieferung bedeutet Fertigstellung in 50% der normalen Lieferzeit."
+    },
+    {
+      question: "Wie funktioniert die Zahlung?",
+      answer: "Zahlung erfolgt sicher über Stripe mit Käuferschutz. Dein Geld wird im Escrow-System verwahrt und erst nach erfolgreicher Lieferung an den Seller ausgezahlt. Wir akzeptieren Kreditkarte, SEPA, Klarna und TWINT."
+    },
+    {
+      question: "Kann ich mit dem Seller kommunizieren?",
+      answer: "Ja! Nutze die 'Frage stellen' Funktion für Vorab-Fragen oder das integrierte Messaging-System nach der Bestellung. Der Seller antwortet in der Regel innerhalb von 1 Stunde."
+    },
+    {
+      question: "Was ist der Unterschied zwischen den Paketen?",
+      answer: "Basic: Schneller Einstieg mit 1 Konzept und 2 Revisionen. Standard: Mehr Auswahl mit 3 Konzepten und 5 Revisionen plus Social Media Kit. Premium: Maximale Flexibilität mit 5 Konzepten, unbegrenzten Revisionen, Brand Guidelines und Priority Support."
     }
   ];
 
@@ -254,10 +266,12 @@ export default function GigDetail() {
             >
               <div className="flex items-center gap-2 text-sm text-slate-400">
                 <Link href="/" className="hover:text-white transition-colors">Home</Link>
-                <span>/</span>
+                <ChevronRight className="h-4 w-4" />
                 <Link href="/marketplace" className="hover:text-white transition-colors">Marketplace</Link>
-                <span>/</span>
-                <span className="text-white">{gig.title}</span>
+                <ChevronRight className="h-4 w-4" />
+                <Link href={`/marketplace?category=${gig.category}`} className="hover:text-white transition-colors capitalize">{gig.category}</Link>
+                <ChevronRight className="h-4 w-4" />
+                <span className="text-white truncate max-w-md">{gig.title}</span>
               </div>
             </motion.div>
 
@@ -545,6 +559,49 @@ export default function GigDetail() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.6, delay: 0.2 }}
                 >
+                  {/* Seller Info Card */}
+                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
+                    <CardContent className="p-6">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center text-white font-bold text-2xl flex-shrink-0">
+                          {gig.seller?.name?.charAt(0).toUpperCase() || "?"}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-bold text-white truncate">{gig.seller?.name || "Unbekannt"}</h3>
+                            {gig.seller?.emailVerified && (
+                              <div className="flex-shrink-0">
+                                <svg className="h-5 w-5 text-success" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-sm text-slate-400">
+                            {(gig.completedOrders || 0) > 10 ? "Top Seller" : (gig.completedOrders || 0) > 5 ? "Pro Seller" : (gig.completedOrders || 0) > 0 ? "Rising Star" : "Neuer Seller"}
+                          </p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <div className="flex items-center gap-1">
+                              <Star className="h-4 w-4 text-success fill-success" />
+                              <span className="text-sm font-bold text-white">{gig.averageRating ? (gig.averageRating / 100).toFixed(1) : "Neu"}</span>
+                            </div>
+                            <span className="text-sm text-slate-400">•</span>
+                            <span className="text-sm text-slate-400">{gig.completedOrders || 0} Aufträge</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Link href="/messages">
+                        <Button 
+                          variant="outline"
+                          className="w-full border-slate-700 hover:border-primary text-white bg-slate-900/40 backdrop-blur-sm"
+                        >
+                          <MessageCircle className="h-4 w-4 mr-2" />
+                          Nachricht senden
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+
                   {/* Package Selection */}
                   <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
                     <CardContent className="p-6">

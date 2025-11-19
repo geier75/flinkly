@@ -111,11 +111,34 @@ export async function getUserByEmail(email: string) {
 export async function getGigs(limit = 20, offset = 0) {
   const db = await getDb();
   if (!db) return [];
-  return db.select().from(gigs)
+  
+  // Join with users table to get seller info (prevents N+1 query problem)
+  const result = await db
+    .select({
+      gig: gigs,
+      seller: {
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        avatarUrl: users.avatarUrl,
+        verified: users.verified,
+        emailVerified: users.emailVerified,
+        phoneVerified: users.phoneVerified,
+        verificationLevel: users.verificationLevel,
+      },
+    })
+    .from(gigs)
+    .leftJoin(users, eq(gigs.sellerId, users.id))
     .where(and(eq(gigs.active, true), eq(gigs.status, "published")))
     .orderBy(desc(gigs.createdAt))
     .limit(limit)
     .offset(offset);
+  
+  // Flatten structure for consistency with getGigById
+  return result.map(r => ({
+    ...r.gig,
+    seller: r.seller,
+  }));
 }
 
 export async function getGigById(id: number) {
@@ -130,6 +153,11 @@ export async function getGigById(id: number) {
         id: users.id,
         name: users.name,
         email: users.email,
+        avatarUrl: users.avatarUrl,
+        verified: users.verified,
+        emailVerified: users.emailVerified,
+        phoneVerified: users.phoneVerified,
+        verificationLevel: users.verificationLevel,
       },
     })
     .from(gigs)
