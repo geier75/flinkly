@@ -168,6 +168,102 @@ export const appRouter = router({
       }),
   }),
 
+  gigPackages: router({
+    list: publicProcedure
+      .input(z.object({ gigId: z.number() }))
+      .query(({ input }) => db.getGigPackages(input.gigId)),
+
+    create: protectedProcedure
+      .input(z.object({
+        gigId: z.number(),
+        packageType: z.enum(["basic", "standard", "premium"]),
+        name: z.string().min(3).max(100),
+        description: z.string().min(10),
+        price: z.number().min(100).max(25000),
+        deliveryDays: z.number().min(1).max(30),
+        revisions: z.number().min(0).max(10),
+        features: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const featuresJson = input.features ? JSON.stringify(input.features) : null;
+        const id = await db.createGigPackage({
+          ...input,
+          features: featuresJson,
+        });
+        return { success: true, id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(3).max(100).optional(),
+        description: z.string().min(10).optional(),
+        price: z.number().min(100).max(25000).optional(),
+        deliveryDays: z.number().min(1).max(30).optional(),
+        revisions: z.number().min(0).max(10).optional(),
+        features: z.array(z.string()).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, features, ...updates } = input;
+        const finalUpdates = {
+          ...updates,
+          ...(features ? { features: JSON.stringify(features) } : {}),
+        };
+        await db.updateGigPackage(id, finalUpdates);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteGigPackage(input.id);
+        return { success: true };
+      }),
+  }),
+
+  gigExtras: router({
+    list: publicProcedure
+      .input(z.object({ gigId: z.number() }))
+      .query(({ input }) => db.getGigExtras(input.gigId)),
+
+    create: protectedProcedure
+      .input(z.object({
+        gigId: z.number(),
+        extraType: z.enum(["express_delivery", "extra_revisions", "commercial_license", "source_files", "custom"]),
+        name: z.string().min(3).max(100),
+        description: z.string().optional(),
+        price: z.number().min(100).max(10000),
+        deliveryDaysReduction: z.number().min(0).max(10).optional(),
+        revisionsAdded: z.number().min(0).max(5).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const id = await db.createGigExtra(input);
+        return { success: true, id };
+      }),
+
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        name: z.string().min(3).max(100).optional(),
+        description: z.string().optional(),
+        price: z.number().min(100).max(10000).optional(),
+        deliveryDaysReduction: z.number().min(0).max(10).optional(),
+        revisionsAdded: z.number().min(0).max(5).optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...updates } = input;
+        await db.updateGigExtra(id, updates);
+        return { success: true };
+      }),
+
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await db.deleteGigExtra(input.id);
+        return { success: true };
+      }),
+  }),
+
   orders: router({
     myPurchases: protectedProcedure
       .input(z.object({

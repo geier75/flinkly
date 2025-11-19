@@ -2953,3 +2953,182 @@
 - [x] Weekly-Digest-Email-Template erstellen
 - [x] Digest-Content-Aggregation (neue Gigs, ungelesene Messages, offene Orders)
 - [x] Cron-Job für wöchentlichen Versand (jeden Montag 9 Uhr)
+
+## 🎯 Monetization-Strategie
+
+### Gig-Pakete/Tiers (32h)
+
+- [x] **Schema-Erweiterung**
+  - [x] `gigPackages` Tabelle erstellen (Basic/Standard/Premium)
+  - [x] Felder: packageType, price, deliveryDays, revisions, features (JSON)
+  - [x] Migration durchführen
+
+- [x] **Backend-Logic**
+  - [x] `getGigPackages(gigId)` Query
+  - [x] `createGigPackage()` Mutation
+  - [x] `updateGigPackage()` Mutation
+  - [x] Package-Validation (Preis-Limits, Feature-Constraints in tRPC-Router)
+
+- [ ] **Frontend - CreateGig/EditGig**
+  - [ ] Package-Builder-UI (3 Spalten: Basic/Standard/Premium)
+  - [ ] Feature-Toggles (Revisionen, Lieferzeit, Commercial-License)
+  - [ ] Preis-Calculator (automatische Vorschläge)
+  - [ ] Live-Vorschau der Packages
+
+- [ ] **Frontend - GigDetail**
+  - [ ] Package-Selection-Tabs (Basic/Standard/Premium)
+  - [ ] Feature-Comparison-Table
+  - [ ] Upsell-Highlights ("Meist gewählt", "Bester Wert")
+  - [ ] Package-Switch-Animation
+
+- [ ] **Frontend - Checkout**
+  - [ ] Selected-Package-Display
+  - [ ] Upgrade-Prompt ("Für nur X€ mehr...")
+
+### Gig-Extras/Add-ons (24h)
+
+- [x] **Schema-Erweiterung**
+  - [x] `gigExtras` Tabelle erstellen
+  - [x] Felder: extraType, price, description, deliveryDaysReduction, revisionsAdded
+  - [x] extraType: express_delivery, extra_revisions, commercial_license, source_files, custom
+
+- [x] **Backend-Logic**
+  - [x] `getGigExtras(gigId)` Query
+  - [x] `createGigExtra()` Mutation
+  - [ ] Order-Total-Calculation mit Extras (TODO: in Checkout implementieren)
+
+- [ ] **Frontend - CreateGig/EditGig**
+  - [ ] Extras-Builder-UI (Checkboxen mit Preis-Inputs)
+  - [ ] Preset-Templates ("Standard-Extras für Design-Gigs")
+
+- [ ] **Frontend - GigDetail**
+  - [ ] Extras-Section unterhalb Packages
+  - [ ] Checkbox-Liste mit Preis-Anzeige
+  - [ ] Dynamic-Total-Calculation
+
+- [ ] **Frontend - Checkout**
+  - [ ] Selected-Extras-Display
+  - [ ] Preis-Breakdown (Package + Extras = Total)
+
+### Seller-Tiers/Levels (40h)
+
+- [ ] **Schema-Erweiterung**
+  - [ ] `users.sellerLevel` Feld hinzufügen (new_seller, rising_talent, level_one, level_two, top_rated)
+  - [ ] `users.sellerBadges` JSON-Feld (Array von Badge-IDs)
+  - [ ] `sellerStats` Tabelle erstellen (totalRevenue, completedOrders, avgRating, responseTime)
+
+- [ ] **Backend-Logic**
+  - [ ] `calculateSellerLevel()` Funktion (basierend auf Orders, Revenue, Rating)
+  - [ ] `updateSellerStats()` Cron-Job (täglich)
+  - [ ] `getSellerBadges(userId)` Query
+  - [ ] Badge-Unlock-Logic (z.B. "100 Orders", "5.0 Rating")
+
+- [ ] **Frontend - Seller-Dashboard**
+  - [ ] Level-Progress-Bar (z.B. "75% zu Level Two")
+  - [ ] Badge-Collection-Grid (unlocked + locked)
+  - [ ] Performance-Metriken-Cards (Revenue, Orders, Rating)
+  - [ ] Next-Level-Requirements-Checklist
+
+- [ ] **Frontend - GigDetail**
+  - [ ] Seller-Level-Badge prominent anzeigen
+  - [ ] Seller-Badges-Section (z.B. "Top Rated", "Fast Responder")
+
+- [ ] **Frontend - Marketplace**
+  - [ ] Filter: "Nur Top Rated Seller"
+  - [ ] Sort: "Nach Seller-Level"
+
+- [ ] **Gamification-Elemente**
+  - [ ] Level-Up-Notification (Toast + Email)
+  - [ ] Badge-Unlock-Animation
+  - [ ] Leaderboard (Top 10 Seller diese Woche)
+
+## 📊 PDCA-Plan (Plan-Do-Check-Act)
+
+### Phase 1: PLAN (Ziele & Hypothesen)
+
+- [ ] **Ziele definieren**
+  - [ ] Conversion-Rate-Ziel festlegen (z.B. +15% durch Packages)
+  - [ ] AOV-Ziel (Average Order Value) festlegen (z.B. +25% durch Add-ons)
+  - [ ] Retention-Ziel (Seller bleiben länger aktiv durch Gamification)
+
+- [ ] **Metriken festlegen**
+  - [ ] Conversion-Rate (Marketplace → Checkout → Order)
+  - [ ] Package-Distribution (Basic vs Standard vs Premium)
+  - [ ] Add-on-Attach-Rate (% Orders mit Extras)
+  - [ ] Seller-Level-Distribution
+  - [ ] Time-to-First-Sale (neue Seller)
+
+- [ ] **Hypothesen aufstellen**
+  - [ ] H1: Premium-Package mit "Meist gewählt"-Badge erhöht Premium-Auswahl um 20%
+  - [ ] H2: Express-Delivery-Add-on wird bei 30%+ der Orders gebucht
+  - [ ] H3: Seller mit Level-Badge bekommen 40% mehr Orders
+
+### Phase 2: DO (Implementierung & Testing)
+
+- [ ] **A/B-Tests einrichten**
+  - [ ] Test 1: Package-UI (Tabs vs Cards)
+  - [ ] Test 2: Upsell-Prompt-Timing (sofort vs nach 3 Sekunden)
+  - [ ] Test 3: Badge-Placement (Header vs Sidebar)
+
+- [ ] **Tracking implementieren**
+  - [ ] Event: "package_selected" (packageType)
+  - [ ] Event: "extra_added" (extraType, price)
+  - [ ] Event: "seller_level_up" (oldLevel, newLevel)
+  - [ ] Funnel-Tracking: Marketplace → GigDetail → Checkout → Confirmation
+
+- [ ] **Feature-Flags**
+  - [ ] Flag: "enable_packages" (schrittweise Rollout)
+  - [ ] Flag: "enable_extras" (schrittweise Rollout)
+  - [ ] Flag: "enable_seller_levels" (schrittweise Rollout)
+
+### Phase 3: CHECK (Analyse & Auswertung)
+
+- [ ] **Analytics-Dashboard erstellen**
+  - [ ] Conversion-Funnel-Visualisierung
+  - [ ] Package-Distribution-Chart (Pie-Chart)
+  - [ ] Add-on-Attach-Rate-Timeline
+  - [ ] Seller-Level-Distribution-Bar-Chart
+  - [ ] AOV-Trend (vor/nach Monetization-Features)
+
+- [ ] **Metriken auswerten**
+  - [ ] Wöchentliche Reports generieren
+  - [ ] A/B-Test-Ergebnisse analysieren
+  - [ ] Hypothesen validieren/verwerfen
+
+- [ ] **User-Feedback sammeln**
+  - [ ] Seller-Survey: "Wie hilfreich sind die Level/Badges?"
+  - [ ] Buyer-Survey: "Warum hast du Package X gewählt?"
+  - [ ] NPS-Score messen (vor/nach Monetization)
+
+### Phase 4: ACT (Optimierung & Iteration)
+
+- [ ] **Quick-Wins implementieren**
+  - [ ] Gewinner-Varianten aus A/B-Tests ausrollen
+  - [ ] UI-Tweaks basierend auf Heatmaps
+  - [ ] Copy-Optimierungen (z.B. "Meist gewählt" → "Bestseller")
+
+- [ ] **Strategische Anpassungen**
+  - [ ] Package-Pricing adjustieren (wenn Premium zu selten gewählt)
+  - [ ] Neue Add-ons einführen (basierend auf Seller-Feedback)
+  - [ ] Seller-Level-Kriterien anpassen (wenn zu schwer/leicht)
+
+- [ ] **Neue Hypothesen testen**
+  - [ ] Nächste Iteration des PDCA-Zyklus starten
+  - [ ] Neue Features basierend auf Learnings entwickeln
+
+## 🎯 Success-Metriken (KPIs)
+
+- [ ] **Revenue-Metriken**
+  - [ ] GMV (Gross Merchandise Value) +30% MoM
+  - [ ] Take-Rate (Platform-Fee) 15% von GMV
+  - [ ] AOV (Average Order Value) 120€ → 150€
+
+- [ ] **Engagement-Metriken**
+  - [ ] Seller-Retention (90-Day) 70%+
+  - [ ] Buyer-Repeat-Rate 40%+
+  - [ ] Time-on-Site +20%
+
+- [ ] **Quality-Metriken**
+  - [ ] Avg-Rating 4.5+ Stars
+  - [ ] Dispute-Rate <2%
+  - [ ] On-Time-Delivery-Rate 95%+

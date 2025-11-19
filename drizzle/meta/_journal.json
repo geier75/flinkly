@@ -78,6 +78,13 @@
       "when": 1763563860630,
       "tag": "0010_cold_wrecker",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "5",
+      "when": 1763584076981,
+      "tag": "0011_black_thaddeus_ross",
+      "breakpoints": true
     }
   ]
 }

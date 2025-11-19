@@ -5,7 +5,8 @@ import {
   InsertGig, InsertOrder, InsertReview, InsertTransaction, InsertPayout, InsertInvoice,
   conversations, messages, InsertConversation, InsertMessage,
   consentLogs, InsertConsentLog, accountDeletionRequests, InsertAccountDeletionRequest,
-  favorites
+  favorites,
+  gigPackages, gigExtras, InsertGigPackage, InsertGigExtra
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1191,4 +1192,70 @@ export async function isFavorite(userId: number, gigId: number): Promise<boolean
     .limit(1);
 
   return result.length > 0;
+}
+
+
+// ========================================
+// GIG PACKAGES - Tiered Pricing (Basic/Standard/Premium)
+// ========================================
+
+export async function getGigPackages(gigId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(gigPackages)
+    .where(and(eq(gigPackages.gigId, gigId), eq(gigPackages.active, true)))
+    .orderBy(gigPackages.price); // Order by price: Basic → Standard → Premium
+}
+
+export async function createGigPackage(pkg: InsertGigPackage) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(gigPackages).values(pkg);
+  return result[0].insertId;
+}
+
+export async function updateGigPackage(id: number, updates: Partial<InsertGigPackage>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(gigPackages).set(updates).where(eq(gigPackages.id, id));
+}
+
+export async function deleteGigPackage(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(gigPackages).set({ active: false }).where(eq(gigPackages.id, id));
+}
+
+// ========================================
+// GIG EXTRAS - Add-ons (Express, Revisions, License, etc.)
+// ========================================
+
+export async function getGigExtras(gigId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(gigExtras)
+    .where(and(eq(gigExtras.gigId, gigId), eq(gigExtras.active, true)));
+}
+
+export async function createGigExtra(extra: InsertGigExtra) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  const result = await db.insert(gigExtras).values(extra);
+  return result[0].insertId;
+}
+
+export async function updateGigExtra(id: number, updates: Partial<InsertGigExtra>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(gigExtras).set(updates).where(eq(gigExtras.id, id));
+}
+
+export async function deleteGigExtra(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(gigExtras).set({ active: false }).where(eq(gigExtras.id, id));
 }

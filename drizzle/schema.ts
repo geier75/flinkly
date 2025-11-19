@@ -58,6 +58,59 @@ export type Gig = typeof gigs.$inferSelect;
 export type InsertGig = typeof gigs.$inferInsert;
 
 /**
+ * Gig Packages table - Basic/Standard/Premium tiers for each gig
+ * Enables tiered pricing and upselling
+ */
+export const gigPackages = mysqlTable("gigPackages", {
+  id: int("id").autoincrement().primaryKey(),
+  gigId: int("gigId").notNull(),
+  packageType: mysqlEnum("packageType", ["basic", "standard", "premium"]).notNull(),
+  name: varchar("name", { length: 100 }).notNull(), // e.g., "Basic Logo", "Premium Brand Package"
+  description: text("description").notNull(),
+  price: int("price").notNull(), // in cents
+  deliveryDays: int("deliveryDays").notNull(),
+  revisions: int("revisions").notNull().default(1),
+  features: text("features"), // JSON array of feature strings
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  gigIdIdx: index("gig_packages_gig_id_idx").on(table.gigId),
+}));
+
+export type GigPackage = typeof gigPackages.$inferSelect;
+export type InsertGigPackage = typeof gigPackages.$inferInsert;
+
+/**
+ * Gig Extras table - Add-ons that can be purchased with any package
+ * Examples: Express delivery, extra revisions, commercial license, source files
+ */
+export const gigExtras = mysqlTable("gigExtras", {
+  id: int("id").autoincrement().primaryKey(),
+  gigId: int("gigId").notNull(),
+  extraType: mysqlEnum("extraType", [
+    "express_delivery",
+    "extra_revisions",
+    "commercial_license",
+    "source_files",
+    "custom"
+  ]).notNull(),
+  name: varchar("name", { length: 100 }).notNull(),
+  description: text("description"),
+  price: int("price").notNull(), // in cents
+  deliveryDaysReduction: int("deliveryDaysReduction").default(0), // for express delivery
+  revisionsAdded: int("revisionsAdded").default(0), // for extra revisions
+  active: boolean("active").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  gigIdIdx: index("gig_extras_gig_id_idx").on(table.gigId),
+}));
+
+export type GigExtra = typeof gigExtras.$inferSelect;
+export type InsertGigExtra = typeof gigExtras.$inferInsert;
+
+/**
  * Orders table - Transactions between buyers and sellers
  */
 export const orders = mysqlTable("orders", {
