@@ -192,4 +192,45 @@ export const userRouter = router({
     const request = await db.getAccountDeletionRequest(ctx.user.id);
     return request || null;
   }),
+
+  /**
+   * Update user profile (including commercial seller fields)
+   */
+  updateProfile: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().optional(),
+        bio: z.string().optional(),
+        country: z.string().optional(),
+        // Commercial seller fields (§ 5 TMG)
+        isCommercial: z.boolean().optional(),
+        companyName: z.string().optional(),
+        companyAddress: z.string().optional(),
+        taxId: z.string().optional(),
+        tradeRegister: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.user.id;
+
+      // Validate: If isCommercial=true, companyName and companyAddress are required
+      if (input.isCommercial && (!input.companyName || !input.companyAddress)) {
+        throw new Error(
+          "Gewerbliche Anbieter müssen Firmenname und Adresse angeben (§ 5 TMG Impressumspflicht)."
+        );
+      }
+
+      // Update user profile
+      await db.updateUser(userId, input);
+
+      // Invalidate cache
+      const cacheKey = CacheKeys.sellerProfile(userId);
+      await setCached(cacheKey, null, 0); // Delete cache
+      console.log(`[Cache INVALIDATE] ${cacheKey}`);
+
+      return {
+        success: true,
+        message: "Profil erfolgreich aktualisiert.",
+      };
+    }),
 });

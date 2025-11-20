@@ -1435,3 +1435,27 @@ export async function getDefaultPaymentMethod(userId: number) {
 
   return result.length > 0 ? result[0] : null;
 }
+
+/**
+ * Update user profile (including commercial seller fields)
+ */
+export async function updateUser(
+  userId: number,
+  updates: {
+    name?: string;
+    bio?: string;
+    country?: string;
+    // Commercial seller fields (§ 5 TMG)
+    isCommercial?: boolean;
+    companyName?: string;
+    companyAddress?: string;
+    taxId?: string;
+    tradeRegister?: string;
+  }
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set(updates).where(eq(users.id, userId));
+  console.log(`[Profile Update] User ${userId} profile updated`);
+}

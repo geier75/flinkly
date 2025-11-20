@@ -3,11 +3,14 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { AlertCircle, User, Mail, MapPin, LogOut, Edit2, Save, X, Zap, Download, Trash2, Shield, Clock } from "lucide-react";
+import { AlertCircle, User, Mail, MapPin, LogOut, Edit2, Save, X, Zap, Download, Trash2, Shield, Clock, Building2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { ImpressumCard } from "@/components/ImpressumCard";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const COUNTRIES = [
   { code: "DE", name: "Deutschland" },
@@ -23,6 +26,12 @@ export default function Profile() {
     name: user?.name || "",
     bio: "",
     country: "DE",
+    // Commercial seller fields (§ 5 TMG)
+    isCommercial: user?.isCommercial || false,
+    companyName: user?.companyName || "",
+    companyAddress: user?.companyAddress || "",
+    taxId: user?.taxId || "",
+    tradeRegister: user?.tradeRegister || "",
   });
 
   // DSGVO: Data Export
@@ -128,16 +137,39 @@ export default function Profile() {
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
+  // Update profile mutation
+  const updateProfileMutation = trpc.user.updateProfile.useMutation({
+    onSuccess: () => {
+      toast.success("Profil erfolgreich aktualisiert!");
+      setIsEditing(false);
+      // Refresh page to show updated data
+      window.location.reload();
+    },
+    onError: (error) => {
+      toast.error("Fehler beim Speichern", {
+        description: error.message,
+      });
+    },
+  });
+
   const handleSave = () => {
-    console.log("Saving profile:", formData);
-    setIsEditing(false);
+    // Validate commercial seller fields
+    if (formData.isCommercial && (!formData.companyName || !formData.companyAddress)) {
+      toast.error("Pflichtfelder fehlen", {
+        description: "Gewerbliche Anbieter müssen Firmenname und Adresse angeben (§ 5 TMG).",
+      });
+      return;
+    }
+
+    updateProfileMutation.mutate(formData);
   };
 
   const handleLogout = async () => {
@@ -254,6 +286,102 @@ export default function Profile() {
                     </select>
                   </div>
 
+                  {/* Commercial Seller Section (§ 5 TMG) */}
+                  <div className="border-t-2 border-cyan-400/30 pt-6 mt-6">
+                    <div className="flex items-center gap-3 mb-6">
+                      <Building2 className="h-6 w-6 text-cyan-400" />
+                      <h3 className="text-xl font-bold text-white">Gewerbliche Angaben</h3>
+                    </div>
+                    
+                    {/* Gewerblich Checkbox */}
+                    <div className="flex items-center gap-3 mb-6 p-4 bg-slate-900/60 rounded-lg border-2 border-slate-700">
+                      <Checkbox
+                        id="isCommercial"
+                        name="isCommercial"
+                        checked={formData.isCommercial}
+                        onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCommercial: checked as boolean }))}
+                        className="border-cyan-400 data-[state=checked]:bg-cyan-400 data-[state=checked]:border-cyan-400"
+                      />
+                      <Label htmlFor="isCommercial" className="text-lg text-slate-200 cursor-pointer">
+                        Ich bin <strong className="text-cyan-400">gewerblicher Anbieter</strong> und unterliege der Impressumspflicht (§ 5 TMG)
+                      </Label>
+                    </div>
+
+                    {/* Conditional Impressum Fields */}
+                    {formData.isCommercial && (
+                      <div className="space-y-6 p-6 bg-cyan-400/5 border-2 border-cyan-400/20 rounded-lg">
+                        <p className="text-sm text-cyan-300 mb-4">
+                          ⚠️ Als gewerblicher Anbieter musst du gemäß § 5 TMG folgende Angaben machen:
+                        </p>
+                        
+                        {/* Firmenname */}
+                        <div>
+                          <label className="block text-lg font-bold text-slate-200 mb-3">
+                            Firmenname <span className="text-red-400">*</span>
+                          </label>
+                          <Input
+                            type="text"
+                            name="companyName"
+                            value={formData.companyName}
+                            onChange={handleChange}
+                            placeholder="z.B. MiMi Tech Ai UG (haftungsbeschränkt)"
+                            className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                            required
+                          />
+                        </div>
+
+                        {/* Vollständige Adresse */}
+                        <div>
+                          <label className="block text-lg font-bold text-slate-200 mb-3">
+                            Vollständige Adresse <span className="text-red-400">*</span>
+                          </label>
+                          <textarea
+                            name="companyAddress"
+                            value={formData.companyAddress}
+                            onChange={handleChange}
+                            placeholder="Straße Hausnummer\nPLZ Ort\nLand"
+                            rows={4}
+                            className="w-full px-4 py-3 bg-slate-900/60 border-2 border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg backdrop-blur-xl resize-none"
+                            required
+                          />
+                          <p className="text-xs text-slate-400 mt-2">
+                            Beispiel: Lindenplatz 23, 75378 Bad Liebenzell, Deutschland
+                          </p>
+                        </div>
+
+                        {/* USt-IdNr. */}
+                        <div>
+                          <label className="block text-lg font-bold text-slate-200 mb-3">
+                            Umsatzsteuer-ID (optional)
+                          </label>
+                          <Input
+                            type="text"
+                            name="taxId"
+                            value={formData.taxId}
+                            onChange={handleChange}
+                            placeholder="z.B. DE123456789"
+                            className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                          />
+                        </div>
+
+                        {/* Handelsregister */}
+                        <div>
+                          <label className="block text-lg font-bold text-slate-200 mb-3">
+                            Handelsregister (optional)
+                          </label>
+                          <Input
+                            type="text"
+                            name="tradeRegister"
+                            value={formData.tradeRegister}
+                            onChange={handleChange}
+                            placeholder="z.B. HRB 12345 B (Amtsgericht Charlottenburg)"
+                            className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Buttons */}
                   <div className="flex gap-4 pt-6">
                     <Button
@@ -266,10 +394,20 @@ export default function Profile() {
                     </Button>
                     <Button
                       onClick={handleSave}
+                      disabled={updateProfileMutation.isPending}
                       className="flex-1 cyber-neon-button text-white font-bold text-lg py-6"
                     >
-                      <Save className="h-5 w-5 mr-2" />
-                      Speichern
+                      {updateProfileMutation.isPending ? (
+                        <>
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                          Speichere...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="h-5 w-5 mr-2" />
+                          Speichern
+                        </>
+                      )}
                     </Button>
                   </div>
                 </>
@@ -308,6 +446,26 @@ export default function Profile() {
                       </div>
                     </motion.div>
                   </div>
+
+                  {/* ImpressumCard (nur für gewerbliche Seller) */}
+                  {user.isCommercial && user.companyName && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="mt-6"
+                    >
+                      <ImpressumCard
+                        companyName={user.companyName}
+                        companyAddress={user.companyAddress || ""}
+                        email={user.email || undefined}
+                        phone={user.phone || undefined}
+                        taxId={user.taxId || undefined}
+                        tradeRegister={user.tradeRegister || undefined}
+                        ownerName={user.name || undefined}
+                      />
+                    </motion.div>
+                  )}
                 </>
               )}
             </CardContent>
