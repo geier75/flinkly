@@ -687,6 +687,11 @@ export default function GigDetail() {
                               price: selectedPkg.price,
                               package: selectedPkg.name,
                             });
+                            // Save package/extras to sessionStorage for Checkout
+                            sessionStorage.setItem('checkout_package', selectedPkg.id);
+                            sessionStorage.setItem('checkout_extras', JSON.stringify(selectedExtras));
+                            // Navigate to Checkout
+                            setLocation(`/checkout/${gig.id}`);
                           }}
                         >
                           {ctaButtonText}

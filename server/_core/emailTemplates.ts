@@ -654,3 +654,144 @@ export function weeklyDigestTemplate(data: WeeklyDigestData): string {
   `.trim();
 }
 
+
+
+export interface LevelUpData {
+  sellerName: string;
+  oldLevel: string;
+  newLevel: string;
+  completedOrders: number;
+  averageRating: string;
+  onTimeDeliveryRate: number;
+  responseTimeHours: number;
+}
+
+export function levelUpTemplate(data: LevelUpData): string {
+  const levelEmojis: Record<string, string> = {
+    new: "🌱",
+    rising: "📈",
+    level_one: "⭐",
+    top_rated: "👑",
+  };
+  
+  const levelNames: Record<string, string> = {
+    new: "New Seller",
+    rising: "Rising Star",
+    level_one: "Level One",
+    top_rated: "Top Rated",
+  };
+  
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Level-Up! 🎉</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="padding: 40px 40px 20px; text-align: center; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px 8px 0 0;">
+              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Flinkly</h1>
+            </td>
+          </tr>
+          
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 64px; margin-bottom: 10px;">${levelEmojis[data.newLevel] || "⭐"}</div>
+                <h2 style="margin: 0 0 10px; color: #1a1a1a; font-size: 28px; font-weight: 700;">Glückwunsch zum Level-Up!</h2>
+                <p style="margin: 0; color: #10b981; font-size: 20px; font-weight: 600;">
+                  ${levelNames[data.oldLevel] || data.oldLevel} → ${levelNames[data.newLevel] || data.newLevel}
+                </p>
+              </div>
+              
+              <p style="margin: 0 0 20px; color: #4a4a4a; font-size: 16px; line-height: 1.6;">
+                Hallo ${data.sellerName},
+              </p>
+              
+              <p style="margin: 0 0 30px; color: #4a4a4a; font-size: 16px; line-height: 1.6;">
+                Deine harte Arbeit und dein Engagement haben sich ausgezahlt! Du wurdest auf <strong>${levelNames[data.newLevel] || data.newLevel}</strong> hochgestuft. 🎉
+              </p>
+              
+              <!-- Stats Box -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 24px;">
+                    <h3 style="margin: 0 0 16px; color: #1a1a1a; font-size: 18px; font-weight: 600;">Deine Statistiken</h3>
+                    
+                    <table width="100%" cellpadding="8" cellspacing="0">
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px;">Abgeschlossene Aufträge</td>
+                        <td align="right" style="color: #1a1a1a; font-size: 16px; font-weight: 600;">${data.completedOrders}</td>
+                      </tr>
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px;">Durchschnittliche Bewertung</td>
+                        <td align="right" style="color: #1a1a1a; font-size: 16px; font-weight: 600;">${data.averageRating} ⭐</td>
+                      </tr>
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px;">Pünktliche Lieferung</td>
+                        <td align="right" style="color: #1a1a1a; font-size: 16px; font-weight: 600;">${data.onTimeDeliveryRate}%</td>
+                      </tr>
+                      <tr>
+                        <td style="color: #6b7280; font-size: 14px;">Antwortzeit</td>
+                        <td align="right" style="color: #1a1a1a; font-size: 16px; font-weight: 600;">${data.responseTimeHours}h</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 0 0 30px; color: #4a4a4a; font-size: 16px; line-height: 1.6;">
+                Als <strong>${levelNames[data.newLevel]}</strong> profitierst du von:
+              </p>
+              
+              <ul style="margin: 0 0 30px; padding-left: 20px; color: #4a4a4a; font-size: 16px; line-height: 1.8;">
+                <li>Höherer Sichtbarkeit in den Suchergebnissen</li>
+                <li>Vertrauens-Badge auf deinem Profil</li>
+                <li>Besseren Conversion-Rates</li>
+                <li>Zugang zu Premium-Features (bald verfügbar)</li>
+              </ul>
+              
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="padding: 20px 0;">
+                    <a href="https://flinkly.manus.space/seller-dashboard" style="display: inline-block; padding: 16px 32px; background-color: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                      Dashboard ansehen
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              
+              <p style="margin: 30px 0 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                Weiter so! Wir freuen uns darauf, dich auf deinem Weg zum Top Rated Seller zu begleiten.
+              </p>
+            </td>
+          </tr>
+          
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px 40px; background-color: #f9fafb; border-radius: 0 0 8px 8px; text-align: center;">
+              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
+                © ${new Date().getFullYear()} Flinkly. Alle Rechte vorbehalten.
+              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                Diese E-Mail wurde automatisch generiert. Bitte antworte nicht auf diese E-Mail.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `;
+}

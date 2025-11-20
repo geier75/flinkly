@@ -41,6 +41,8 @@ export default function Checkout() {
   const [showExitIntent, setShowExitIntent] = useState(true);
   const [discountCode, setDiscountCode] = useState<string | null>(null);
   const [discountAmount, setDiscountAmount] = useState(0);
+  const [selectedPackage, setSelectedPackage] = useState<"basic" | "standard" | "premium">("basic");
+  const [selectedExtras, setSelectedExtras] = useState<number[]>([]);
   
   // Analytics
   const { trackFocus, trackBlur, trackSubmit, trackError } = useFormTracking('checkout_form');
@@ -58,13 +60,32 @@ export default function Checkout() {
     }
   }, [gig]);
 
-  // Load discount code from sessionStorage (Exit Intent)
+  // Load discount code and package/extras from sessionStorage
   useEffect(() => {
     const code = sessionStorage.getItem('exit_intent_discount_code');
     if (code) {
       setDiscountCode(code);
       setDiscountAmount(500); // 5€ in cents
       console.log('[Checkout] Discount code loaded from sessionStorage:', code);
+    }
+    
+    const pkg = sessionStorage.getItem('checkout_package');
+    if (pkg && (pkg === 'basic' || pkg === 'standard' || pkg === 'premium')) {
+      setSelectedPackage(pkg);
+      console.log('[Checkout] Package loaded from sessionStorage:', pkg);
+    }
+    
+    const extras = sessionStorage.getItem('checkout_extras');
+    if (extras) {
+      try {
+        const parsed = JSON.parse(extras);
+        if (Array.isArray(parsed)) {
+          setSelectedExtras(parsed);
+          console.log('[Checkout] Extras loaded from sessionStorage:', parsed);
+        }
+      } catch (e) {
+        console.error('[Checkout] Failed to parse extras:', e);
+      }
     }
   }, []);
 
@@ -118,6 +139,8 @@ export default function Checkout() {
     createOrderMutation.mutate({
       gigId: gig.id,
       buyerMessage: JSON.stringify(briefing),
+      selectedPackage,
+      selectedExtras,
     });
   };
 

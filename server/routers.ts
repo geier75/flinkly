@@ -310,6 +310,8 @@ export const appRouter = router({
       .input(z.object({
         gigId: z.number(),
         buyerMessage: z.string().optional(),
+        selectedPackage: z.enum(["basic", "standard", "premium"]).optional().default("basic"),
+        selectedExtras: z.array(z.number()).optional(), // Array of extra IDs
       }))
       .mutation(async ({ ctx, input }) => {
         const gig = await db.getGigById(input.gigId);
@@ -321,6 +323,8 @@ export const appRouter = router({
           sellerId: gig.sellerId,
           totalPrice: gig.price,
           buyerMessage: input.buyerMessage,
+          selectedPackage: input.selectedPackage,
+          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : null,
           status: "pending",
         });
 

@@ -127,6 +127,8 @@ export const orders = mysqlTable("orders", {
   sellerId: int("sellerId").notNull(),
   status: mysqlEnum("status", ["pending", "in_progress", "preview", "delivered", "revision", "completed", "disputed", "cancelled"]).default("pending"),
   totalPrice: int("totalPrice").notNull(), // in cents
+  selectedPackage: mysqlEnum("selectedPackage", ["basic", "standard", "premium"]).default("basic"), // Package tier selected by buyer
+  selectedExtras: text("selectedExtras"), // JSON array of extra IDs purchased with this order
   buyerMessage: text("buyerMessage"),
   sellerDelivery: text("sellerDelivery"),
   deliveryDate: timestamp("deliveryDate"),

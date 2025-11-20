@@ -1,6 +1,9 @@
 import { getDb } from "../db";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { notifyOwner } from "../_core/notification";
+import { sendEmail } from "../_core/email";
+import { levelUpTemplate } from "../_core/emailTemplates";
 
 /**
  * Seller Level System
@@ -130,6 +133,40 @@ export async function upgradeAllSellers(): Promise<number> {
         console.log(
           `[SellerLevelService] Upgraded seller ${seller.id} from ${currentLevel} to ${nextLevel}`
         );
+        
+        // Send level-up notifications
+        try {
+          // 1. Push notification (Manus Notification API)
+          await notifyOwner({
+            title: `🎉 Seller Level-Up: ${seller.name || 'Seller'} → ${nextLevel}`,
+            content: `Seller ${seller.id} (${seller.name || 'Unknown'}) wurde von ${currentLevel} auf ${nextLevel} hochgestuft.\n\nStats:\n- Completed Orders: ${sellerStats.completedOrders}\n- Rating: ${(sellerStats.averageRating / 100).toFixed(1)}/5.0\n- On-Time Delivery: ${sellerStats.onTimeDeliveryRate}%\n- Response Time: ${sellerStats.responseTimeHours}h`,
+          });
+          
+          // 2. Email notification to seller
+          if (seller.email) {
+            const emailHtml = levelUpTemplate({
+              sellerName: seller.name || 'Seller',
+              oldLevel: currentLevel,
+              newLevel: nextLevel,
+              completedOrders: sellerStats.completedOrders,
+              averageRating: (sellerStats.averageRating / 100).toFixed(1),
+              onTimeDeliveryRate: sellerStats.onTimeDeliveryRate,
+              responseTimeHours: sellerStats.responseTimeHours,
+            });
+            
+            await sendEmail({
+              to: seller.email,
+              subject: `🎉 Glückwunsch! Du bist jetzt ${nextLevel} Seller`,
+              html: emailHtml,
+            });
+          }
+        } catch (notificationError) {
+          console.error(
+            `[SellerLevelService] Failed to send notifications for seller ${seller.id}:`,
+            notificationError
+          );
+        }
+        
         upgradeCount++;
       }
     }

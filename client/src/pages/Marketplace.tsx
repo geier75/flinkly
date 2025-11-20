@@ -26,7 +26,7 @@ import { useFilterTracking, useSearchTracking, useNavigationClick } from "@/hook
 import { usePricingFormat } from "@/hooks/useFeatureFlags";
 
 export default function Marketplace() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const searchParams = new URLSearchParams(location.split("?")[1]);
   
   // Analytics
@@ -45,6 +45,19 @@ export default function Marketplace() {
   const [quickViewGig, setQuickViewGig] = useState<any | null>(null);
   const [displayCount, setDisplayCount] = useState(12); // Infinite-Scroll: Start with 12 gigs
   const [showScrollTop, setShowScrollTop] = useState(false);
+  
+  // Sync filter state to URL
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.set('q', searchQuery);
+    if (category) params.set('category', category);
+    if (sortBy !== 'relevance') params.set('sort', sortBy);
+    
+    const newUrl = params.toString() ? `/marketplace?${params.toString()}` : '/marketplace';
+    if (newUrl !== location) {
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [searchQuery, category, sortBy]);
 
   const { data: gigs, isLoading } = trpc.gigs.list.useQuery({ limit: 100 });
   const utils = trpc.useUtils();

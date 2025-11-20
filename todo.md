@@ -3296,3 +3296,55 @@
 - [x] Checkout-Review-Step – Zusammenfassung vor Zahlung (Step 4)
 - [x] Seller-Onboarding-Checklist – Progress-Tracking für neue Seller
 - [x] Seller-Level-Auto-Upgrade – Cron-Job für automatisches Level-Up
+
+
+---
+
+## 🎯 CURRENT SPRINT: MVP High-Priority Features (29h)
+
+### Phase 1: Order Model Extension (4h)
+- [x] Add `selectedPackage` field to orders table (enum: basic, standard, premium)
+- [x] Add `selectedExtras` JSON field to orders table
+- [x] Run database migration with `pnpm db:push`
+- [x] Update createOrder procedure to save package/extras
+- [x] Update Checkout.tsx to pass package/extras to backend
+- [x] Add navigation from GigDetail to Checkout with package/extras data
+
+### Phase 2: Level-Up Notifications (6h)
+- [x] Implement Push notification on level upgrade (Manus Notification API)
+- [x] Implement Email notification on level upgrade
+- [x] Create levelUpTemplate email template
+- [x] Integrate into sellerLevelService.ts upgradeAllSellers()
+- [ ] Add in-app badge for new level (TODO: Frontend notification component)
+
+### Phase 3: Email Config & SMTP (4h)
+- [x] Install nodemailer (already installed)
+- [x] sendEmail function already exists (server/_core/email.ts)
+- [x] Weekly Digest cron already implemented (cronJobs.ts)
+- [ ] Configure SMTP ENV vars (USER ACTION: Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS)
+- [ ] Test Weekly Digest email (requires SMTP config)
+
+### Phase 4: Filter State in URL (3h)
+- [x] Add useEffect to sync filter state to URL
+- [x] Sync category, searchQuery, sortBy to URL
+- [x] Use window.history.replaceState for clean URLs
+- [x] Browser back button support (reads from URL on mount)
+- [x] Shareable URLs (filters persist in URL)
+
+### Phase 5: Popularity Sorting (4h)
+- [ ] Create popularity algorithm (views * 0.3 + orders * 0.5 + rating * 0.2)
+- [ ] Add gigs.listByPopularity procedure
+- [ ] Extend sort dropdown in Marketplace
+- [ ] Test with mock data
+
+### Phase 6: AVV Tooltip (2h)
+- [ ] Create Tooltip component with explanation
+- [ ] Add link to Muster-AVV
+- [ ] Integrate in Checkout Legal step
+- [ ] Test keyboard navigation
+
+### Phase 7: Payment Method Saving (6h)
+- [ ] Integrate Stripe Customer Portal
+- [ ] Add "Save payment method" checkbox
+- [ ] Display saved payment methods
+- [ ] Test with Stripe test cards

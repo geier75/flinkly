@@ -99,6 +99,13 @@
       "when": 1763592374528,
       "tag": "0013_secret_captain_midlands",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "5",
+      "when": 1763598601939,
+      "tag": "0014_spotty_vindicator",
+      "breakpoints": true
     }
   ]
 }
