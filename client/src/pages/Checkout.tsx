@@ -158,16 +158,19 @@ export default function Checkout() {
     { id: 1, title: "Briefing", description: "Projektdetails & Anforderungen" },
     { id: 2, title: "Zahlung", description: "Zahlungsmethode wählen" },
     { id: 3, title: "Rechtliches", description: "AGB & Datenschutz" },
+    { id: 4, title: "Überprüfung", description: "Bestellung überprüfen" },
   ];
 
-  const isStepComplete = (step: number) => {
+  const isStepComplete = (step: number): boolean => {
     switch (step) {
       case 1:
         return briefing.projectName.length >= 5 && briefing.description.length >= 20;
       case 2:
         return payment.acceptEscrow;
       case 3:
-        return legal.acceptTerms && (!legal.needsAVV || (legal.companyName && legal.dataProcessing));
+        return legal.acceptTerms && (!legal.needsAVV || (!!legal.companyName && !!legal.dataProcessing));
+      case 4:
+        return isStepComplete(1) && isStepComplete(2) && isStepComplete(3);
       default:
         return false;
     }
@@ -574,8 +577,95 @@ export default function Checkout() {
                     </Button>
                     <Button
                       className="flex-1"
+                      onClick={() => setCurrentStep(4)}
+                      disabled={!isStepComplete(3)}
+                    >
+                      Weiter zur Überprüfung
+                    </Button>
+                  </div>
+                </CardContent>
+              </PremiumCard>
+            )}
+
+            {/* Step 4: Review */}
+            {currentStep === 4 && (
+              <PremiumCard>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-primary" />
+                    Bestellung überprüfen
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
+                  {/* Briefing Summary */}
+                  <div>
+                    <h3 className="font-semibold text-slate-900 mb-3">Projekt-Briefing</h3>
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
+                      <div>
+                        <span className="text-sm text-slate-600">Projektname:</span>
+                        <p className="font-medium">{briefing.projectName}</p>
+                      </div>
+                      <div>
+                        <span className="text-sm text-slate-600">Beschreibung:</span>
+                        <p className="text-sm">{briefing.description}</p>
+                      </div>
+                      {briefing.targetAudience && (
+                        <div>
+                          <span className="text-sm text-slate-600">Zielgruppe:</span>
+                          <p className="text-sm">{briefing.targetAudience}</p>
+                        </div>
+                      )}
+                      {briefing.colorPreferences && (
+                        <div>
+                          <span className="text-sm text-slate-600">Farbpräferenzen:</span>
+                          <p className="text-sm">{briefing.colorPreferences}</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Payment Summary */}
+                  <div>
+                    <h3 className="font-semibold text-slate-900 mb-3">Zahlung</h3>
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+                      <div className="flex items-center gap-2">
+                        {payment.method === "sepa" && <Banknote className="h-5 w-5 text-slate-600" />}
+                        {payment.method === "card" && <CreditCard className="h-5 w-5 text-slate-600" />}
+                        {payment.method === "paypal" && <Smartphone className="h-5 w-5 text-slate-600" />}
+                        <span className="font-medium">
+                          {payment.method === "sepa" && "SEPA-Lastschrift"}
+                          {payment.method === "card" && "Kreditkarte"}
+                          {payment.method === "paypal" && "PayPal"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Legal Summary */}
+                  {legal.needsAVV && (
+                    <div>
+                      <h3 className="font-semibold text-slate-900 mb-3">Rechtliches</h3>
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-2">
+                        <div>
+                          <span className="text-sm text-slate-600">Unternehmen:</span>
+                          <p className="font-medium">{legal.companyName}</p>
+                        </div>
+                        <div>
+                          <span className="text-sm text-slate-600">Datenverarbeitung:</span>
+                          <p className="text-sm">{legal.dataProcessing}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 pt-4">
+                    <Button variant="outline" onClick={() => setCurrentStep(3)}>
+                      Zurück
+                    </Button>
+                    <Button
+                      className="flex-1"
                       onClick={handleSubmit}
-                      disabled={!isStepComplete(3) || createOrderMutation.isPending}
+                      disabled={!isStepComplete(4) || createOrderMutation.isPending}
                     >
                       {createOrderMutation.isPending
                         ? "Wird erstellt..."

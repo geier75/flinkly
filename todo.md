@@ -3286,3 +3286,13 @@
 
 **Total Aufwand:** 6h  
 **Status:** ✅ Completed, ready for testing
+
+
+---
+
+## 🎯 CURRENT IMPLEMENTATION (Nov 19, 2025 - After Sandbox Reset)
+
+### Requested Features (18h total)
+- [x] Checkout-Review-Step – Zusammenfassung vor Zahlung (Step 4)
+- [x] Seller-Onboarding-Checklist – Progress-Tracking für neue Seller
+- [x] Seller-Level-Auto-Upgrade – Cron-Job für automatisches Level-Up

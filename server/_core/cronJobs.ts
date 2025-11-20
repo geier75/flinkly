@@ -8,6 +8,7 @@ import cron from "node-cron";
 import { aggregateDigestContent, getDigestRecipients } from "./weeklyDigest";
 import { weeklyDigestTemplate } from "./emailTemplates";
 import { sendEmail } from "./email";
+import { upgradeAllSellers } from "../services/sellerLevelService";
 
 /**
  * Sendet Weekly-Digest an alle User
@@ -72,7 +73,21 @@ export function initCronJobs() {
     timezone: "Europe/Berlin" // DACH-Timezone
   });
   
-  console.log("[CronJob] Cron jobs initialized: Weekly-Digest (Monday 9:00 AM)");
+  // Seller-Level-Upgrade: Jeden Tag um 3:00 Uhr nachts
+  // 0 0 3 * * * = Täglich 3:00 Uhr
+  cron.schedule("0 0 3 * * *", async () => {
+    console.log("[CronJob] Triggering seller level upgrade check (Daily 3:00 AM)");
+    try {
+      const upgradeCount = await upgradeAllSellers();
+      console.log(`[CronJob] Seller level upgrade completed: ${upgradeCount} sellers upgraded`);
+    } catch (error) {
+      console.error("[CronJob] Error in seller level upgrade:", error);
+    }
+  }, {
+    timezone: "Europe/Berlin"
+  });
+  
+  console.log("[CronJob] Cron jobs initialized: Weekly-Digest (Monday 9:00 AM), Seller-Level-Upgrade (Daily 3:00 AM)");
 }
 
 /**

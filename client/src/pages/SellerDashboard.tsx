@@ -28,6 +28,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SellerLevelProgress from "@/components/SellerLevelProgress";
+import SellerOnboardingChecklist from "@/components/SellerOnboardingChecklist";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -317,6 +318,23 @@ export default function SellerDashboard() {
         </div>
 
         <div className="container mx-auto px-4 py-8">
+          {/* Onboarding Checklist (show if not complete) */}
+          {completedOrders < 1 && (
+            <motion.div
+              className="mb-8"
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.05 }}
+            >
+              <SellerOnboardingChecklist
+                hasCreatedGig={gigs.length > 0}
+                hasCompletedProfile={!!user?.name && !!user?.email}
+                hasReceivedFirstOrder={completedOrders > 0}
+                hasReceivedFirstReview={false}
+              />
+            </motion.div>
+          )}
+
           {/* Seller Level Progress */}
           <motion.div
             className="mb-8"
