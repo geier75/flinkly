@@ -3379,3 +3379,28 @@
 - [ ] Cache category stats with 1h TTL
 - [ ] Add cache invalidation on gig create/update/delete
 - [ ] Test cache hit/miss rates
+
+
+## ✅ Stripe Payment Methods (v1.1.0) - Abgeschlossen
+
+- [x] **Backend-Implementation** (4h)
+  - [x] paymentMethods-Tabelle im Schema (bereits vorhanden)
+  - [x] 5 DB-Helper-Funktionen (save, get, delete, setDefault, getDefault)
+  - [x] paymentMethodsRouter mit 5 tRPC-Procedures
+  - [x] Stripe SDK Integration (PaymentMethod retrieval)
+  - [x] Security: User kann nur eigene Payment Methods verwalten
+
+- [x] **Frontend-Component** (2h)
+  - [x] SavedPaymentMethods.tsx erstellt
+  - [x] List/Select/Delete UI
+  - [x] Set Default Button
+  - [x] Empty State
+  - [x] New Card Form Placeholder (Stripe Elements Integration pending)
+
+- [ ] **Checkout-Integration** (2h)
+  - [ ] SavedPaymentMethods in Checkout.tsx integrieren
+  - [ ] Stripe Elements für neue Karten
+  - [ ] Save Payment Method Checkbox
+  - [ ] Auto-Select Default Payment Method
+
+**Expected Impact:** +30% Repeat-Purchase-Rate, -15% Checkout-Time

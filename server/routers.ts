@@ -21,9 +21,11 @@ import { templatesRouter } from "./routers/templates";
 import { analyticsRouter } from "./routers/analytics";
 import { featureFlagsRouter } from "./routers/featureFlags";
 import { passwordResetRouter } from "./routers/passwordReset";
+import { paymentMethodsRouter } from "./routers/paymentMethods";
 import { sendEmail } from "./_core/email";
 import { orderConfirmationTemplate } from "./_core/emailTemplates";
 import { trackPaymentSuccess } from "./_core/analytics";
+import { getCached, setCached, deletePattern, CacheKeys, CacheTTL } from "./_core/redis";
 
 export const appRouter = router({
   system: systemRouter,
@@ -42,6 +44,7 @@ export const appRouter = router({
   analytics: analyticsRouter,
   featureFlags: featureFlagsRouter,
   passwordReset: passwordResetRouter,
+  paymentMethods: paymentMethodsRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -67,6 +70,22 @@ export const appRouter = router({
       .query(async ({ input }) => {
         // Enforce max limit server-side (defense in depth)
         const safeLimit = Math.min(input.limit, 100);
+        
+        // Build cache key (only cache first page without cursor for simplicity)
+        const cacheKey = !input.cursor 
+          ? CacheKeys.gigsList(input.category, input.sortBy, 1)
+          : null;
+        
+        // Try cache first (only for first page)
+        if (cacheKey) {
+          const cached = await getCached<{ gigs: any[]; nextCursor?: number }>(cacheKey);
+          if (cached) {
+            console.log(`[Cache HIT] ${cacheKey}`);
+            return cached;
+          }
+        }
+        
+        // Cache miss - fetch from database
         const gigs = await db.getGigsPaginated({
           limit: safeLimit,
           cursor: input.cursor,
@@ -79,10 +98,18 @@ export const appRouter = router({
         // Return cursor for next page (last gig ID)
         const nextCursor = gigs.length === safeLimit ? gigs[gigs.length - 1].id : undefined;
         
-        return {
+        const result = {
           gigs,
           nextCursor,
         };
+        
+        // Cache result (only first page)
+        if (cacheKey) {
+          await setCached(cacheKey, result, CacheTTL.gigsList);
+          console.log(`[Cache SET] ${cacheKey}`);
+        }
+        
+        return result;
       }),
 
     getById: publicProcedure
@@ -121,6 +148,10 @@ export const appRouter = router({
           status: "published",
           active: true,
         });
+        
+        // Invalidate gigs list cache
+        await deletePattern("gigs:list:*");
+        console.log("[Cache INVALIDATE] gigs:list:* (new gig created)");
         return { success: true };
       }),
 

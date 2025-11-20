@@ -6,7 +6,8 @@ import {
   conversations, messages, InsertConversation, InsertMessage,
   consentLogs, InsertConsentLog, accountDeletionRequests, InsertAccountDeletionRequest,
   favorites,
-  gigPackages, gigExtras, InsertGigPackage, InsertGigExtra
+  gigPackages, gigExtras, InsertGigPackage, InsertGigExtra,
+  paymentMethods
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -1337,4 +1338,100 @@ export async function updateSellerLevel(userId: number): Promise<void> {
   await db.update(users).set({ sellerLevel: newLevel }).where(eq(users.id, userId));
 
   console.log(`[Seller Level] User ${userId} updated to ${newLevel}`);
+}
+
+/**
+ * ==========================================
+ * PAYMENT METHODS - Stripe Payment Method Management
+ * ==========================================
+ */
+
+export async function savePaymentMethod(data: {
+  userId: number;
+  stripePaymentMethodId: string;
+  last4: string;
+  brand: string;
+  expiryMonth: number;
+  expiryYear: number;
+  isDefault: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // If setting as default, unset all other defaults for this user
+  if (data.isDefault) {
+    await db
+      .update(paymentMethods)
+      .set({ isDefault: false })
+      .where(eq(paymentMethods.userId, data.userId));
+  }
+
+  const result = await db.insert(paymentMethods).values({
+    userId: data.userId,
+    stripePaymentMethodId: data.stripePaymentMethodId,
+    last4: data.last4,
+    brand: data.brand,
+    expiryMonth: data.expiryMonth,
+    expiryYear: data.expiryYear,
+    isDefault: data.isDefault,
+  });
+
+  const insertId = result[0].insertId;
+
+  // Return the inserted payment method
+  const inserted = await db
+    .select()
+    .from(paymentMethods)
+    .where(eq(paymentMethods.id, insertId))
+    .limit(1);
+
+  return inserted[0];
+}
+
+export async function getPaymentMethodsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(paymentMethods)
+    .where(eq(paymentMethods.userId, userId))
+    .orderBy(desc(paymentMethods.isDefault), desc(paymentMethods.createdAt));
+}
+
+export async function deletePaymentMethod(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  await db.delete(paymentMethods).where(eq(paymentMethods.id, id));
+}
+
+export async function setDefaultPaymentMethod(userId: number, id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Unset all defaults for this user
+  await db
+    .update(paymentMethods)
+    .set({ isDefault: false })
+    .where(eq(paymentMethods.userId, userId));
+
+  // Set the specified payment method as default
+  await db
+    .update(paymentMethods)
+    .set({ isDefault: true })
+    .where(and(eq(paymentMethods.id, id), eq(paymentMethods.userId, userId)));
+}
+
+export async function getDefaultPaymentMethod(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(paymentMethods)
+    .where(and(eq(paymentMethods.userId, userId), eq(paymentMethods.isDefault, true)))
+    .limit(1);
+
+  return result.length > 0 ? result[0] : null;
 }
