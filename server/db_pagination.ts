@@ -1,4 +1,4 @@
-import { and, eq, desc, lt, gte, lte } from "drizzle-orm";
+import { and, eq, gte, lte, lt, desc, asc } from "drizzle-orm";
 import { getDb } from "./db";
 import { gigs, users } from "../drizzle/schema";
 
@@ -12,11 +12,12 @@ export async function getGigsPaginated(options: {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
+  sortBy?: "relevance" | "price" | "delivery" | "rating" | "popularity";
 }) {
   const db = await getDb();
   if (!db) return [];
 
-  const { limit, cursor, category, minPrice, maxPrice } = options;
+  const { limit, cursor, category, minPrice, maxPrice, sortBy = "relevance" } = options;
 
   // Build where conditions
   const conditions = [
@@ -42,6 +43,27 @@ export async function getGigsPaginated(options: {
     conditions.push(lte(gigs.price, maxPrice));
   }
 
+  // Determine sort order based on sortBy parameter
+  let orderByClause;
+  switch (sortBy) {
+    case "price":
+      orderByClause = asc(gigs.price);
+      break;
+    case "delivery":
+      orderByClause = asc(gigs.deliveryDays);
+      break;
+    case "rating":
+      orderByClause = desc(gigs.averageRating);
+      break;
+    case "popularity":
+      orderByClause = desc(gigs.popularityScore);
+      break;
+    case "relevance":
+    default:
+      orderByClause = desc(gigs.id); // Most recent first
+      break;
+  }
+  
   // Join with users table to get seller info (prevents N+1 query problem)
   const result = await db
     .select({
@@ -63,7 +85,7 @@ export async function getGigsPaginated(options: {
     .from(gigs)
     .leftJoin(users, eq(gigs.sellerId, users.id))
     .where(and(...conditions))
-    .orderBy(desc(gigs.id)) // Order by ID DESC for cursor-based pagination
+    .orderBy(orderByClause)
     .limit(limit);
 
   // Flatten structure for consistency

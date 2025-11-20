@@ -1,0 +1,1 @@
+ALTER TABLE `gigs` ADD `popularityScore` int DEFAULT 0;

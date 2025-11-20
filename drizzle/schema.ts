@@ -51,6 +51,7 @@ export const gigs = mysqlTable("gigs", {
   active: boolean("active").default(true),
   completedOrders: int("completedOrders").default(0),
   averageRating: int("averageRating").default(0), // stored as int (0-500) for 0.00-5.00 rating
+  popularityScore: int("popularityScore").default(0), // Calculated: views × 0.3 + orders × 0.5 + rating × 0.2
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({
@@ -441,3 +442,24 @@ export const passwordResetTokens = mysqlTable("passwordResetTokens", {
 
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
+
+
+/**
+ * Payment Methods - Saved Stripe payment methods for faster checkout
+ * Stores tokenized payment method IDs from Stripe
+ */
+export const paymentMethods = mysqlTable("paymentMethods", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  stripePaymentMethodId: varchar("stripePaymentMethodId", { length: 255 }).notNull().unique(),
+  last4: varchar("last4", { length: 4 }).notNull(), // Last 4 digits of card
+  brand: varchar("brand", { length: 32 }).notNull(), // visa, mastercard, amex, etc.
+  expiryMonth: int("expiryMonth").notNull(),
+  expiryYear: int("expiryYear").notNull(),
+  isDefault: boolean("isDefault").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PaymentMethod = typeof paymentMethods.$inferSelect;
+export type InsertPaymentMethod = typeof paymentMethods.$inferInsert;

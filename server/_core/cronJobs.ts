@@ -9,6 +9,7 @@ import { aggregateDigestContent, getDigestRecipients } from "./weeklyDigest";
 import { weeklyDigestTemplate } from "./emailTemplates";
 import { sendEmail } from "./email";
 import { upgradeAllSellers } from "../services/sellerLevelService";
+import { updateAllPopularityScores } from "../services/popularityService";
 
 /**
  * Sendet Weekly-Digest an alle User
@@ -87,7 +88,21 @@ export function initCronJobs() {
     timezone: "Europe/Berlin"
   });
   
-  console.log("[CronJob] Cron jobs initialized: Weekly-Digest (Monday 9:00 AM), Seller-Level-Upgrade (Daily 3:00 AM)");
+  // Popularity-Score-Update: Jeden Tag um 4:00 Uhr nachts
+  // 0 0 4 * * * = Täglich 4:00 Uhr
+  cron.schedule("0 0 4 * * *", async () => {
+    console.log("[CronJob] Triggering popularity score update (Daily 4:00 AM)");
+    try {
+      const updateCount = await updateAllPopularityScores();
+      console.log(`[CronJob] Popularity score update completed: ${updateCount} gigs updated`);
+    } catch (error) {
+      console.error("[CronJob] Error in popularity score update:", error);
+    }
+  }, {
+    timezone: "Europe/Berlin"
+  });
+  
+  console.log("[CronJob] Cron jobs initialized: Weekly-Digest (Monday 9:00 AM), Seller-Level-Upgrade (Daily 3:00 AM), Popularity-Score-Update (Daily 4:00 AM)");
 }
 
 /**

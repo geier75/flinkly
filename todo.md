@@ -3348,3 +3348,34 @@
 - [ ] Add "Save payment method" checkbox
 - [ ] Display saved payment methods
 - [ ] Test with Stripe test cards
+
+
+---
+
+## 🎯 NEW SPRINT: Performance & UX Improvements (26h)
+
+### Phase 1: Popularity Sorting Algorithm (4h)
+- [x] Add popularityScore calculated field to gigs table
+- [x] Create calculatePopularityScore function (views × 0.3 + orders × 0.5 + rating × 0.2)
+- [x] Add cron job to update popularity scores daily (4:00 AM)
+- [x] Add "popularity" sort option to Marketplace.tsx
+- [x] Update gigs.list procedure to support popularity sorting
+- [x] Add sortBy parameter to getGigsPaginated function
+
+### Phase 2: Stripe Payment Methods (6h)
+- [ ] Add paymentMethods table (userId, stripePaymentMethodId, last4, brand, isDefault)
+- [ ] Create stripe.savePaymentMethod procedure
+- [ ] Create stripe.listPaymentMethods procedure
+- [ ] Add "Save payment method" checkbox to Checkout.tsx
+- [ ] Add saved payment methods selection UI in Checkout
+- [ ] Test payment method saving and reuse
+
+### Phase 3: Redis Caching (16h)
+- [ ] Install ioredis package
+- [ ] Configure Redis connection (REDIS_URL env var)
+- [ ] Create cache helper functions (get, set, del, invalidate)
+- [ ] Cache gigs.list with 5min TTL
+- [ ] Cache seller profiles with 10min TTL
+- [ ] Cache category stats with 1h TTL
+- [ ] Add cache invalidation on gig create/update/delete
+- [ ] Test cache hit/miss rates

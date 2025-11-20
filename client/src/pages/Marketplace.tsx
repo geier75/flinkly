@@ -40,7 +40,7 @@ export default function Marketplace() {
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [maxPrice, setMaxPrice] = useState<number>(250);
-  const [sortBy, setSortBy] = useState<"relevance" | "price" | "delivery" | "rating">("relevance");
+  const [sortBy, setSortBy] = useState<"relevance" | "price" | "delivery" | "rating" | "popularity">("relevance");
   const [showFilters, setShowFilters] = useState(false);
   const [quickViewGig, setQuickViewGig] = useState<any | null>(null);
   const [displayCount, setDisplayCount] = useState(12); // Infinite-Scroll: Start with 12 gigs
@@ -342,6 +342,7 @@ export default function Marketplace() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="relevance">Relevanz</SelectItem>
+                  <SelectItem value="popularity">Beliebtheit</SelectItem>
                   <SelectItem value="price">Preis</SelectItem>
                   <SelectItem value="delivery">Lieferzeit</SelectItem>
                   <SelectItem value="rating">Bewertung</SelectItem>

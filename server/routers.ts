@@ -62,6 +62,7 @@ export const appRouter = router({
         category: z.string().optional(),
         minPrice: z.number().optional(),
         maxPrice: z.number().optional(),
+        sortBy: z.enum(["relevance", "price", "delivery", "rating", "popularity"]).optional().default("relevance"),
       }))
       .query(async ({ input }) => {
         // Enforce max limit server-side (defense in depth)
@@ -72,6 +73,7 @@ export const appRouter = router({
           category: input.category,
           minPrice: input.minPrice,
           maxPrice: input.maxPrice,
+          sortBy: input.sortBy,
         });
         
         // Return cursor for next page (last gig ID)
