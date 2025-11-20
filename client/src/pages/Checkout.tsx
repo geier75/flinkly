@@ -503,9 +503,40 @@ export default function Checkout() {
                     <div className="flex items-start gap-3">
                       <AlertCircle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-amber-900 mb-2">
-                          Verarbeitung personenbezogener Daten?
-                        </h4>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h4 className="font-semibold text-amber-900">
+                            Verarbeitung personenbezogener Daten?
+                          </h4>
+                          <div className="group relative">
+                            <button
+                              type="button"
+                              className="w-5 h-5 rounded-full bg-amber-600 text-white text-xs font-bold flex items-center justify-center hover:bg-amber-700 transition-colors"
+                              aria-label="AVV-Erklärung"
+                            >
+                              ?
+                            </button>
+                            <div className="absolute left-0 top-6 w-80 bg-white border-2 border-amber-600 rounded-lg shadow-xl p-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                              <h5 className="font-semibold text-slate-900 mb-2">
+                                Was ist eine AVV?
+                              </h5>
+                              <p className="text-sm text-slate-700 mb-3">
+                                Eine <strong>Auftragsverarbeitungsvereinbarung (AVV)</strong> ist gemäß Art. 28 DSGVO erforderlich, 
+                                wenn ein Dienstleister personenbezogene Daten im Auftrag verarbeitet.
+                              </p>
+                              <p className="text-sm text-slate-700 mb-2">
+                                <strong>Beispiele:</strong>
+                              </p>
+                              <ul className="text-sm text-slate-700 space-y-1 list-disc list-inside">
+                                <li>Newsletter-Erstellung mit Kundendaten</li>
+                                <li>Webdesign mit Kontaktformularen</li>
+                                <li>Social Media Management mit Nutzerdaten</li>
+                              </ul>
+                              <p className="text-xs text-slate-500 mt-3">
+                                Die AVV wird automatisch generiert und per E-Mail zugestellt.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                         <p className="text-sm text-amber-800 mb-3">
                           Wenn der Verkäufer personenbezogene Daten verarbeitet (z.B. Namen,
                           E-Mails), wird automatisch eine Auftragsverarbeitungsvereinbarung
@@ -618,8 +649,26 @@ export default function Checkout() {
                     <CheckCircle className="h-5 w-5 text-primary" />
                     Bestellung überprüfen
                   </CardTitle>
+                  <p className="text-sm text-slate-600 mt-2">
+                    Bitte überprüfe alle Angaben sorgfältig, bevor du die Bestellung abschließt.
+                  </p>
                 </CardHeader>
                 <CardContent className="space-y-6 p-6 md:p-8 p-6 md:p-8">
+                  {/* Order Summary Header */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <Shield className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold text-blue-900 mb-1">
+                          Käuferschutz aktiv
+                        </h4>
+                        <p className="text-sm text-blue-800">
+                          Dein Geld wird erst nach erfolgreicher Abnahme ausgezahlt. 
+                          Du hast 14 Tage Widerrufsrecht gemäß §312g BGB.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                   {/* Briefing Summary */}
                   <div>
                     <h3 className="font-semibold text-slate-900 mb-3">Projekt-Briefing</h3>
@@ -681,18 +730,46 @@ export default function Checkout() {
                     </div>
                   )}
 
+                  {/* Legal Notice before Purchase */}
+                  <div className="bg-amber-50 border-2 border-amber-200 rounded-lg p-4">
+                    <h4 className="font-semibold text-amber-900 mb-2 flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      Rechtliche Hinweise
+                    </h4>
+                    <div className="space-y-2 text-sm text-amber-900">
+                      <p>
+                        • <strong>AGB:</strong> Mit dem Kauf akzeptierst du unsere{" "}
+                        <a href="/terms" target="_blank" className="text-primary hover:underline font-semibold">
+                          Allgemeinen Geschäftsbedingungen
+                        </a>
+                      </p>
+                      <p>
+                        • <strong>Widerrufsrecht:</strong> Du hast 14 Tage Widerrufsrecht. Details in der{" "}
+                        <a href="/widerruf" target="_blank" className="text-primary hover:underline font-semibold">
+                          Widerrufsbelehrung
+                        </a>
+                      </p>
+                      <p>
+                        • <strong>Datenschutz:</strong> Deine Daten werden DSGVO-konform verarbeitet. Siehe{" "}
+                        <a href="/privacy" target="_blank" className="text-primary hover:underline font-semibold">
+                          Datenschutzerklärung
+                        </a>
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="flex gap-3 pt-4">
                     <Button variant="outline" onClick={() => setCurrentStep(3)}>
                       Zurück
                     </Button>
                     <Button
-                      className="flex-1"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                       onClick={handleSubmit}
                       disabled={!isStepComplete(4) || createOrderMutation.isPending}
                     >
                       {createOrderMutation.isPending
                         ? "Wird erstellt..."
-                        : "Auftrag verbindlich erstellen"}
+                        : "✓ Jetzt verbindlich bestellen"}
                     </Button>
                   </div>
                 </CardContent>

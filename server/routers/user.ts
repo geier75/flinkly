@@ -2,11 +2,42 @@
  * User-Router (DSGVO-Funktionen: Datenexport, Account-Löschung)
  */
 
-import { router, protectedProcedure } from "../_core/trpc";
+import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
 import { z } from "zod";
 import * as db from "../db";
+import { getCached, setCached, CacheKeys, CacheTTL } from "../_core/redis";
 
 export const userRouter = router({
+  /**
+   * Get user profile by ID (with Redis caching)
+   * Public endpoint for viewing seller profiles
+   */
+  getProfile: publicProcedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      const cacheKey = CacheKeys.sellerProfile(input.userId);
+      
+      // Try cache first
+      const cached = await getCached<any>(cacheKey);
+      if (cached) {
+        console.log(`[Cache HIT] ${cacheKey}`);
+        return cached;
+      }
+      
+      // Cache miss - fetch from database
+      const profile = await db.getUserById(input.userId);
+      
+      if (!profile) {
+        return null;
+      }
+      
+      // Cache result
+      await setCached(cacheKey, profile, CacheTTL.sellerProfile);
+      console.log(`[Cache SET] ${cacheKey}`);
+      
+      return profile;
+    }),
+
   /**
    * Datenexport (DSGVO Art. 20)
    */

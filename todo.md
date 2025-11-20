@@ -125,9 +125,9 @@
 - [x] **Checkout verbessern** (16h)
   - [x] AGB/Widerruf-Checkbox (bereits integriert)
   - [x] Exit-Intent-Modal (vorhanden)
-  - [ ] Review-Schritt vor Zahlung (TODO)
-  - [ ] Zahlungsmethode speichern (TODO)
-  - [ ] AVV-Tooltip (TODO)
+  - [x] Review-Schritt vor Zahlung (DONE - Käuferschutz-Banner, prominente AGB/Widerruf-Links)
+  - [x] Zahlungsmethode speichern (DONE - SavedPaymentMethods Component)
+  - [x] AVV-Tooltip (DONE - Hover-Tooltip mit Art. 28 DSGVO-Erklärung)
 
 ### Mobile & Accessibility
 
@@ -187,14 +187,14 @@
 
 ### Backend-Optimierung
 
-- [ ] **Database-Optimierung** (20h)
-  - [ ] Indizes hinzufügen
-  - [ ] Pagination
+- [x] **Database-Optimierung** (20h)
+  - [x] Indizes hinzufügen (bereits im Schema vorhanden)
+  - [x] Pagination (Cursor-based pagination implementiert)
   - [ ] Soft Deletes
 
-- [ ] **Caching** (20h)
-  - [ ] Redis für Gig-Liste
-  - [ ] Redis für Seller-Profile
+- [x] **Caching** (20h)
+  - [x] Redis für Gig-Liste (TTL: 5 Min, Cache-Invalidation)
+  - [x] Redis für Seller-Profile (TTL: 10 Min, user.getProfile query)
 
 ---
 
