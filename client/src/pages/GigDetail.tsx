@@ -28,6 +28,8 @@ import {
 } from "lucide-react";
 import GigDetailSkeleton from "@/components/GigDetailSkeleton";
 import GigExtrasCard from "@/components/GigExtrasCard";
+import { GigPackageSelector } from "@/components/GigPackageSelector";
+import { GigExtrasSelector } from "@/components/GigExtrasSelector";
 import { useCTAClick, useScrollDepth } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/hooks/useAnalytics";
 import { useCTAButtonText, useTrustBadge } from "@/hooks/useFeatureFlags";
@@ -69,10 +71,20 @@ export default function GigDetail() {
     { gigId, k: 6 },
     { enabled: !!gigId }
   );
-  const { data: gigPackages } = trpc.gigPackages.list.useQuery(
+  const { data: gigPackagesRaw } = trpc.gigPackages.list.useQuery(
     { gigId },
     { enabled: !!gigId }
   );
+  const { data: gigExtras } = trpc.gigExtras.list.useQuery(
+    { gigId },
+    { enabled: !!gigId }
+  );
+  
+  // Transform gigPackages: Parse JSON features string to array
+  const gigPackages = gigPackagesRaw?.map(pkg => ({
+    ...pkg,
+    features: pkg.features ? JSON.parse(pkg.features) : null
+  }));
 
   // Filter, sort and paginate reviews
   const reviews = allReviews
@@ -620,102 +632,76 @@ export default function GigDetail() {
                     </CardContent>
                   </Card>
 
-                  {/* Package Selection */}
-                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
-                    <CardContent className="p-6">
-                      <h3 className="text-xl font-bold text-white mb-4">Paket auswählen</h3>
-                      
-                      {/* Package Tabs */}
-                      <div className="flex gap-2 mb-6">
-                        {packages.map((pkg) => (
-                          <button
-                            key={pkg.id}
-                            onClick={() => setSelectedPackage(pkg.id as any)}
-                            className={`relative flex-1 py-2 px-4 rounded-lg font-bold transition-all duration-300 ${
-                              selectedPackage === pkg.id
-                                ? "bg-primary text-white shadow-lg shadow-primary/30"
-                                : "bg-slate-800/50 text-slate-400 hover:text-white"
-                            }`}
+                  {/* Package Selection - New GigPackageSelector */}
+                  {gigPackages && gigPackages.length > 0 && (
+                    <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
+                      <CardContent className="p-6">
+                        <GigPackageSelector
+                          packages={gigPackages}
+                          selectedPackage={selectedPackage}
+                          onSelectPackage={(pkg) => setSelectedPackage(pkg)}
+                        />
+                        
+                        {/* CTA Button */}
+                        <motion.div
+                          className="mt-6"
+                          animate={{ y: [0, -5, 0] }}
+                          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        >
+                          <Button 
+                            size="lg"
+                            className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
+                            onClick={() => {
+                              const selectedPkg = gigPackages.find(p => p.packageType === selectedPackage);
+                              trackCTA('projekt_starten', {
+                                gig_id: gig.id,
+                                gig_title: gig.title,
+                                price: selectedPkg?.price || gig.price,
+                                package: selectedPkg?.name || 'basic',
+                              });
+                              // Save package/extras to sessionStorage for Checkout
+                              sessionStorage.setItem('checkout_package', selectedPackage);
+                              sessionStorage.setItem('checkout_extras', JSON.stringify(selectedExtras));
+                              // Navigate to Checkout
+                              setLocation(`/checkout/${gig.id}`);
+                            }}
                           >
-                            {pkg.id === "standard" && (
-                              <span className="absolute -top-2 -right-2 bg-accent text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-lg">
-                                Meist gewählt
-                              </span>
-                            )}
-                            {pkg.name}
-                          </button>
-                        ))}
-                      </div>
+                            {ctaButtonText}
+                          </Button>
+                        </motion.div>
 
-                      {/* Package Details */}
-                      <div className="space-y-4 mb-6">
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Preis</span>
-                          <span className="text-3xl font-black text-white">{selectedPkg.price}€</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-400">Lieferzeit</span>
-                          <div className="flex items-center gap-2">
-                            <Clock className="h-5 w-5 text-success" />
-                            <span className="text-white font-bold">{selectedPkg.deliveryDays} Tage</span>
-                          </div>
-                        </div>
-                      </div>
+                        <Link href="/messages">
+                          <Button 
+                            size="lg"
+                            variant="outline"
+                            className="w-full mt-3 border-slate-700 hover:border-primary text-white bg-slate-900/40 backdrop-blur-sm"
+                          >
+                            <MessageCircle className="h-5 w-5 mr-2" />
+                            Frage stellen
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  )}
 
-                      {/* Features */}
-                      <div className="space-y-3 mb-6">
-                        {selectedPkg.features.map((feature: string, index: number) => (
-                          <div key={index} className="flex items-start gap-2">
-                            <Check className="h-5 w-5 text-success mt-0.5 flex-shrink-0" />
-                            <span className="text-slate-300">{feature}</span>
-                          </div>
-                        ))}
-                      </div>
-
-                      {/* CTA Button */}
-                      <motion.div
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                      >
-                        <Button 
-                          size="lg"
-                          className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
-                          onClick={() => {
-                            trackCTA('projekt_starten', {
-                              gig_id: gig.id,
-                              gig_title: gig.title,
-                              price: selectedPkg.price,
-                              package: selectedPkg.name,
-                            });
-                            // Save package/extras to sessionStorage for Checkout
-                            sessionStorage.setItem('checkout_package', selectedPkg.id);
-                            sessionStorage.setItem('checkout_extras', JSON.stringify(selectedExtras));
-                            // Navigate to Checkout
-                            setLocation(`/checkout/${gig.id}`);
+                  {/* Gig Extras / Add-ons - New GigExtrasSelector */}
+                  {gigExtras && gigExtras.length > 0 && (
+                    <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
+                      <CardContent className="p-6">
+                        <GigExtrasSelector
+                          extras={gigExtras}
+                          selectedExtras={selectedExtras}
+                          onToggleExtra={(extraId) => {
+                            setSelectedExtras(prev => 
+                              prev.includes(extraId) 
+                                ? prev.filter(id => id !== extraId)
+                                : [...prev, extraId]
+                            );
                           }}
-                        >
-                          {ctaButtonText}
-                        </Button>
-                      </motion.div>
-
-                      <Link href="/messages">
-                        <Button 
-                          size="lg"
-                          variant="outline"
-                          className="w-full mt-3 border-slate-700 hover:border-primary text-white bg-slate-900/40 backdrop-blur-sm"
-                        >
-                          <MessageCircle className="h-5 w-5 mr-2" />
-                          Frage stellen
-                        </Button>
-                      </Link>
-                    </CardContent>
-                  </Card>
-
-                  {/* Gig Extras / Add-ons */}
-                  <GigExtrasCard gigId={gigId} onExtrasChange={(extras: number[], total: number) => {
-                    setSelectedExtras(extras);
-                    setExtrasTotal(total);
-                  }} />
+                        />
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* Seller Stats */}
                   <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">

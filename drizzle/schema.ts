@@ -26,6 +26,12 @@ export const users = mysqlTable("users", {
   averageRating: int("averageRating").default(0), // Stored as int (0-500 = 0.0-5.0 stars, multiply by 100)
   responseTimeHours: int("responseTimeHours").default(24), // Average response time in hours
   onTimeDeliveryRate: int("onTimeDeliveryRate").default(100), // Percentage (0-100)
+  // Commercial seller fields (§ 5 TMG Impressumspflicht)
+  isCommercial: boolean("isCommercial").default(false).notNull(), // Gewerblich vs. Privat
+  companyName: varchar("companyName", { length: 255 }), // Firmenname
+  companyAddress: text("companyAddress"), // Vollständige Adresse
+  taxId: varchar("taxId", { length: 50 }), // USt-IdNr. (DE123456789)
+  tradeRegister: varchar("tradeRegister", { length: 255 }), // Handelsregister (HRB 12345)
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
