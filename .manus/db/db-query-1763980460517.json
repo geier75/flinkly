@@ -1,0 +1,22 @@
+{
+  "query": "SELECT COUNT(*) as package_count, packageType FROM gigPackages GROUP BY packageType",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT COUNT(*) as package_count, packageType FROM gigPackages GROUP BY packageType",
+  "rows": [
+    {
+      "package_count": "61",
+      "packageType": "premium"
+    },
+    {
+      "package_count": "61",
+      "packageType": "standard"
+    },
+    {
+      "package_count": "61",
+      "packageType": "basic"
+    }
+  ],
+  "messages": [],
+  "stdout": "package_count\tpackageType\n61\tpremium\n61\tstandard\n61\tbasic\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}

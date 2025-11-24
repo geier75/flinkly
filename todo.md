@@ -3447,3 +3447,26 @@
 - [x] TypeScript Errors behoben
 - [ ] Checkout-Flow komplett testen (E2E)
 
+
+
+---
+
+## 🐛 Checkout Flow Bugs (2025-01-24)
+
+### Mobile Checkout Button Bug
+- [x] Mobile Sticky Bottom Bar "Projekt starten" Button hatte keinen onClick Handler - FIXED
+- [x] Desktop-Button funktionierte korrekt
+- [x] onClick Handler zu Mobile Button hinzugefügt
+- [x] TypeScript Errors behoben
+
+### Missing Gig Packages Bug
+- [x] Seed-Script erstellt keine Packages für Gigs - FIXED
+- [x] Checkout-Button wird nicht angezeigt ohne Packages - FIXED
+- [x] Seed-Script erweitern um Package-Erstellung (Basic, Standard, Premium) - DONE
+- [x] Packages für alle 60 Gigs erstellen - DONE (180 packages total)
+- [x] Checkout-Flow E2E testen - DONE (works up to auth gate)
+
+### Redis Cache Issue
+- [x] Redis war nicht gestartet - Server konnte nicht auf Cache zugreifen
+- [x] Redis installiert und gestartet
+- [x] Marketplace zeigt jetzt 50+ Gigs korrekt an

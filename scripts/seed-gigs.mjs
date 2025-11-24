@@ -135,8 +135,62 @@ for (const [category, templates] of Object.entries(gigTemplates)) {
         ]
       );
       
+      const gigId = result.insertId;
       gigsCreated++;
       console.log(`  ✅ ${gigsCreated}/100 - ${template.title.substring(0, 50)}...`);
+
+      // Create 3 packages for this gig (Basic, Standard, Premium)
+      const packages = [
+        {
+          name: 'Basic',
+          type: 'basic',
+          description: 'Grundlegende Leistung mit allen essentiellen Features',
+          price: template.price,
+          deliveryDays: template.deliveryDays,
+          revisions: 1,
+          features: JSON.stringify(['Grundlegende Umsetzung', '1 Revision', 'Standard-Support'])
+        },
+        {
+          name: 'Standard',
+          type: 'standard',
+          description: 'Erweiterte Leistung mit zusätzlichen Features',
+          price: Math.round(template.price * 1.5),
+          deliveryDays: Math.max(1, Math.round(template.deliveryDays * 0.8)),
+          revisions: 3,
+          features: JSON.stringify(['Erweiterte Umsetzung', '3 Revisionen', 'Priority-Support', 'Schnellere Lieferung'])
+        },
+        {
+          name: 'Premium',
+          type: 'premium',
+          description: 'Premium-Leistung mit allen Features und höchster Priorität',
+          price: Math.round(template.price * 2.5),
+          deliveryDays: Math.max(1, Math.round(template.deliveryDays * 0.6)),
+          revisions: 999,
+          features: JSON.stringify(['Premium-Umsetzung', 'Unbegrenzte Revisionen', '24/7 Support', 'Express-Lieferung', 'Dedizierter Manager'])
+        }
+      ];
+
+      for (const pkg of packages) {
+        try {
+          await connection.execute(
+            `INSERT INTO gigPackages (
+              gigId, name, packageType, description, price, deliveryDays, revisions, features, createdAt, updatedAt
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+              gigId,
+              pkg.name,
+              pkg.type,
+              pkg.description,
+              pkg.price,
+              pkg.deliveryDays,
+              pkg.revisions,
+              pkg.features
+            ]
+          );
+        } catch (pkgError) {
+          console.error(`  ❌ Error creating package for gig ${gigId}:`, pkgError.message);
+        }
+      }
     } catch (error) {
       console.error(`  ❌ Error creating gig:`, error.message);
     }
