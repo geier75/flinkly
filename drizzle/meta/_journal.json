@@ -134,6 +134,13 @@
       "when": 1763969785106,
       "tag": "0018_small_zaladane",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "5",
+      "when": 1763985703017,
+      "tag": "0019_common_adam_warlock",
+      "breakpoints": true
     }
   ]
 }

@@ -59,7 +59,16 @@ export default function Marketplace() {
     }
   }, [searchQuery, category, sortBy]);
 
-  const { data: gigs, isLoading } = trpc.gigs.list.useQuery({ limit: 100 });
+  const { data: gigs, isLoading, error } = trpc.gigs.list.useQuery({ limit: 100 });
+  
+  // DEBUG: Log API response
+  useEffect(() => {
+    console.log('[Marketplace] API Response:', { gigs, isLoading, error });
+    if (gigs) {
+      console.log('[Marketplace] Total gigs:', gigs.gigs?.length || 0);
+      console.log('[Marketplace] First gig:', gigs.gigs?.[0]);
+    }
+  }, [gigs, isLoading, error]);
   const utils = trpc.useUtils();
 
   // Favorites
@@ -125,6 +134,7 @@ export default function Marketplace() {
 
   // Filter gigs
   const allGigs = gigs?.gigs || [];
+  console.log('[Marketplace] All gigs count:', allGigs.length);
   const filteredGigs = allGigs.filter((gig: any) => {
     const matchesSearch = !searchQuery || 
       gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -138,6 +148,9 @@ export default function Marketplace() {
     return matchesSearch && matchesCategory && matchesPrice;
   }) || [];
 
+  console.log('[Marketplace] Filtered gigs count:', filteredGigs.length);
+  console.log('[Marketplace] Filters:', { searchQuery, category, maxPrice, sortBy });
+  
   // Sort gigs
   const sortedGigs = [...filteredGigs].sort((a, b) => {
     switch (sortBy) {

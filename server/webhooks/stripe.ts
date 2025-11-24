@@ -99,6 +99,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const buyerId = parseInt(metadata.buyer_id);
     const sellerId = parseInt(metadata.seller_id);
     const paymentIntentId = session.payment_intent as string;
+    
+    // Calculate platform fee (15% default)
+    const totalPrice = session.amount_total!;
+    const platformFeePercent = 15;
+    const platformFee = Math.round((totalPrice * platformFeePercent) / 100);
+    const sellerEarnings = totalPrice - platformFee;
 
     // Create order
     const [order] = await db.insert(orders).values({
@@ -106,7 +112,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       buyerId,
       sellerId,
       status: 'in_progress',
-      totalPrice: session.amount_total!, // Already in cents
+      totalPrice,
+      platformFeePercent,
+      platformFee,
+      sellerEarnings,
     });
 
     // Create transaction record
@@ -114,7 +123,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       orderId: order.insertId,
       buyerId,
       sellerId,
-      amount: session.amount_total!,
+      amount: totalPrice,
+      platformFee,
+      sellerEarnings,
       currency: 'EUR',
       paymentIntentId,
       status: 'authorized',

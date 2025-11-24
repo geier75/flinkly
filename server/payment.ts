@@ -18,7 +18,7 @@ import { ENV } from './_core/env';
 
 // Initialize Stripe with secret key
 const stripe = new Stripe(ENV.stripeSecretKey, {
-  apiVersion: '2025-10-29.clover',
+  apiVersion: "2025-11-17.clover",
   typescript: true,
 });
 

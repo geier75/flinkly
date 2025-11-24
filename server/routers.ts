@@ -23,6 +23,7 @@ import { analyticsRouter } from "./routers/analytics";
 import { featureFlagsRouter } from "./routers/featureFlags";
 import { passwordResetRouter } from "./routers/passwordReset";
 import { paymentMethodsRouter } from "./routers/paymentMethods";
+import { stripeConnectRouter } from "./routers/stripeConnect";
 import { sendEmail } from "./_core/email";
 import { orderConfirmationTemplate } from "./_core/emailTemplates";
 import { trackPaymentSuccess } from "./_core/analytics";
@@ -46,6 +47,7 @@ export const appRouter = router({
   featureFlags: featureFlagsRouter,
   passwordReset: passwordResetRouter,
   paymentMethods: paymentMethodsRouter,
+  stripeConnect: stripeConnectRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -351,14 +353,23 @@ export const appRouter = router({
         const gig = await db.getGigById(input.gigId);
         if (!gig) throw new Error("Gig not found");
 
+        // Calculate platform fee (15% default)
+        const totalPrice = gig.price;
+        const platformFeePercent = 15;
+        const platformFee = Math.round((totalPrice * platformFeePercent) / 100);
+        const sellerEarnings = totalPrice - platformFee;
+
         const order = await db.createOrder({
           gigId: input.gigId,
           buyerId: ctx.user.id,
           sellerId: gig.sellerId,
-          totalPrice: gig.price,
+          totalPrice,
+          platformFeePercent,
+          platformFee,
+          sellerEarnings,
           buyerMessage: input.buyerMessage,
           selectedPackage: input.selectedPackage,
-          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : null,
+          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : undefined,
           status: "pending",
         });
 
@@ -433,7 +444,7 @@ export const appRouter = router({
         const Stripe = (await import('stripe')).default;
         const { ENV } = await import('./_core/env');
         const stripe = new Stripe(ENV.stripeSecretKey, {
-          apiVersion: '2025-10-29.clover',
+          apiVersion: "2025-11-17.clover",
           typescript: true,
         });
 
@@ -460,12 +471,21 @@ export const appRouter = router({
         const gig = await db.getGigById(gigId);
         if (!gig) throw new Error('Gig not found');
 
+        // Calculate platform fee (15% default)
+        const totalPrice = gig.price;
+        const platformFeePercent = 15;
+        const platformFee = Math.round((totalPrice * platformFeePercent) / 100);
+        const sellerEarnings = totalPrice - platformFee;
+
         // Create order
         const order = await db.createOrder({
           gigId,
           buyerId,
           sellerId,
-          totalPrice: gig.price,
+          totalPrice,
+          platformFeePercent,
+          platformFee,
+          sellerEarnings,
           buyerMessage,
           selectedPackage,
           selectedExtras,

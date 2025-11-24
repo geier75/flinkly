@@ -1451,6 +1451,11 @@ export async function updateUser(
     companyAddress?: string;
     taxId?: string;
     tradeRegister?: string;
+    // Stripe Connect fields
+    stripeAccountId?: string;
+    stripeOnboardingComplete?: boolean;
+    stripeChargesEnabled?: boolean;
+    stripePayoutsEnabled?: boolean;
   }
 ): Promise<void> {
   const db = await getDb();

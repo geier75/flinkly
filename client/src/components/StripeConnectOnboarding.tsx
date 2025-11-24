@@ -21,17 +21,20 @@ import { toast } from 'sonner';
 export function StripeConnectOnboarding() {
   const [isLoading, setIsLoading] = useState(false);
   
-  const { data: status, isLoading: statusLoading, refetch } = trpc.payment.getConnectAccountStatus.useQuery();
-  const createAccountMutation = trpc.payment.createConnectAccount.useMutation();
-  const refreshLinkMutation = trpc.payment.refreshOnboardingLink.useMutation();
+  const { data: status, isLoading: statusLoading, refetch } = trpc.stripeConnect.getAccountStatus.useQuery();
+  const createAccountMutation = trpc.stripeConnect.createAccount.useMutation();
+  const { refetch: getOnboardingLink } = trpc.stripeConnect.getOnboardingLink.useQuery(undefined, { enabled: false });
 
   const handleConnectStripe = async () => {
     setIsLoading(true);
     try {
-      const result = await createAccountMutation.mutateAsync({ country: 'DE' });
+      await createAccountMutation.mutateAsync({ country: 'DE' });
       
-      // Redirect to Stripe onboarding
-      window.location.href = result.onboardingUrl;
+      // Get onboarding link and redirect
+      const { data } = await getOnboardingLink();
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (error: any) {
       toast.error(error.message || 'Fehler beim Erstellen des Stripe-Kontos');
       setIsLoading(false);
@@ -41,10 +44,10 @@ export function StripeConnectOnboarding() {
   const handleRefreshOnboarding = async () => {
     setIsLoading(true);
     try {
-      const result = await refreshLinkMutation.mutateAsync();
-      
-      // Redirect to Stripe onboarding
-      window.location.href = result.url;
+      const { data } = await getOnboardingLink();
+      if (data?.url) {
+        window.location.href = data.url;
+      }
     } catch (error: any) {
       toast.error(error.message || 'Fehler beim Aktualisieren des Onboarding-Links');
       setIsLoading(false);

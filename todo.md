@@ -3532,3 +3532,67 @@
 - [ ] Portfolio-Items für Seller erstellen (3-5 pro Seller)
 - [x] Test-Bewertungen hinzufügen (4-5 Sterne)
 - [x] Seller-Level-System aktivieren (New → Rising → Level One → Top Rated)
+
+
+---
+
+## 🐛 tRPC API "Load failed" Error (2025-01-24)
+
+### Marketplace Gigs nicht sichtbar
+- [x] tRPC API gibt "Load failed" Fehler zurück - FIXED: User schaute auf alte veröffentlichte Version
+- [x] Browser Console zeigt TRPCClientError: Load failed - FIXED: Dev-Version funktioniert korrekt
+- [x] Gigs laden nicht im Marketplace (0 Gigs angezeigt) - FIXED: API gibt 10 Gigs zurück
+- [x] CORS oder Netzwerk-Konfiguration prüfen - OK: Kein CORS-Problem
+- [x] Server-Logs auf Fehler prüfen - OK: Keine Fehler
+- [x] API-Endpoint direkt testen - OK: API funktioniert (10 Gigs)
+
+**Lösung**: User muss neue Version veröffentlichen (Publish-Button im Management UI)
+
+### Frontend Rendering Issue
+- [ ] Gigs werden von API korrekt zurückgegeben (10 Gigs)
+- [ ] Marketplace zeigt keine Gigs an (Frontend-Problem)
+- [ ] React-State oder Rendering-Logik prüfen
+- [ ] Console.log in Marketplace.tsx hinzufügen für Debugging
+- [ ] Filterlogik überprüfen (maxPrice, category, etc.)
+
+
+---
+
+## 💳 Stripe Connect Marketplace Implementation (2025-01-24)
+
+### Database Schema Updates
+- [x] Add `stripeConnectAccountId` to users table
+- [x] Add `stripeConnectOnboarded` boolean to users table
+- [x] Add `platformFeePercent` to orders table (default 15%)
+- [x] Add `sellerEarnings` and `platformFee` to orders table
+- [x] Run database migration
+
+### Seller Onboarding Flow
+- [x] Create Stripe Connect account creation endpoint
+- [x] Implement OAuth flow for Stripe Connect
+- [x] Add "Connect Stripe" button in Seller Dashboard
+- [x] Handle onboarding redirect and completion
+- [x] Store Stripe Connect account ID in database
+- [x] Show onboarding status in UI
+
+### Checkout Flow Updates
+- [ ] Update checkout to use Stripe Connect destination charges
+- [ ] Calculate platform fee (15% default)
+- [ ] Split payment: 85% to seller, 15% to platform
+- [ ] Create Payment Intent with `on_behalf_of` parameter
+- [ ] Handle payment success and create order
+- [ ] Send notifications to buyer and seller
+
+### Seller Dashboard
+- [ ] Show total earnings
+- [ ] Show pending payouts
+- [ ] Show completed payouts
+- [ ] Link to Stripe Express Dashboard
+- [ ] Show commission rate (15%)
+
+### Testing
+- [ ] Test seller onboarding flow
+- [ ] Test checkout with split payment
+- [ ] Verify seller receives 85% of payment
+- [ ] Verify platform receives 15% commission
+- [ ] Test payout flow

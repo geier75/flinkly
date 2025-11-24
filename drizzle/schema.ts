@@ -139,6 +139,9 @@ export const orders = mysqlTable("orders", {
   sellerId: int("sellerId").notNull(),
   status: mysqlEnum("status", ["pending", "in_progress", "preview", "delivered", "revision", "completed", "disputed", "cancelled"]).default("pending"),
   totalPrice: int("totalPrice").notNull(), // in cents
+  platformFeePercent: int("platformFeePercent").default(15).notNull(), // Platform commission (default 15%)
+  platformFee: int("platformFee").notNull(), // Platform fee in cents (calculated from totalPrice)
+  sellerEarnings: int("sellerEarnings").notNull(), // Seller earnings in cents (totalPrice - platformFee)
   selectedPackage: mysqlEnum("selectedPackage", ["basic", "standard", "premium"]).default("basic"), // Package tier selected by buyer
   selectedExtras: text("selectedExtras"), // JSON array of extra IDs purchased with this order
   buyerMessage: text("buyerMessage"),
@@ -184,10 +187,13 @@ export const transactions = mysqlTable("transactions", {
   orderId: int("orderId").notNull(),
   buyerId: int("buyerId").notNull(),
   sellerId: int("sellerId").notNull(),
-  amount: int("amount").notNull(), // in cents
+  amount: int("amount").notNull(), // in cents (total amount paid by buyer)
+  platformFee: int("platformFee").notNull(), // Platform fee in cents
+  sellerEarnings: int("sellerEarnings").notNull(), // Seller earnings in cents
   currency: varchar("currency", { length: 3 }).default("EUR"),
   paymentMethod: varchar("paymentMethod", { length: 32 }), // 'klarna', 'sepa', 'card', 'twint'
   paymentIntentId: varchar("paymentIntentId", { length: 255 }),
+  transferId: varchar("transferId", { length: 255 }), // Stripe Connect transfer ID (tr_...)
   status: mysqlEnum("status", ["pending", "authorized", "captured", "refunded", "failed"]).default("pending"),
   escrowReleaseDate: timestamp("escrowReleaseDate"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
