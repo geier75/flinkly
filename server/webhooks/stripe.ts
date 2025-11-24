@@ -197,23 +197,65 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
 
 /**
  * Handle account.updated
- * Update seller's Connect account status
+ * Update seller's Connect account status and capabilities
+ * 
+ * This webhook is triggered when:
+ * - Seller completes onboarding
+ * - Account capabilities change (charges_enabled, payouts_enabled)
+ * - Account is disabled/suspended
  */
 async function handleAccountUpdated(account: Stripe.Account) {
   try {
     const db = await getDb();
-    if (!db) return;
+    if (!db) {
+      console.error('[Stripe Webhook] Database not available');
+      return;
+    }
 
     const sellerId = account.metadata?.seller_id;
-    if (!sellerId) return;
+    if (!sellerId) {
+      console.warn('[Stripe Webhook] account.updated event missing seller_id in metadata');
+      return;
+    }
 
-    // Check if account is fully onboarded
-    const isVerified = account.charges_enabled && account.payouts_enabled;
+    // Extract capabilities
+    const chargesEnabled = account.charges_enabled || false;
+    const payoutsEnabled = account.payouts_enabled || false;
+    const onboardingComplete = account.details_submitted || false;
+    
+    // Check if account is fully functional
+    const isFullyVerified = chargesEnabled && payoutsEnabled && onboardingComplete;
 
-    console.log(`[Stripe Webhook] Seller ${sellerId} account updated: verified=${isVerified}`);
+    console.log(`[Stripe Webhook] Seller ${sellerId} account updated:`);
+    console.log(`  - Charges Enabled: ${chargesEnabled}`);
+    console.log(`  - Payouts Enabled: ${payoutsEnabled}`);
+    console.log(`  - Onboarding Complete: ${onboardingComplete}`);
+    console.log(`  - Fully Verified: ${isFullyVerified}`);
 
-    // Optional: Update seller verification status in DB
-    // await db.update(users).set({ stripeVerified: isVerified }).where(eq(users.id, parseInt(sellerId)));
+    // Update seller's Stripe Connect status in database
+    const { updateUserStripeAccount } = await import('../db');
+    await updateUserStripeAccount(
+      parseInt(sellerId),
+      account.id,
+      {
+        chargesEnabled,
+        payoutsEnabled,
+        onboardingComplete,
+      }
+    );
+
+    console.log(`[Stripe Webhook] ✅ Seller ${sellerId} capabilities updated in database`);
+    
+    // Optional: Send notification to seller if fully verified
+    if (isFullyVerified) {
+      console.log(`[Stripe Webhook] 🎉 Seller ${sellerId} is now fully verified!`);
+      // TODO: Send email notification to seller
+      // await sendEmail({
+      //   to: sellerEmail,
+      //   subject: 'Stripe-Konto erfolgreich verifiziert',
+      //   template: 'stripe-verified',
+      // });
+    }
   } catch (error) {
     console.error('[Stripe Webhook] Failed to update seller account:', error);
   }

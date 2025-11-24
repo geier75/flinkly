@@ -10,6 +10,7 @@ import { weeklyDigestTemplate } from "./emailTemplates";
 import { sendEmail } from "./email";
 import { upgradeAllSellers } from "../services/sellerLevelService";
 import { updateAllPopularityScores } from "../services/popularityService";
+import { sendStripeConnectReminders } from "../services/stripeReminderService";
 
 /**
  * Sendet Weekly-Digest an alle User
@@ -102,7 +103,21 @@ export function initCronJobs() {
     timezone: "Europe/Berlin"
   });
   
-  console.log("[CronJob] Cron jobs initialized: Weekly-Digest (Monday 9:00 AM), Seller-Level-Upgrade (Daily 3:00 AM), Popularity-Score-Update (Daily 4:00 AM)");
+  // Stripe Connect Reminder: Jeden Tag um 10:00 Uhr
+  // 0 0 10 * * * = Täglich 10:00 Uhr
+  cron.schedule("0 0 10 * * *", async () => {
+    console.log("[CronJob] Triggering Stripe Connect reminders (Daily 10:00 AM)");
+    try {
+      const reminderCount = await sendStripeConnectReminders();
+      console.log(`[CronJob] Stripe Connect reminders sent: ${reminderCount} sellers notified`);
+    } catch (error) {
+      console.error("[CronJob] Error in Stripe Connect reminders:", error);
+    }
+  }, {
+    timezone: "Europe/Berlin"
+  });
+  
+  console.log("[CronJob] Cron jobs initialized: Weekly-Digest (Monday 9:00 AM), Seller-Level-Upgrade (Daily 3:00 AM), Popularity-Score-Update (Daily 4:00 AM), Stripe-Connect-Reminder (Daily 10:00 AM)");
 }
 
 /**

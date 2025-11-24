@@ -40,6 +40,7 @@ const SellerVerification = lazy(() => import("./pages/SellerVerification"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
+const PlatformAnalytics = lazy(() => import("./pages/PlatformAnalytics"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -60,6 +61,7 @@ function Router() {
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/seller-dashboard"} component={SellerDashboard} />
       <Route path={"/admin"} component={AdminDashboard} />
+      <Route path={"/platform-analytics"} component={PlatformAnalytics} />
       <Route path={"/profile"} component={Profile} />
       <Route path={"/favorites"} component={Favorites} />
       <Route path={"/order/:id"} component={OrderDetail} />

@@ -3,6 +3,8 @@ import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { gigViews, gigStats, gigs, orders } from "../../drizzle/schema";
 import { eq, and, gte, sql, desc } from "drizzle-orm";
+import { TRPCError } from '@trpc/server';
+import { getPlatformFeeSummary } from '../services/platformAnalyticsService';
 
 export const analyticsRouter = router({
   /**
@@ -247,5 +249,23 @@ export const analyticsRouter = router({
 
       // Sort by revenue DESC
       return gigsWithRevenue.sort((a, b) => b.revenue - a.revenue);
+    }),
+
+  /**
+   * Get Platform Fee Summary (Admin Only)
+   * Returns platform fees, seller payouts, and revenue breakdown
+   */
+  getPlatformSummary: protectedProcedure
+    .query(async ({ ctx }) => {
+      // Only admins can access platform analytics
+      if (ctx.user.role !== 'admin') {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'Only admins can access platform analytics',
+        });
+      }
+
+      const summary = await getPlatformFeeSummary();
+      return summary;
     }),
 });

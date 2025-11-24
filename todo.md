@@ -3415,3 +3415,24 @@
 - [ ] Update Checkout.tsx to redirect to Stripe Checkout URL
 - [ ] Configure success/cancel URLs for Stripe Checkout
 - [ ] Test complete payment flow with Stripe test card (4242 4242 4242 4242)
+
+---
+
+## 🔧 Stripe Connect Erweiterungen (2025-01-24)
+
+### Webhook Handler
+- [x] account.updated Event Handler implementieren
+- [x] Seller-Capabilities automatisch aktualisieren (chargesEnabled, payoutsEnabled)
+- [x] Webhook-Logging für Debugging
+
+### Email-Reminder System
+- [x] Cron-Job für Seller ohne Stripe-Konto (täglich 10:00 Uhr)
+- [x] Email-Template für Stripe Connect Reminder
+- [x] Notification-System Integration
+
+### Analytics Dashboard
+- [x] Platform-Gebühren Übersicht (Admin-Panel)
+- [x] Seller-Payouts Statistiken
+- [x] Revenue Time Series (täglich)
+- [x] Top 10 Seller nach Umsatz
+
