@@ -843,6 +843,20 @@ export default function GigDetail() {
           <Button 
             size="lg"
             className="flex-1 bg-accent hover:bg-accent/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-accent/30"
+            onClick={() => {
+              const selectedPkg = gigPackages?.find(p => p.packageType === selectedPackage);
+              trackCTA('projekt_starten_mobile', {
+                gig_id: gig.id,
+                gig_title: gig.title,
+                price: selectedPkg?.price || gig.price,
+                package: selectedPkg?.name || 'basic',
+              });
+              // Save package/extras to sessionStorage for Checkout
+              sessionStorage.setItem('checkout_package', selectedPackage);
+              sessionStorage.setItem('checkout_extras', JSON.stringify(selectedExtras));
+              // Navigate to Checkout
+              setLocation(`/checkout/${gig.id}`);
+            }}
           >
             Projekt starten
           </Button>
