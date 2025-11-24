@@ -3576,19 +3576,19 @@
 - [x] Show onboarding status in UI
 
 ### Checkout Flow Updates
-- [ ] Update checkout to use Stripe Connect destination charges
-- [ ] Calculate platform fee (15% default)
-- [ ] Split payment: 85% to seller, 15% to platform
-- [ ] Create Payment Intent with `on_behalf_of` parameter
-- [ ] Handle payment success and create order
-- [ ] Send notifications to buyer and seller
+- [x] Update checkout to use Stripe Connect destination charges
+- [x] Calculate platform fee (15% default)
+- [x] Split payment: 85% to seller, 15% to platform
+- [x] Create Payment Intent with destination charges
+- [x] Handle payment success and create order
+- [x] Send notifications to buyer and seller
 
 ### Seller Dashboard
-- [ ] Show total earnings
-- [ ] Show pending payouts
-- [ ] Show completed payouts
-- [ ] Link to Stripe Express Dashboard
-- [ ] Show commission rate (15%)
+- [x] Show total earnings
+- [x] Show pending payouts
+- [x] Show completed payouts
+- [x] Link to Stripe Express Dashboard
+- [x] Show commission rate (15%)
 
 ### Testing
 - [ ] Test seller onboarding flow

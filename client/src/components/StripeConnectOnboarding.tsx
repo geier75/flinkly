@@ -217,11 +217,13 @@ export function StripeConnectOnboarding() {
           </div>
         </div>
 
-        <div className="pt-4 border-t">
-          <p className="text-xs text-slate-500">
-            Account ID: <code className="bg-slate-100 px-1 rounded">{status.accountId}</code>
-          </p>
-        </div>
+        {status.hasAccount && 'accountId' in status && (
+          <div className="pt-4 border-t">
+            <p className="text-xs text-slate-500">
+              Account ID: <code className="bg-slate-100 px-1 rounded">{status.accountId}</code>
+            </p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
