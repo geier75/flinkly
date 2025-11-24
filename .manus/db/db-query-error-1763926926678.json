@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, gigId, name, price, deliveryDays, description FROM packages WHERE gigId = 1 ORDER BY price ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT id, gigId, name, price, deliveryDays, description FROM packages WHERE gigId = 1 ORDER BY price ASC;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'pv3g2vyhcgppzo3y5utgzt.packages' doesn't exist"
+  ]
+}

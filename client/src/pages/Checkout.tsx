@@ -110,13 +110,13 @@ export default function Checkout() {
     dataProcessing: "",
   });
 
-  const createOrderMutation = trpc.orders.create.useMutation({
-    onSuccess: (order) => {
-      toast.success("Auftrag erfolgreich erstellt!");
-      setLocation(`/order/confirmation/${order.orderId}`); // Redirect to order confirmation page
+  const createCheckoutMutation = trpc.payment.createCheckout.useMutation({
+    onSuccess: (session) => {
+      // Redirect to Stripe Checkout
+      window.location.href = session.url;
     },
     onError: () => {
-      toast.error("Fehler beim Erstellen des Auftrags");
+      toast.error("Fehler beim Erstellen der Checkout-Session");
     },
   });
 
@@ -136,7 +136,7 @@ export default function Checkout() {
       needs_avv: legal.needsAVV,
     });
 
-    createOrderMutation.mutate({
+    createCheckoutMutation.mutate({
       gigId: gig.id,
       buyerMessage: JSON.stringify(briefing),
       selectedPackage,
@@ -765,10 +765,10 @@ export default function Checkout() {
                     <Button
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white"
                       onClick={handleSubmit}
-                      disabled={!isStepComplete(4) || createOrderMutation.isPending}
+                      disabled={!isStepComplete(4) || createCheckoutMutation.isPending}
                     >
-                      {createOrderMutation.isPending
-                        ? "Wird erstellt..."
+                      {createCheckoutMutation.isPending
+                        ? "Weiterleitung zu Stripe..."
                         : "✓ Jetzt verbindlich bestellen"}
                     </Button>
                   </div>

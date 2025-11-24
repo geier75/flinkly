@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO gigPackages (gigId, packageType, name, description, price, deliveryDays, revisions, features, active) VALUES \n(1, 'standard', 'Standard Logo', '3 Logo-Konzepte, 5 Revisionen, Alle Dateiformate (PNG, JPG, SVG, AI)', 49900, 5, 5, '[\"3 Logo-Konzepte\",\"5 Revisionen\",\"PNG, JPG, SVG, AI\",\"Kommerzielle Nutzung\",\"Brand Guidelines\"]', true),\n(1, 'premium', 'Premium Brand Package', '5 Logo-Konzepte, Unbegrenzte Revisionen, Komplettes Brand Identity Package', 99900, 7, 999, '[\"5 Logo-Konzepte\",\"Unbegrenzte Revisionen\",\"Alle Dateiformate\",\"Brand Guidelines\",\"Social Media Kit\",\"Visitenkarten-Design\"]', true);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute INSERT INTO gigPackages (gigId, packageType, name, description, price, deliveryDays, revisions, features, active) VALUES \n(1, 'standard', 'Standard Logo', '3 Logo-Konzepte, 5 Revisionen, Alle Dateiformate (PNG, JPG, SVG, AI)', 49900, 5, 5, '[\"3 Logo-Konzepte\",\"5 Revisionen\",\"PNG, JPG, SVG, AI\",\"Kommerzielle Nutzung\",\"Brand Guidelines\"]', true),\n(1, 'premium', 'Premium Brand Package', '5 Logo-Konzepte, Unbegrenzte Revisionen, Komplettes Brand Identity Package', 99900, 7, 999, '[\"5 Logo-Konzepte\",\"Unbegrenzte Revisionen\",\"Alle Dateiformate\",\"Brand Guidelines\",\"Social Media Kit\",\"Visitenkarten-Design\"]', true);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 61
+}

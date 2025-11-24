@@ -3404,3 +3404,14 @@
   - [ ] Auto-Select Default Payment Method
 
 **Expected Impact:** +30% Repeat-Purchase-Rate, -15% Checkout-Time
+
+
+## 🔴 STRIPE CHECKOUT FIX (KRITISCH - Zahlung funktioniert nicht)
+
+**Problem:** Orders werden direkt erstellt OHNE Stripe Checkout → Zahlungen bleiben "Incomplete"
+
+- [ ] Fix Stripe Checkout integration - redirect to Stripe Checkout Session instead of direct order creation
+- [ ] Implement createCheckoutSession tRPC procedure
+- [ ] Update Checkout.tsx to redirect to Stripe Checkout URL
+- [ ] Configure success/cancel URLs for Stripe Checkout
+- [ ] Test complete payment flow with Stripe test card (4242 4242 4242 4242)

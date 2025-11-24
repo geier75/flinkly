@@ -1,0 +1,14 @@
+{
+  "query": "SELECT COUNT(*) as total_gigs, SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_gigs FROM gigs;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT COUNT(*) as total_gigs, SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_gigs FROM gigs;",
+  "rows": [
+    {
+      "total_gigs": "61",
+      "active_gigs": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_gigs\tactive_gigs\n61\t0\n",
+  "stderr": "",
+  "execution_time_ms": 79
+}

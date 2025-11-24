@@ -39,6 +39,7 @@ const PrivacyDashboard = lazy(() => import("./pages/PrivacyDashboard"));
 const SellerVerification = lazy(() => import("./pages/SellerVerification"));
 const Favorites = lazy(() => import("./pages/Favorites"));
 const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
+const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -53,6 +54,7 @@ function Router() {
       <Route path={"/marketplace"} component={Marketplace} />
       <Route path={"/gig/:id"} component={GigDetail} />
       <Route path={"/checkout/:id"} component={Checkout} />
+      <Route path={"/checkout/success"} component={CheckoutSuccess} />
       <Route path="/create-gig" component={CreateGig} />
       <Route path="/edit-gig/:id" component={EditGig} />
       <Route path={"/dashboard"} component={Dashboard} />

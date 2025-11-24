@@ -425,6 +425,85 @@ export const appRouter = router({
         await db.updateOrderStatus(input.orderId, "disputed");
         return { success: true };
       }),
+
+    createFromStripeSession: protectedProcedure
+      .input(z.object({ sessionId: z.string() }))
+      .mutation(async ({ ctx, input }) => {
+        const Stripe = (await import('stripe')).default;
+        const { ENV } = await import('./_core/env');
+        const stripe = new Stripe(ENV.stripeSecretKey, {
+          apiVersion: '2025-10-29.clover',
+          typescript: true,
+        });
+
+        // Retrieve checkout session from Stripe
+        const session = await stripe.checkout.sessions.retrieve(input.sessionId);
+        
+        if (!session || session.payment_status !== 'paid') {
+          throw new Error('Payment not completed');
+        }
+
+        // Extract metadata
+        const gigId = parseInt(session.metadata?.gig_id || '0');
+        const buyerId = parseInt(session.metadata?.buyer_id || '0');
+        const sellerId = parseInt(session.metadata?.seller_id || '0');
+        const buyerMessage = session.metadata?.buyer_message;
+        const selectedPackage = (session.metadata?.selected_package || 'basic') as 'basic' | 'standard' | 'premium';
+        const selectedExtras = session.metadata?.selected_extras;
+
+        // Verify buyer matches authenticated user
+        if (buyerId !== ctx.user.id) {
+          throw new Error('Unauthorized');
+        }
+
+        const gig = await db.getGigById(gigId);
+        if (!gig) throw new Error('Gig not found');
+
+        // Create order
+        const order = await db.createOrder({
+          gigId,
+          buyerId,
+          sellerId,
+          totalPrice: gig.price,
+          buyerMessage,
+          selectedPackage,
+          selectedExtras,
+          status: 'pending',
+        });
+
+        // Create order-based conversation thread
+        await db.createConversation({
+          orderId: order!.id,
+          buyerId,
+          sellerId,
+        });
+
+        // Track payment success event
+        trackPaymentSuccess(ctx.user.id, order!.id, gigId, gig.price);
+        
+        // Send order confirmation email to buyer
+        const buyer = await db.getUserById(buyerId);
+        const seller = await db.getUserById(sellerId);
+        
+        if (buyer?.email) {
+          const emailHtml = orderConfirmationTemplate({
+            buyerName: buyer.name || 'Kunde',
+            orderId: order!.id,
+            gigTitle: gig.title,
+            price: gig.price,
+            sellerName: seller?.name || 'Seller',
+            deliveryDays: gig.deliveryDays,
+          });
+          
+          await sendEmail({
+            to: buyer.email,
+            subject: `Bestellung bestätigt - ${gig.title} (#${order!.id})`,
+            html: emailHtml,
+          });
+        }
+
+        return { success: true, orderId: order!.id };
+      }),
   }),
 
   reviews: router({
@@ -462,6 +541,9 @@ export const appRouter = router({
     createCheckout: protectedProcedure
       .input(z.object({ 
         gigId: z.number(),
+        buyerMessage: z.string().optional(),
+        selectedPackage: z.enum(['basic', 'standard', 'premium']).optional(),
+        selectedExtras: z.array(z.number()).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { createCheckoutSession } = await import('./payment');
@@ -478,6 +560,9 @@ export const appRouter = router({
           buyerName: ctx.user.name || '',
           sellerId: gig.sellerId,
           origin: ctx.req.headers.origin || 'http://localhost:3000',
+          buyerMessage: input.buyerMessage,
+          selectedPackage: input.selectedPackage,
+          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : undefined,
         });
 
         return session;

@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, buyerId, gigId, packageType, status, totalPrice, platformFee, paymentFee, paymentMethod, paymentStatus, stripePaymentIntentId, stripeCheckoutSessionId, createdAt FROM orders WHERE id = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT id, buyerId, gigId, packageType, status, totalPrice, platformFee, paymentFee, paymentMethod, paymentStatus, stripePaymentIntentId, stripeCheckoutSessionId, createdAt FROM orders WHERE id = 1;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'packagetype' in 'field list'"
+  ]
+}

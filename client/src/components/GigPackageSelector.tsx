@@ -95,7 +95,7 @@ export function GigPackageSelector({
         {sortedPackages.map((pkg) => {
           const isSelected = selectedPackage === pkg.packageType;
           const isHovered = hoveredPackage === pkg.packageType;
-          const features = pkg.features ? JSON.parse(pkg.features as any) : [];
+          const features = pkg.features || [];
 
           return (
             <motion.div

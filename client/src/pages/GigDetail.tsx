@@ -182,7 +182,7 @@ export default function GigDetail() {
     price: pkg.price / 100, // Convert cents to euros
     deliveryDays: pkg.deliveryDays,
     revisions: pkg.revisions,
-    features: pkg.features ? JSON.parse(pkg.features) : []
+    features: pkg.features || []
   })) : [
     {
       id: "basic",

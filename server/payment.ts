@@ -31,6 +31,9 @@ export interface CreateCheckoutParams {
   buyerName?: string;
   sellerId: number;
   origin: string; // For success/cancel URLs
+  buyerMessage?: string; // JSON string with briefing data
+  selectedPackage?: string; // basic/standard/premium
+  selectedExtras?: string; // JSON array of extra IDs
 }
 
 export interface CheckoutSession {
@@ -76,8 +79,11 @@ export async function createCheckoutSession(
         seller_id: params.sellerId.toString(),
         buyer_email: params.buyerEmail,
         buyer_name: params.buyerName || '',
+        buyer_message: params.buyerMessage || '',
+        selected_package: params.selectedPackage || 'basic',
+        selected_extras: params.selectedExtras || '[]',
       },
-      success_url: `${params.origin}/dashboard?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${params.origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${params.origin}/gig/${params.gigId}?payment=cancelled`,
       allow_promotion_codes: true,
       billing_address_collection: 'auto',

@@ -1,0 +1,73 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "account_deletion_requests"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "consent_logs"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "conversations"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "disputes"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "favorites"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "fraudAlerts"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "gigExtras"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "gigPackages"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "gigStats"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "gigViews"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "gigs"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "invoices"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "messages"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "orders"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "passwordResetTokens"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "paymentMethods"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "payouts"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "reviews"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "transactions"
+    },
+    {
+      "Tables_in_PV3G2vYhCgPPZo3y5UtgZt": "users"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_PV3G2vYhCgPPZo3y5UtgZt\n__drizzle_migrations\naccount_deletion_requests\nconsent_logs\nconversations\ndisputes\nfavorites\nfraudAlerts\ngigExtras\ngigPackages\ngigStats\ngigViews\ngigs\ninvoices\nmessages\norders\npasswordResetTokens\npaymentMethods\npayouts\nreviews\ntransactions\nusers\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}
