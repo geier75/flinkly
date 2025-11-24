@@ -3470,3 +3470,26 @@
 - [x] Redis war nicht gestartet - Server konnte nicht auf Cache zugreifen
 - [x] Redis installiert und gestartet
 - [x] Marketplace zeigt jetzt 50+ Gigs korrekt an
+
+
+---
+
+## 🐛 Browser Console Errors & Test Data Reduction (2025-01-24)
+
+### WebGL VideoScene Error
+- [x] TypeError: error2 is not a function in WebGLRenderer - FIXED
+- [x] Added try-catch error handling to VideoScene component
+- [x] WebGL failures now gracefully degrade without breaking page
+
+### Test Data Reduction
+- [x] Seed-Daten von 60 auf 10 Gigs reduziert für einfacheres Checkout-Testing
+- [x] Neues Seed-Script erstellt: scripts/seed-10-gigs.mjs
+- [x] 10 Gigs mit je 3 Packages (Basic, Standard, Premium) = 30 Packages total
+- [x] Kategorien: Design (2), Development (2), Marketing (2), Content (2), Business (1), Technology (1)
+- [x] Redis Cache geleert für frische Daten
+- [x] maxPrice Filter von 250€ auf 1000€ erhöht (alle Gigs sichtbar)
+
+### Marketplace Loading
+- [x] API gibt 10 Gigs korrekt zurück
+- [x] Frontend filtert und zeigt Gigs korrekt an
+- [x] Checkout-Prozess bereit zum Testen mit reduzierten Daten
