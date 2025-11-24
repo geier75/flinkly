@@ -30,6 +30,7 @@ export interface CreateCheckoutParams {
   buyerEmail: string;
   buyerName?: string;
   sellerId: number;
+  sellerStripeAccountId?: string; // Stripe Connect Account ID (for Destination Charges)
   origin: string; // For success/cancel URLs
   buyerMessage?: string; // JSON string with briefing data
   selectedPackage?: string; // basic/standard/premium
@@ -50,12 +51,20 @@ export interface CheckoutSession {
  * 3. Redirect to Stripe-hosted checkout page
  * 4. On success, webhook creates order in DB
  * 5. Funds held in escrow until delivery
+ * 
+ * Marketplace Model:
+ * - If seller has Stripe Connect: Use Destination Charges (85% to seller, 15% platform fee)
+ * - If seller has NO Connect: Funds go to platform (manual payout later)
  */
 export async function createCheckoutSession(
   params: CreateCheckoutParams
 ): Promise<CheckoutSession> {
   try {
-    const session = await stripe.checkout.sessions.create({
+    const totalAmountCents = Math.round(params.gigPrice * 100);
+    const platformFeeCents = Math.round(totalAmountCents * 0.15); // 15% platform fee
+    
+    // Base session config
+    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
       payment_method_types: ['card', 'sepa_debit', 'klarna'],
       line_items: [
@@ -66,7 +75,7 @@ export async function createCheckoutSession(
               name: params.gigTitle,
               description: `Digitale Dienstleistung auf Flinkly`,
             },
-            unit_amount: Math.round(params.gigPrice * 100), // Convert to cents
+            unit_amount: totalAmountCents,
           },
           quantity: 1,
         },
@@ -88,16 +97,27 @@ export async function createCheckoutSession(
       allow_promotion_codes: true,
       billing_address_collection: 'auto',
       payment_intent_data: {
-        // Capture method: manual (for escrow)
-        // Funds authorized but not captured until order completion
-        capture_method: 'manual',
+        capture_method: 'manual', // Escrow: hold funds until order completion
         metadata: {
           gig_id: params.gigId.toString(),
           buyer_id: params.buyerId.toString(),
           seller_id: params.sellerId.toString(),
         },
       },
-    });
+    };
+    
+    // If seller has Stripe Connect: Use Destination Charges
+    if (params.sellerStripeAccountId) {
+      sessionConfig.payment_intent_data!.application_fee_amount = platformFeeCents;
+      sessionConfig.payment_intent_data!.transfer_data = {
+        destination: params.sellerStripeAccountId,
+      };
+      console.log(`[Stripe] Destination Charge: ${params.gigPrice}€ total, ${(platformFeeCents / 100).toFixed(2)}€ platform fee, ${((totalAmountCents - platformFeeCents) / 100).toFixed(2)}€ to seller`);
+    } else {
+      console.log(`[Stripe] Platform Charge: ${params.gigPrice}€ to platform (seller has no Connect account)`);
+    }
+    
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return {
       id: session.id,
@@ -199,6 +219,13 @@ export async function transferToSeller(
  * 
  * Required for receiving payouts
  * Sellers must complete KYC verification
+ * 
+ * Flow:
+ * 1. Create Stripe Express account
+ * 2. Generate onboarding link for KYC
+ * 3. Save account ID to database
+ * 4. Seller completes onboarding
+ * 5. Webhook updates capabilities
  */
 export async function createConnectAccount(
   sellerId: number,
@@ -228,6 +255,10 @@ export async function createConnectAccount(
       return_url: `${ENV.frontendUrl}/seller-dashboard?onboarding=complete`,
       type: 'account_onboarding',
     });
+
+    // Save account ID to database
+    const { updateUserStripeAccount } = await import('./db');
+    await updateUserStripeAccount(sellerId, account.id);
 
     return {
       accountId: account.id,

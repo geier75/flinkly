@@ -29,6 +29,7 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SellerLevelProgress from "@/components/SellerLevelProgress";
 import SellerOnboardingChecklist from "@/components/SellerOnboardingChecklist";
+import { StripeConnectOnboarding } from "@/components/StripeConnectOnboarding";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -334,6 +335,16 @@ export default function SellerDashboard() {
               />
             </motion.div>
           )}
+
+          {/* Stripe Connect Onboarding */}
+          <motion.div
+            className="mb-8"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.08 }}
+          >
+            <StripeConnectOnboarding />
+          </motion.div>
 
           {/* Seller Level Progress */}
           <motion.div

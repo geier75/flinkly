@@ -2,6 +2,7 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
+import { TRPCError } from '@trpc/server';
 import { z } from "zod";
 import * as db from "./db";
 import * as v from "./validation";
@@ -550,6 +551,14 @@ export const appRouter = router({
         
         const gig = await db.getGigById(input.gigId);
         if (!gig) throw new Error("Gig not found");
+        
+        // Get seller's Stripe Connect account (if exists)
+        const seller = await db.getUserById(gig.sellerId);
+        const sellerStripeAccountId = seller?.stripeAccountId || undefined;
+        
+        if (!sellerStripeAccountId) {
+          console.warn(`[Payment] Seller ${gig.sellerId} has no Stripe Connect account - funds will go to platform`);
+        }
 
         const session = await createCheckoutSession({
           gigId: gig.id,
@@ -559,6 +568,7 @@ export const appRouter = router({
           buyerEmail: ctx.user.email || '',
           buyerName: ctx.user.name || '',
           sellerId: gig.sellerId,
+          sellerStripeAccountId,
           origin: ctx.req.headers.origin || 'http://localhost:3000',
           buyerMessage: input.buyerMessage,
           selectedPackage: input.selectedPackage,
@@ -585,6 +595,69 @@ export const appRouter = router({
         const { refundPayment } = await import('./payment');
         await refundPayment(input.paymentIntentId, input.amount);
         return { success: true };
+      }),
+    
+    // Stripe Connect procedures
+    createConnectAccount: protectedProcedure
+      .input(z.object({
+        country: z.enum(['DE', 'AT', 'CH']).optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { createConnectAccount } = await import('./payment');
+        
+        // Check if user already has a Connect account
+        const user = await db.getUserById(ctx.user.id);
+        if (user?.stripeAccountId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'User already has a Stripe Connect account',
+          });
+        }
+        
+        const result = await createConnectAccount(
+          ctx.user.id,
+          ctx.user.email || '',
+          input.country || 'DE'
+        );
+        
+        return result;
+      }),
+    
+    getConnectAccountStatus: protectedProcedure
+      .query(async ({ ctx }) => {
+        const user = await db.getUserById(ctx.user.id);
+        
+        return {
+          hasAccount: !!user?.stripeAccountId,
+          accountId: user?.stripeAccountId || null,
+          onboardingComplete: user?.stripeOnboardingComplete || false,
+          chargesEnabled: user?.stripeChargesEnabled || false,
+          payoutsEnabled: user?.stripePayoutsEnabled || false,
+        };
+      }),
+    
+    refreshOnboardingLink: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        const user = await db.getUserById(ctx.user.id);
+        
+        if (!user?.stripeAccountId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'No Stripe Connect account found',
+          });
+        }
+        
+        const { stripe } = await import('./payment');
+        const { ENV } = await import('./_core/env');
+        
+        const accountLink = await stripe.accountLinks.create({
+          account: user.stripeAccountId,
+          refresh_url: `${ENV.frontendUrl}/seller-dashboard?onboarding=refresh`,
+          return_url: `${ENV.frontendUrl}/seller-dashboard?onboarding=complete`,
+          type: 'account_onboarding',
+        });
+        
+        return { url: accountLink.url };
       }),
   }),
 

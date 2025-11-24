@@ -32,6 +32,11 @@ export const users = mysqlTable("users", {
   companyAddress: text("companyAddress"), // Vollständige Adresse
   taxId: varchar("taxId", { length: 50 }), // USt-IdNr. (DE123456789)
   tradeRegister: varchar("tradeRegister", { length: 255 }), // Handelsregister (HRB 12345)
+  // Stripe Connect fields (for seller payouts)
+  stripeAccountId: varchar("stripeAccountId", { length: 255 }), // Stripe Connect Account ID (acct_...)
+  stripeOnboardingComplete: boolean("stripeOnboardingComplete").default(false).notNull(), // KYC verification complete
+  stripeChargesEnabled: boolean("stripeChargesEnabled").default(false).notNull(), // Can receive payments
+  stripePayoutsEnabled: boolean("stripePayoutsEnabled").default(false).notNull(), // Can receive payouts
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),

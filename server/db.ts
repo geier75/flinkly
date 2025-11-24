@@ -1459,3 +1459,36 @@ export async function updateUser(
   await db.update(users).set(updates).where(eq(users.id, userId));
   console.log(`[Profile Update] User ${userId} profile updated`);
 }
+
+/**
+ * Update user Stripe Connect account ID
+ */
+export async function updateUserStripeAccount(
+  userId: number,
+  stripeAccountId: string,
+  capabilities?: {
+    chargesEnabled?: boolean;
+    payoutsEnabled?: boolean;
+    onboardingComplete?: boolean;
+  }
+): Promise<void> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const updates: any = { stripeAccountId };
+  
+  if (capabilities) {
+    if (capabilities.chargesEnabled !== undefined) {
+      updates.stripeChargesEnabled = capabilities.chargesEnabled;
+    }
+    if (capabilities.payoutsEnabled !== undefined) {
+      updates.stripePayoutsEnabled = capabilities.payoutsEnabled;
+    }
+    if (capabilities.onboardingComplete !== undefined) {
+      updates.stripeOnboardingComplete = capabilities.onboardingComplete;
+    }
+  }
+  
+  await db.update(users).set(updates).where(eq(users.id, userId));
+  console.log(`[Stripe Connect] User ${userId} Stripe account updated: ${stripeAccountId}`);
+}
