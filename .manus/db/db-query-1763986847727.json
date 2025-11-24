@@ -1,0 +1,45 @@
+{
+  "query": "SELECT id, title, category, price, status FROM gigs LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT id, title, category, price, status FROM gigs LIMIT 5;",
+  "rows": [
+    {
+      "id": "90001",
+      "title": "Professionelles Logo-Design für dein Startup",
+      "category": "design",
+      "price": "149",
+      "status": "published"
+    },
+    {
+      "id": "90002",
+      "title": "Social Media Design-Paket (Instagram, Facebook, LinkedIn)",
+      "category": "design",
+      "price": "89",
+      "status": "published"
+    },
+    {
+      "id": "90003",
+      "title": "Responsive WordPress-Website mit Elementor",
+      "category": "development",
+      "price": "399",
+      "status": "published"
+    },
+    {
+      "id": "90004",
+      "title": "Landing Page mit HTML/CSS/JavaScript",
+      "category": "development",
+      "price": "299",
+      "status": "published"
+    },
+    {
+      "id": "90005",
+      "title": "SEO-Optimierung für deine Website (On-Page)",
+      "category": "marketing",
+      "price": "249",
+      "status": "published"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tcategory\tprice\tstatus\n90001\tProfessionelles Logo-Design für dein Startup\tdesign\t149\tpublished\n90002\tSocial Media Design-Paket (Instagram, Facebook, LinkedIn)\tdesign\t89\tpublished\n90003\tResponsive WordPress-Website mit Elementor\tdevelopment\t399\tpublished\n90004\tLanding Page mit HTML/CSS/JavaScript\tdevelopment\t299\tpublished\n90005\tSEO-Optimierung für deine Website (On-Page)\tmarketing\t249\tpublished\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

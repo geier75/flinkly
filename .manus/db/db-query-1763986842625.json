@@ -1,0 +1,13 @@
+{
+  "query": "SELECT COUNT(*) as gig_count FROM gigs;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT COUNT(*) as gig_count FROM gigs;",
+  "rows": [
+    {
+      "gig_count": "70"
+    }
+  ],
+  "messages": [],
+  "stdout": "gig_count\n70\n",
+  "stderr": "",
+  "execution_time_ms": 58
+}
