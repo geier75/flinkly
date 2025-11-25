@@ -112,11 +112,14 @@ export default function Checkout() {
 
   const createCheckoutMutation = trpc.payment.createCheckout.useMutation({
     onSuccess: (session) => {
+      console.log('[Checkout] Session created, redirecting to:', session.url);
       // Redirect to Stripe Checkout
       window.location.href = session.url;
     },
-    onError: () => {
-      toast.error("Fehler beim Erstellen der Checkout-Session");
+    onError: (error) => {
+      console.error('[Checkout] Error creating checkout session:', error);
+      toast.error(`Fehler beim Erstellen der Checkout-Session: ${error.message}`);
+      trackError('checkout_error', error.message);
     },
   });
 

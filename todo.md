@@ -3699,3 +3699,9 @@
 - [x] Redis konfigurieren und Caching wieder aktivieren
 - [x] Category-Filter in Marketplace fixen (funktionierte bereits, war nur Cache-Problem)
 - [x] CreateGig E2E-Test mit Authentifizierung schreiben
+
+
+## 🐛 CRITICAL BUGS (25. Nov 2025 - User-Reported)
+
+- [ ] Checkout payment.createCheckout gibt 500 Error beim Absenden (Enhanced error logging added)
+- [x] Marketplace zeigt wieder 0 Gigs (trotz 60 Gigs in Datenbank) - FIXED: War temporäres Loading-Problem, funktioniert jetzt

@@ -572,35 +572,57 @@ export const appRouter = router({
         selectedExtras: z.array(z.number()).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { createCheckoutSession } = await import('./payment');
-        
-        const gig = await db.getGigById(input.gigId);
-        if (!gig) throw new Error("Gig not found");
-        
-        // Get seller's Stripe Connect account (if exists)
-        const seller = await db.getUserById(gig.sellerId);
-        const sellerStripeAccountId = seller?.stripeAccountId || undefined;
-        
-        if (!sellerStripeAccountId) {
-          console.warn(`[Payment] Seller ${gig.sellerId} has no Stripe Connect account - funds will go to platform`);
+        try {
+          console.log('[payment.createCheckout] Starting checkout for gig:', input.gigId);
+          
+          const { createCheckoutSession } = await import('./payment');
+          
+          const gig = await db.getGigById(input.gigId);
+          if (!gig) {
+            console.error('[payment.createCheckout] Gig not found:', input.gigId);
+            throw new Error("Gig not found");
+          }
+          
+          console.log('[payment.createCheckout] Gig found:', { id: gig.id, title: gig.title, sellerId: gig.sellerId });
+          
+          // Get seller's Stripe Connect account (if exists)
+          const seller = await db.getUserById(gig.sellerId);
+          if (!seller) {
+            console.error('[payment.createCheckout] Seller not found:', gig.sellerId);
+            throw new Error("Seller not found");
+          }
+          
+          console.log('[payment.createCheckout] Seller found:', { id: seller.id, name: seller.name });
+          
+          const sellerStripeAccountId = seller?.stripeAccountId || undefined;
+          
+          if (!sellerStripeAccountId) {
+            console.warn(`[payment.createCheckout] Seller ${gig.sellerId} has no Stripe Connect account - funds will go to platform`);
+          }
+
+          console.log('[payment.createCheckout] Creating Stripe session...');
+          const session = await createCheckoutSession({
+            gigId: gig.id,
+            gigTitle: gig.title,
+            gigPrice: Number(gig.price),
+            buyerId: ctx.user.id,
+            buyerEmail: ctx.user.email || '',
+            buyerName: ctx.user.name || '',
+            sellerId: gig.sellerId,
+            sellerStripeAccountId,
+            origin: ctx.req.headers.origin || 'http://localhost:3000',
+            buyerMessage: input.buyerMessage,
+            selectedPackage: input.selectedPackage,
+            selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : undefined,
+          });
+
+          console.log('[payment.createCheckout] Session created successfully:', session.id);
+          return session;
+        } catch (error: any) {
+          console.error('[payment.createCheckout] Error:', error.message);
+          console.error('[payment.createCheckout] Stack:', error.stack);
+          throw error;
         }
-
-        const session = await createCheckoutSession({
-          gigId: gig.id,
-          gigTitle: gig.title,
-          gigPrice: Number(gig.price),
-          buyerId: ctx.user.id,
-          buyerEmail: ctx.user.email || '',
-          buyerName: ctx.user.name || '',
-          sellerId: gig.sellerId,
-          sellerStripeAccountId,
-          origin: ctx.req.headers.origin || 'http://localhost:3000',
-          buyerMessage: input.buyerMessage,
-          selectedPackage: input.selectedPackage,
-          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : undefined,
-        });
-
-        return session;
       }),
 
     capturePayment: protectedProcedure
