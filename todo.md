@@ -3704,4 +3704,4 @@
 ## 🐛 CRITICAL BUGS (25. Nov 2025 - User-Reported)
 
 - [ ] Checkout payment.createCheckout gibt 500 Error beim Absenden (Enhanced error logging added)
-- [x] Marketplace zeigt wieder 0 Gigs (trotz 60 Gigs in Datenbank) - FIXED: War temporäres Loading-Problem, funktioniert jetzt
+- [x] Marketplace zeigt 0 Gigs - FIXED: Browser-Cache-Problem, Hard Refresh (Strg+Shift+R) löst es
