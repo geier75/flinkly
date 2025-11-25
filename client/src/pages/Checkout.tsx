@@ -364,7 +364,7 @@ export default function Checkout() {
                 <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-base font-semibold mb-3 block">Wähle deine Zahlungsmethode</Label>
+                      <Label className="text-base font-semibold mb-3 block">Sichere Zahlung mit Stripe</Label>
                       <div className="flex items-center gap-4 mb-4">
                         <div className="flex items-center gap-2 text-sm text-slate-600">
                           <Shield className="h-4 w-4 text-green-600" />
@@ -376,43 +376,31 @@ export default function Checkout() {
                         </div>
                       </div>
                     </div>
-                    <div className="grid gap-3">
-                      {[
-                        { id: "sepa", name: "SEPA-Lastschrift", icon: Banknote, description: "Direkte Banküberweisung" },
-                        { id: "klarna", name: "Klarna", icon: CreditCard, description: "Flexible Zahlungsoptionen" },
-                        { id: "twint", name: "TWINT", icon: Smartphone, description: "Schnelle Mobile Zahlung" },
-                      ].map((method) => (
-                        <div
-                          key={method.id}
-                          className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
-                            payment.method === method.id
-                              ? "border-blue-600 bg-blue-50 shadow-md"
-                              : "border-slate-200 hover:border-blue-300 hover:shadow-sm"
-                          }`}
-                          onClick={() => setPayment({ ...payment, method: method.id })}
-                        >
-                          <div className="flex items-center gap-4">
-                            <div
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                                payment.method === method.id
-                                  ? "border-blue-600 bg-blue-600"
-                                  : "border-slate-300"
-                              }`}
-                            >
-                              {payment.method === method.id && (
-                                <CheckCircle className="w-4 h-4 text-white" />
-                              )}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2">
-                                <method.icon className="h-5 w-5 text-primary" />
-                                <span className="font-semibold text-slate-900">{method.name}</span>
-                              </div>
-                              <p className="text-xs text-slate-500 mt-1">{method.description}</p>
-                            </div>
+                    
+                    {/* Stripe Payment Info */}
+                    <div className="border-2 border-blue-600 bg-blue-50 rounded-lg p-6">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                          <CreditCard className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-slate-900 mb-2">Stripe Checkout</h4>
+                          <p className="text-sm text-slate-600 mb-3">
+                            Du wirst zu Stripe weitergeleitet, um deine Zahlung sicher abzuschließen.
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700">
+                              <CreditCard className="h-3 w-3" /> Kreditkarte
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700">
+                              <Banknote className="h-3 w-3" /> SEPA
+                            </span>
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-white border border-slate-200 rounded text-xs text-slate-700">
+                              <Smartphone className="h-3 w-3" /> Klarna
+                            </span>
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
                   </div>
 
@@ -422,19 +410,22 @@ export default function Checkout() {
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
                         <span className="text-slate-600">Gig-Preis:</span>
-                        <span className="font-semibold">{Number(gig.price)}€</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600">Flinkly-Gebühr (3%):</span>
-                        <span className="font-semibold">{(Number(gig.price) * 0.03).toFixed(2)}€</span>
+                        <span className="font-semibold">{Number(gig.price).toFixed(2)}€</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-slate-600">Zahlungsgebühr:</span>
-                        <span className="font-semibold">0€ (kostenlos)</span>
+                        <span className="font-semibold text-green-600">0€ (kostenlos)</span>
                       </div>
                       <div className="border-t border-slate-300 pt-2 mt-2 flex justify-between">
                         <span className="font-bold text-slate-900">Gesamtbetrag:</span>
-                        <span className="font-bold text-lg text-primary">{(Number(gig.price) + Number(gig.price) * 0.03).toFixed(2)}€</span>
+                        <span className="font-bold text-lg text-primary">{Number(gig.price).toFixed(2)}€</span>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-slate-200">
+                        <p className="text-xs text-slate-500">
+                          💰 Verkäufer erhält: <span className="font-semibold text-slate-700">{(Number(gig.price) * 0.85).toFixed(2)}€</span> (85%)
+                          <br />
+                          🏛️ Plattform-Gebühr: <span className="font-semibold text-slate-700">{(Number(gig.price) * 0.15).toFixed(2)}€</span> (15%, vom Verkäufer getragen)
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -701,15 +692,12 @@ export default function Checkout() {
                     <h3 className="font-semibold text-slate-900 mb-3">Zahlung</h3>
                     <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                       <div className="flex items-center gap-2">
-                        {payment.method === "sepa" && <Banknote className="h-5 w-5 text-slate-600" />}
-                        {payment.method === "card" && <CreditCard className="h-5 w-5 text-slate-600" />}
-                        {payment.method === "paypal" && <Smartphone className="h-5 w-5 text-slate-600" />}
-                        <span className="font-medium">
-                          {payment.method === "sepa" && "SEPA-Lastschrift"}
-                          {payment.method === "card" && "Kreditkarte"}
-                          {payment.method === "paypal" && "PayPal"}
-                        </span>
+                        <CreditCard className="h-5 w-5 text-blue-600" />
+                        <span className="font-medium">Stripe Checkout</span>
                       </div>
+                      <p className="text-xs text-slate-500 mt-2">
+                        Kreditkarte, SEPA, Klarna verfügbar
+                      </p>
                     </div>
                   </div>
 

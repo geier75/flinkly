@@ -3623,3 +3623,28 @@
 2. **CRITICAL** - Marketplace-Route auf Live-Site aktivieren
 3. **HIGH** - Browser Console Errors beseitigen
 4. **HIGH** - Production Testing durchführen
+
+
+## 🚨 CRITICAL: STRIPE CONNECT + CHECKOUT FIX
+
+### Problem
+- [ ] Checkout zeigt keine Stripe-Zahlungsmethode
+- [ ] Stripe Connect für Seller-Payouts fehlt
+- [ ] Escrow/Treuhand-System nicht implementiert
+- [ ] 85/15 Split-Payment fehlt
+- [ ] Andere Zahlungsmethoden müssen entfernt werden
+
+### Lösung (State-of-the-Art Best Practices)
+- [x] **Stripe Connect Standard** für Seller-Onboarding
+- [x] **Stripe Payment Intents** mit `application_fee_amount` für Connect
+- [x] **Application Fee** (15%) automatisch bei jeder Transaktion
+- [x] **Escrow-System**: Geld erst nach Order-Completion freigeben (capture_method: manual)
+- [x] **Checkout-Fix**: Nur Stripe anzeigen, andere Methoden entfernt
+- [x] **Stripe Checkout** für sichere Zahlung (hosted page)
+- [x] **Webhook-Handling** für payment_intent.succeeded (bereits in _core/webhooks.ts)
+
+### Architektur
+1. **Seller-Onboarding**: Stripe Connect Account Link → Express Dashboard
+2. **Checkout**: Payment Intent mit `transfer_data` + `application_fee_amount`
+3. **Escrow**: Funds on hold → Release bei Order-Status "completed"
+4. **Payout**: Automatisch via Stripe Connect (täglich/wöchentlich)
