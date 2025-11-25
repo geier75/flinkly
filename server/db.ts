@@ -203,7 +203,8 @@ export async function getSellerDrafts(sellerId: number) {
 export async function createGig(gig: InsertGig) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  await db.insert(gigs).values(gig);
+  const result = await db.insert(gigs).values(gig);
+  return { id: Number(result[0].insertId) };
 }
 
 export async function updateGig(id: number, updates: Partial<InsertGig>) {

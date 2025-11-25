@@ -1,0 +1,34 @@
+{
+  "query": "SELECT category, COUNT(*) as count FROM gigs WHERE active = 1 AND status = 'published' GROUP BY category;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT category, COUNT(*) as count FROM gigs WHERE active = 1 AND status = 'published' GROUP BY category;",
+  "rows": [
+    {
+      "category": "marketing",
+      "count": "10"
+    },
+    {
+      "category": "content",
+      "count": "10"
+    },
+    {
+      "category": "development",
+      "count": "10"
+    },
+    {
+      "category": "business",
+      "count": "10"
+    },
+    {
+      "category": "design",
+      "count": "10"
+    },
+    {
+      "category": "technology",
+      "count": "10"
+    }
+  ],
+  "messages": [],
+  "stdout": "category\tcount\nmarketing\t10\ncontent\t10\ndevelopment\t10\nbusiness\t10\ndesign\t10\ntechnology\t10\n",
+  "stderr": "",
+  "execution_time_ms": 99
+}

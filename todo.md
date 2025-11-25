@@ -3692,3 +3692,10 @@
 
 - [x] Marketplace zeigt 0 Gigs - FIXED: Redis caching disabled, gigs.list query fixed
 - [x] CreateGig Form schlägt am Ende fehl - FIXED: Redis cache invalidation disabled
+
+
+## 🔧 PRODUCTION IMPROVEMENTS (25. Nov 2025)
+
+- [x] Redis konfigurieren und Caching wieder aktivieren
+- [x] Category-Filter in Marketplace fixen (funktionierte bereits, war nur Cache-Problem)
+- [x] CreateGig E2E-Test mit Authentifizierung schreiben

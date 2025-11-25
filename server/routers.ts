@@ -74,14 +74,24 @@ export const appRouter = router({
         // Enforce max limit server-side (defense in depth)
         const safeLimit = Math.min(input?.limit ?? 20, 100);
         
-        // TODO: Re-enable caching after Redis is configured
-        // const cacheKey = !input?.cursor 
-        //   ? CacheKeys.gigsList(input?.category, input?.sortBy, 1)
-        //   : null;
+        // Build cache key (only cache first page without cursor for simplicity)
+        const cacheKey = !input?.cursor 
+          ? CacheKeys.gigsList(input?.category, input?.sortBy, 1)
+          : null;
         
-        console.log('[gigs.list] Fetching from database...');
+        // Try cache first (only for first page)
+        if (cacheKey) {
+          const cached = await getCached<{ gigs: any[]; nextCursor?: number }>(cacheKey);
+          if (cached) {
+            console.log(`[Cache HIT] ${cacheKey}`);
+            return cached;
+          }
+        }
         
-        // Fetch from database
+        console.log('[gigs.list] Cache miss - fetching from database...');
+        console.log('[gigs.list] Filters:', { category: input?.category, minPrice: input?.minPrice, maxPrice: input?.maxPrice, sortBy: input?.sortBy });
+        
+        // Cache miss - fetch from database
         const gigs = await db.getGigsPaginated({
           limit: safeLimit,
           cursor: input?.cursor,
@@ -101,11 +111,11 @@ export const appRouter = router({
         
         console.log(`[gigs.list] Returning ${gigs.length} gigs`);
         
-        // TODO: Re-enable caching
-        // if (cacheKey) {
-        //   await setCached(cacheKey, result, CacheTTL.gigsList);
-        //   console.log(`[Cache SET] ${cacheKey}`);
-        // }
+        // Cache result (only first page)
+        if (cacheKey) {
+          await setCached(cacheKey, result, CacheTTL.gigsList);
+          console.log(`[Cache SET] ${cacheKey}`);
+        }
         
         return result;
       }),
@@ -147,9 +157,9 @@ export const appRouter = router({
           active: true,
         });
         
-        // TODO: Re-enable cache invalidation after Redis is configured
-        // await deletePattern("gigs:list:*");
-        // console.log("[Cache INVALIDATE] gigs:list:* (new gig created)");
+        // Invalidate gigs list cache
+        await deletePattern("gigs:list:*");
+        console.log("[Cache INVALIDATE] gigs:list:* (new gig created)");
         return { success: true };
       }),
 
