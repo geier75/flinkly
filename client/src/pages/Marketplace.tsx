@@ -59,16 +59,26 @@ export default function Marketplace() {
     }
   }, [searchQuery, category, sortBy]);
 
-  const { data: gigs, isLoading, error } = trpc.gigs.list.useQuery({ limit: 100 });
+  const { data: gigs, isLoading, error, isError, isSuccess } = trpc.gigs.list.useQuery({ limit: 100 });
   
   // DEBUG: Log API response
   useEffect(() => {
-    console.log('[Marketplace] API Response:', { gigs, isLoading, error });
+    console.log('[Marketplace] Query State:', { 
+      isLoading, 
+      isError, 
+      isSuccess, 
+      hasData: !!gigs, 
+      gigsCount: gigs?.gigs?.length || 0,
+      error: error?.message || null
+    });
     if (gigs) {
-      console.log('[Marketplace] Total gigs:', gigs.gigs?.length || 0);
+      console.log('[Marketplace] Gigs data:', gigs);
       console.log('[Marketplace] First gig:', gigs.gigs?.[0]);
     }
-  }, [gigs, isLoading, error]);
+    if (error) {
+      console.error('[Marketplace] Query Error:', error);
+    }
+  }, [gigs, isLoading, error, isError, isSuccess]);
   const utils = trpc.useUtils();
 
   // Favorites

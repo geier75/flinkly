@@ -3648,3 +3648,39 @@
 2. **Checkout**: Payment Intent mit `transfer_data` + `application_fee_amount`
 3. **Escrow**: Funds on hold → Release bei Order-Status "completed"
 4. **Payout**: Automatisch via Stripe Connect (täglich/wöchentlich)
+
+
+## 🔍 COMPREHENSIVE USER WALKTHROUGH (Pre-Publish)
+
+### Publish-Blocker
+- [ ] Warum kann User nicht publishen? (Checkpoint fehlt? Build-Error? Andere Gründe?)
+
+### Critical User Flows
+- [ ] **Homepage**: CTAs funktionieren (Gig finden, Gig anbieten)
+- [ ] **Marketplace**: Gigs laden, Filter funktioniert, Kategorien klickbar
+- [ ] **Gig Detail**: Package-Auswahl, "Projekt starten" Button
+- [ ] **Checkout Step 1**: Briefing-Formular, Validation
+- [ ] **Checkout Step 2**: Stripe Payment angezeigt, Escrow-Checkbox
+- [ ] **Checkout Step 3**: Legal (AGB, Widerruf), Review
+- [ ] **Checkout Step 4**: Weiterleitung zu Stripe Checkout
+
+### Seller Flows
+- [ ] **Seller Dashboard**: Zugriff, Navigation
+- [ ] **Create Gig**: Formular, Image-Upload, Package-Erstellung
+- [ ] **Stripe Connect**: Onboarding-Link, KYC-Flow
+
+### Authentication
+- [ ] **Login**: OAuth-Flow funktioniert
+- [ ] **Logout**: Session wird gelöscht
+- [ ] **Protected Routes**: Redirect zu Login
+
+### Database & Backend
+- [ ] **Gigs Query**: getGigsPaginated funktioniert
+- [ ] **Orders Query**: getOrdersByBuyerId funktioniert
+- [ ] **Payment Intent**: createCheckout erstellt Session
+
+### Production Readiness
+- [ ] **TypeScript**: 0 Errors
+- [ ] **Build**: Keine Build-Errors
+- [ ] **Console**: Keine kritischen Errors
+- [ ] **Lighthouse**: Performance >80
