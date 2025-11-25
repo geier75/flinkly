@@ -28,22 +28,23 @@ const initializePostHog = () => {
     }
   }
 
-  // Initialize PostHog (always initialize, but opt-out by default)
-  posthog.init("phc_placeholder_key", {
-    api_host: "https://eu.i.posthog.com", // EU instance for GDPR compliance
-    person_profiles: "identified_only", // Only create profiles for identified users
-    autocapture: false, // Disable autocapture (we use manual tracking)
-    capture_pageview: false, // We'll manually track pageviews
-    opt_out_capturing_by_default: !analyticsConsent, // Respect consent
-    loaded: (posthog) => {
-      if (analyticsConsent) {
-        posthog.opt_in_capturing();
-      }
-    },
-  });
+  // PostHog disabled until valid API key is configured
+  // To enable: Replace phc_placeholder_key with real API key from PostHog dashboard
+  // posthog.init("phc_placeholder_key", {
+  //   api_host: "https://eu.i.posthog.com",
+  //   person_profiles: "identified_only",
+  //   autocapture: false,
+  //   capture_pageview: false,
+  //   opt_out_capturing_by_default: !analyticsConsent,
+  //   loaded: (posthog) => {
+  //     if (analyticsConsent) {
+  //       posthog.opt_in_capturing();
+  //     }
+  //   },
+  // });
 
-  // Make PostHog available globally for CookieConsent.tsx
-  window.posthog = posthog;
+  // PostHog disabled - set to undefined to prevent errors
+  window.posthog = undefined;
 };
 
 initializePostHog();
