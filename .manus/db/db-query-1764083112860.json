@@ -1,0 +1,28 @@
+{
+  "query": "SELECT id, title, status, active FROM gigs WHERE active = 1 AND status = 'published' LIMIT 3;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 22Rpum9L9sZxinw.3a1e4922553d --database PV3G2vYhCgPPZo3y5UtgZt --execute SELECT id, title, status, active FROM gigs WHERE active = 1 AND status = 'published' LIMIT 3;",
+  "rows": [
+    {
+      "id": "150061",
+      "title": "Professionelles Logo-Design für dein Startup",
+      "status": "published",
+      "active": "1"
+    },
+    {
+      "id": "150062",
+      "title": "Social Media Design-Paket (Instagram, Facebook, LinkedIn)",
+      "status": "published",
+      "active": "1"
+    },
+    {
+      "id": "150063",
+      "title": "Moderne Website-Mockups (Figma/Adobe XD)",
+      "status": "published",
+      "active": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitle\tstatus\tactive\n150061\tProfessionelles Logo-Design für dein Startup\tpublished\t1\n150062\tSocial Media Design-Paket (Instagram, Facebook, LinkedIn)\tpublished\t1\n150063\tModerne Website-Mockups (Figma/Adobe XD)\tpublished\t1\n",
+  "stderr": "",
+  "execution_time_ms": 85
+}

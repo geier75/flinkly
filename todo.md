@@ -3684,3 +3684,11 @@
 - [ ] **Build**: Keine Build-Errors
 - [ ] **Console**: Keine kritischen Errors
 - [ ] **Lighthouse**: Performance >80
+
+
+---
+
+## 🔴 CRITICAL PRODUCTION BUGS (25. Nov 2025)
+
+- [x] Marketplace zeigt 0 Gigs - FIXED: Redis caching disabled, gigs.list query fixed
+- [x] CreateGig Form schlägt am Ende fehl - FIXED: Redis cache invalidation disabled

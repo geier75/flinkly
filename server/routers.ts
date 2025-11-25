@@ -63,39 +63,32 @@ export const appRouter = router({
   gigs: router({
     list: publicProcedure
       .input(z.object({ 
-        limit: z.number().min(1).max(100).default(20), // DoS-Prevention: Max 100 items per request
+        limit: z.number().min(1).max(100).optional().default(20), // DoS-Prevention: Max 100 items per request
         cursor: z.number().optional(), // Cursor-based pagination (last seen gig ID)
         category: z.string().optional(),
         minPrice: z.number().optional(),
         maxPrice: z.number().optional(),
         sortBy: z.enum(["relevance", "price", "delivery", "rating", "popularity"]).optional().default("relevance"),
-      }))
+      }).optional())
       .query(async ({ input }) => {
         // Enforce max limit server-side (defense in depth)
-        const safeLimit = Math.min(input.limit, 100);
+        const safeLimit = Math.min(input?.limit ?? 20, 100);
         
-        // Build cache key (only cache first page without cursor for simplicity)
-        const cacheKey = !input.cursor 
-          ? CacheKeys.gigsList(input.category, input.sortBy, 1)
-          : null;
+        // TODO: Re-enable caching after Redis is configured
+        // const cacheKey = !input?.cursor 
+        //   ? CacheKeys.gigsList(input?.category, input?.sortBy, 1)
+        //   : null;
         
-        // Try cache first (only for first page)
-        if (cacheKey) {
-          const cached = await getCached<{ gigs: any[]; nextCursor?: number }>(cacheKey);
-          if (cached) {
-            console.log(`[Cache HIT] ${cacheKey}`);
-            return cached;
-          }
-        }
+        console.log('[gigs.list] Fetching from database...');
         
-        // Cache miss - fetch from database
+        // Fetch from database
         const gigs = await db.getGigsPaginated({
           limit: safeLimit,
-          cursor: input.cursor,
-          category: input.category,
-          minPrice: input.minPrice,
-          maxPrice: input.maxPrice,
-          sortBy: input.sortBy,
+          cursor: input?.cursor,
+          category: input?.category,
+          minPrice: input?.minPrice,
+          maxPrice: input?.maxPrice,
+          sortBy: input?.sortBy ?? "relevance",
         });
         
         // Return cursor for next page (last gig ID)
@@ -106,11 +99,13 @@ export const appRouter = router({
           nextCursor,
         };
         
-        // Cache result (only first page)
-        if (cacheKey) {
-          await setCached(cacheKey, result, CacheTTL.gigsList);
-          console.log(`[Cache SET] ${cacheKey}`);
-        }
+        console.log(`[gigs.list] Returning ${gigs.length} gigs`);
+        
+        // TODO: Re-enable caching
+        // if (cacheKey) {
+        //   await setCached(cacheKey, result, CacheTTL.gigsList);
+        //   console.log(`[Cache SET] ${cacheKey}`);
+        // }
         
         return result;
       }),
@@ -152,9 +147,9 @@ export const appRouter = router({
           active: true,
         });
         
-        // Invalidate gigs list cache
-        await deletePattern("gigs:list:*");
-        console.log("[Cache INVALIDATE] gigs:list:* (new gig created)");
+        // TODO: Re-enable cache invalidation after Redis is configured
+        // await deletePattern("gigs:list:*");
+        // console.log("[Cache INVALIDATE] gigs:list:* (new gig created)");
         return { success: true };
       }),
 
