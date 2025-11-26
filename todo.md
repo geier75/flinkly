@@ -3704,4 +3704,5 @@
 ## 🐛 CRITICAL BUGS (25. Nov 2025 - User-Reported)
 
 - [ ] Checkout payment.createCheckout gibt 500 Error beim Absenden (Enhanced error logging added)
-- [x] Marketplace zeigt 0 Gigs - FIXED: Browser-Cache-Problem, Hard Refresh (Strg+Shift+R) löst es
+- [x] Gig-Erstellung schlägt fehl - FIXED: Preis wird jetzt korrekt von Euro in Cent umgerechnet (price * 100)
+- [x] Marketplace funktioniert nicht - FIXED: API funktioniert, User muss nur Hard Refresh machen (Strg+Shift+R) bei Browser-Cache

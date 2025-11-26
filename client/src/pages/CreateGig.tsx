@@ -173,7 +173,7 @@ export default function CreateGig() {
       title: formData.title,
       description: formData.description,
       category: formData.category,
-      price: price,
+      price: price * 100, // Convert Euro to Cent
       deliveryDays: parseInt(formData.deliveryDays),
       imageUrl: formData.imageUrl || undefined,
     });
