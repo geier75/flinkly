@@ -48,6 +48,20 @@ export default function Checkout() {
   const { trackFocus, trackBlur, trackSubmit, trackError } = useFormTracking('checkout_form');
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: parseInt(id!) });
+  const { data: gigPackagesRaw } = trpc.gigPackages.list.useQuery(
+    { gigId: parseInt(id!) },
+    { enabled: !!id }
+  );
+  const { data: gigExtras } = trpc.gigExtras.list.useQuery(
+    { gigId: parseInt(id!) },
+    { enabled: !!id }
+  );
+  
+  // Transform gigPackages: Parse JSON features string to array
+  const gigPackages = gigPackagesRaw?.map(pkg => ({
+    ...pkg,
+    features: pkg.features ? JSON.parse(pkg.features as string) : null
+  }));
   
   // Track checkout started event
   useEffect(() => {
@@ -109,6 +123,36 @@ export default function Checkout() {
     companyName: "",
     dataProcessing: "",
   });
+  
+  // Calculate total price based on selected package and extras
+  const calculateTotalPrice = (): number => {
+    if (!gig) return 0;
+    
+    // Get selected package price (or fallback to gig.price)
+    let basePrice = gig.price;
+    if (gigPackages && gigPackages.length > 0) {
+      const selectedPkg = gigPackages.find(p => p.packageType === selectedPackage);
+      if (selectedPkg) {
+        basePrice = selectedPkg.price;
+      }
+    }
+    
+    // Add extras price
+    let extrasPrice = 0;
+    if (gigExtras && selectedExtras.length > 0) {
+      extrasPrice = gigExtras
+        .filter(extra => selectedExtras.includes(extra.id))
+        .reduce((sum, extra) => sum + extra.price, 0);
+    }
+    
+    // Convert from cents to euros
+    const totalInEuros = (basePrice + extrasPrice) / 100;
+    
+    // Apply discount
+    return Math.max(totalInEuros - (discountAmount / 100), 0);
+  };
+  
+  const totalPrice = calculateTotalPrice();
 
   const createCheckoutMutation = trpc.payment.createCheckout.useMutation({
     onSuccess: (session) => {
@@ -788,9 +832,35 @@ export default function Checkout() {
 
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="text-slate-600">Gig-Preis</span>
-                      <span className="font-semibold">{Number(gig.price)}€</span>
+                      <span className="text-slate-600">
+                        {gigPackages && gigPackages.length > 0 ? (
+                          <span className="capitalize">{selectedPackage} Paket</span>
+                        ) : (
+                          "Gig-Preis"
+                        )}
+                      </span>
+                      <span className="font-semibold">
+                        {(() => {
+                          if (gigPackages && gigPackages.length > 0) {
+                            const pkg = gigPackages.find(p => p.packageType === selectedPackage);
+                            return pkg ? (pkg.price / 100).toFixed(2) + '€' : (gig.price / 100).toFixed(2) + '€';
+                          }
+                          return (gig.price / 100).toFixed(2) + '€';
+                        })()}
+                      </span>
                     </div>
+                    {gigExtras && selectedExtras.length > 0 && (
+                      <div className="space-y-1">
+                        {gigExtras
+                          .filter(extra => selectedExtras.includes(extra.id))
+                          .map(extra => (
+                            <div key={extra.id} className="flex justify-between text-sm">
+                              <span className="text-slate-600 text-xs">+ {extra.name}</span>
+                              <span className="font-semibold text-xs">+{(extra.price / 100).toFixed(2)}€</span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
                     {discountCode && (
                       <div className="flex justify-between text-sm">
                         <span className="text-green-600 flex items-center gap-1">
@@ -811,7 +881,7 @@ export default function Checkout() {
                   <div className="flex justify-between">
                     <span className="font-semibold text-slate-900">Gesamt</span>
                     <span className="text-2xl font-bold text-primary">
-                      {Math.max(Number(gig.price) - (discountAmount / 100), 0).toFixed(2)}€
+                      {totalPrice.toFixed(2)}€
                     </span>
                   </div>
 
