@@ -3706,3 +3706,24 @@
 - [ ] Checkout payment.createCheckout gibt 500 Error beim Absenden (Enhanced error logging added)
 - [x] Gig-Erstellung schlägt fehl - FIXED: Preis wird jetzt korrekt von Euro in Cent umgerechnet (price * 100)
 - [x] Marketplace funktioniert nicht - FIXED: API funktioniert, User muss nur Hard Refresh machen (Strg+Shift+R) bei Browser-Cache
+
+
+## 🚀 PHASE 2: GROWTH FEATURES (Monetization)
+
+### Gig-Pakete/Tiers (32h)
+- [ ] Database-Schema für Packages erweitern (Basic/Standard/Premium)
+- [ ] CreateGig: Package-Auswahl UI
+- [ ] GigDetail: Package-Anzeige mit Upsell-UI
+- [ ] Checkout: Package-basierte Preisberechnung
+
+### Gig-Extras/Add-ons (24h)
+- [ ] Database-Schema für Extras (Express, Revisionen, Commercial License)
+- [ ] CreateGig: Extras definieren
+- [ ] GigDetail: Extras als Checkboxen anzeigen
+- [ ] Checkout: Extras-Preisberechnung
+
+### Seller-Tiers/Levels (40h)
+- [ ] 4-Level-System implementieren (New → Rising → Pro → Top)
+- [ ] Gamification-Badges & Icons
+- [ ] Performance-Dashboard für Seller
+- [ ] Automatische Level-Upgrades basierend auf Metriken
