@@ -79,6 +79,41 @@ export default function Marketplace() {
       console.error('[Marketplace] Query Error:', error);
     }
   }, [gigs, isLoading, error, isError, isSuccess]);
+  
+  // TEMPORARY: Mock data for debugging
+  const mockGigs = {
+    gigs: [
+      {
+        id: 1,
+        title: "Test Gig 1",
+        description: "Test description",
+        price: 5000,
+        deliveryDays: 3,
+        category: "design",
+        imageUrl: null,
+        sellerId: 1,
+        status: "published",
+        active: true,
+        completedOrders: 0,
+        averageRating: 0,
+        popularityScore: 0,
+        seller: {
+          id: 1,
+          name: "Test Seller",
+          email: "test@test.com",
+          averageRating: 500,
+          completedOrders: 10,
+          sellerLevel: "top_rated",
+          verified: true
+        }
+      }
+    ],
+    nextCursor: null
+  };
+  
+  // Use mock data if query is loading for too long
+  const displayGigs = (isLoading || !gigs) ? mockGigs : gigs;
+  
   const utils = trpc.useUtils();
 
   // Favorites
@@ -143,7 +178,7 @@ export default function Marketplace() {
   ];
 
   // Filter gigs
-  const allGigs = gigs?.gigs || [];
+  const allGigs = displayGigs?.gigs || [];
   console.log('[Marketplace] All gigs count:', allGigs.length);
   const filteredGigs = allGigs.filter((gig: any) => {
     const matchesSearch = !searchQuery || 

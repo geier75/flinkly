@@ -15,6 +15,7 @@ import Home from "./pages/Home";
 
 // Code-Splitting: Lazy-load non-critical pages
 const Marketplace = lazy(() => import("./pages/Marketplace"));
+import MarketplaceSimple from "./pages/MarketplaceSimple";
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const GigDetail = lazy(() => import("./pages/GigDetail"));
 const CreateGig = lazy(() => import("./pages/CreateGig"));
@@ -53,6 +54,7 @@ function Router() {
       <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/marketplace"} component={Marketplace} />
+      <Route path={"/marketplace-simple"} component={MarketplaceSimple} />
       <Route path={"/gig/:id"} component={GigDetail} />
       <Route path={"/checkout/:id"} component={Checkout} />
       <Route path={"/checkout/success"} component={CheckoutSuccess} />
