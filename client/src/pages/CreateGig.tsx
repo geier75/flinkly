@@ -32,7 +32,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { VideoScene } from "@/components/webgl/VideoScene";
 import { PopOutLogo } from "@/components/3d/PopOutLogo";
 import { GigPreview } from "@/components/GigPreview";
+import { PackagePricingForm } from "@/components/PackagePricingForm";
 import { useEffect } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function CreateGig() {
   const { user, isAuthenticated } = useAuth();
@@ -40,6 +42,7 @@ export default function CreateGig() {
   const [currentStep, setCurrentStep] = useState(0); // Start at step 0 (Template selection)
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [pricingMode, setPricingMode] = useState<'simple' | 'packages'>('simple');
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -48,6 +51,34 @@ export default function CreateGig() {
     deliveryDays: "3",
     imageUrl: "",
     imageAlt: "",
+  });
+  
+  // Package pricing data
+  const [packages, setPackages] = useState({
+    basic: {
+      name: "Basic",
+      description: "",
+      price: "",
+      deliveryDays: "3",
+      revisions: "2",
+      features: [""],
+    },
+    standard: {
+      name: "Standard",
+      description: "",
+      price: "",
+      deliveryDays: "5",
+      revisions: "5",
+      features: [""],
+    },
+    premium: {
+      name: "Premium",
+      description: "",
+      price: "",
+      deliveryDays: "7",
+      revisions: "10",
+      features: [""],
+    },
   });
 
   // Auto-Save to localStorage every 30s
@@ -169,6 +200,37 @@ export default function CreateGig() {
       return;
     }
 
+    // Prepare packages if in package mode
+    const packagesData = pricingMode === 'packages' ? [
+      {
+        packageType: 'basic' as const,
+        name: packages.basic.name,
+        description: packages.basic.description,
+        price: parseInt(packages.basic.price) * 100, // Convert Euro to Cent
+        deliveryDays: parseInt(packages.basic.deliveryDays),
+        revisions: parseInt(packages.basic.revisions),
+        features: packages.basic.features.filter(f => f.trim() !== ''),
+      },
+      {
+        packageType: 'standard' as const,
+        name: packages.standard.name,
+        description: packages.standard.description,
+        price: parseInt(packages.standard.price) * 100,
+        deliveryDays: parseInt(packages.standard.deliveryDays),
+        revisions: parseInt(packages.standard.revisions),
+        features: packages.standard.features.filter(f => f.trim() !== ''),
+      },
+      {
+        packageType: 'premium' as const,
+        name: packages.premium.name,
+        description: packages.premium.description,
+        price: parseInt(packages.premium.price) * 100,
+        deliveryDays: parseInt(packages.premium.deliveryDays),
+        revisions: parseInt(packages.premium.revisions),
+        features: packages.premium.features.filter(f => f.trim() !== ''),
+      },
+    ].filter(pkg => pkg.price > 0) : undefined; // Only include packages with price > 0
+
     await createGigMutation.mutateAsync({
       title: formData.title,
       description: formData.description,
@@ -176,6 +238,7 @@ export default function CreateGig() {
       price: price * 100, // Convert Euro to Cent
       deliveryDays: parseInt(formData.deliveryDays),
       imageUrl: formData.imageUrl || undefined,
+      packages: packagesData,
     });
   };
 
@@ -192,8 +255,14 @@ export default function CreateGig() {
       return formData.title.length >= 10 && formData.description.length >= 50 && formData.category;
     }
     if (currentStep === 2) {
-      const price = parseInt(formData.price);
-      return price >= 10 && price <= 250;
+      if (pricingMode === 'simple') {
+        const price = parseInt(formData.price);
+        return price >= 10 && price <= 250;
+      } else {
+        // For packages, at least basic package must have a price
+        const basicPrice = parseInt(packages.basic.price);
+        return basicPrice >= 10 && basicPrice <= 500;
+      }
     }
     return true;
   };
@@ -417,51 +486,68 @@ export default function CreateGig() {
                           <h2 className="text-2xl font-bold text-white">Preisgestaltung</h2>
                         </div>
 
-                        {/* Preis */}
-                        <div className="space-y-2">
-                          <Label htmlFor="price" className="text-slate-200 font-medium">
-                            Preis <span className="text-red-500">*</span>
-                          </Label>
-                          <div className="relative">
-                            <Input
-                              id="price"
-                              type="number"
-                              value={formData.price}
-                              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                              placeholder="299"
-                              className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all pl-8"
-                              min="10"
-                              max="250"
-                            />
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                              €
-                            </span>
-                          </div>
-                          <p className="text-sm text-slate-400">
-                            Empfohlener Preisbereich: 50€ - 200€
-                          </p>
-                        </div>
+                        <Tabs value={pricingMode} onValueChange={(v) => setPricingMode(v as 'simple' | 'packages')} className="w-full">
+                          <TabsList className="grid w-full grid-cols-2 bg-slate-800/50">
+                            <TabsTrigger value="simple" className="data-[state=active]:bg-accent data-[state=active]:text-white">
+                              Einfacher Preis
+                            </TabsTrigger>
+                            <TabsTrigger value="packages" className="data-[state=active]:bg-accent data-[state=active]:text-white">
+                              Pakete (Basic/Standard/Premium)
+                            </TabsTrigger>
+                          </TabsList>
 
-                        {/* Lieferzeit */}
-                        <div className="space-y-2">
-                          <Label htmlFor="deliveryDays" className="text-slate-200 font-medium">
-                            Lieferzeit
-                          </Label>
-                          <Select
-                            value={formData.deliveryDays}
-                            onValueChange={(value) => setFormData({ ...formData, deliveryDays: value })}
-                          >
-                            <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:border-accent focus:ring-2 focus:ring-accent/20">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent className="bg-slate-800 border-slate-700">
-                              <SelectItem value="1" className="text-white hover:bg-slate-700">1 Tag</SelectItem>
-                              <SelectItem value="3" className="text-white hover:bg-slate-700">3 Tage</SelectItem>
-                              <SelectItem value="7" className="text-white hover:bg-slate-700">7 Tage</SelectItem>
-                              <SelectItem value="14" className="text-white hover:bg-slate-700">14 Tage</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
+                          <TabsContent value="simple" className="space-y-6 mt-6">
+                            {/* Preis */}
+                            <div className="space-y-2">
+                              <Label htmlFor="price" className="text-slate-200 font-medium">
+                                Preis <span className="text-red-500">*</span>
+                              </Label>
+                              <div className="relative">
+                                <Input
+                                  id="price"
+                                  type="number"
+                                  value={formData.price}
+                                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                  placeholder="299"
+                                  className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all pl-8"
+                                  min="10"
+                                  max="250"
+                                />
+                                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                                  €
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-400">
+                                Empfohlener Preisbereich: 50€ - 200€
+                              </p>
+                            </div>
+
+                            {/* Lieferzeit */}
+                            <div className="space-y-2">
+                              <Label htmlFor="deliveryDays" className="text-slate-200 font-medium">
+                                Lieferzeit
+                              </Label>
+                              <Select
+                                value={formData.deliveryDays}
+                                onValueChange={(value) => setFormData({ ...formData, deliveryDays: value })}
+                              >
+                                <SelectTrigger className="bg-slate-800/50 border-slate-700 text-white focus:border-accent focus:ring-2 focus:ring-accent/20">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent className="bg-slate-800 border-slate-700">
+                                  <SelectItem value="1" className="text-white hover:bg-slate-700">1 Tag</SelectItem>
+                                  <SelectItem value="3" className="text-white hover:bg-slate-700">3 Tage</SelectItem>
+                                  <SelectItem value="7" className="text-white hover:bg-slate-700">7 Tage</SelectItem>
+                                  <SelectItem value="14" className="text-white hover:bg-slate-700">14 Tage</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="packages" className="mt-6">
+                            <PackagePricingForm packages={packages} setPackages={setPackages} />
+                          </TabsContent>
+                        </Tabs>
 
                         {/* Pricing Info Card */}
                         <Card className="bg-accent/10 border-accent/30">
@@ -473,7 +559,9 @@ export default function CreateGig() {
                                   Premium-Tipp
                                 </p>
                                 <p className="text-sm text-slate-300">
-                                  Gigs zwischen 100€ und 200€ haben die höchste Conversion-Rate. Biete mehrere Pakete an für mehr Flexibilität.
+                                  {pricingMode === 'simple' 
+                                    ? 'Gigs zwischen 100€ und 200€ haben die höchste Conversion-Rate. Biete mehrere Pakete an für mehr Flexibilität.'
+                                    : 'Pakete ermöglichen es Käufern, das passende Angebot für ihr Budget zu wählen. Die meisten erfolgreichen Seller nutzen 3 Pakete.'}
                                 </p>
                               </div>
                             </div>

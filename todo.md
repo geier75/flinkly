@@ -3711,8 +3711,12 @@
 ## 🚀 PHASE 2: GROWTH FEATURES (Monetization)
 
 ### Gig-Pakete/Tiers (32h)
-- [ ] Database-Schema für Packages erweitern (Basic/Standard/Premium)
-- [ ] CreateGig: Package-Auswahl UI
+- [x] Database-Schema für Packages erweitern (Basic/Standard/Premium) - DONE
+- [x] Database-Queries für Packages (getGigPackages, createGigPackage, etc.) - DONE
+- [x] Vitest-Tests für Package-Funktionen (12/12 passed) - DONE
+- [x] Backend tRPC-Router für gigPackages (list, create, update, delete) - DONE
+- [x] CreateGig: Package-Auswahl UI (Tabs: Simple vs Packages) - DONE
+- [x] CreateGig: Backend-Mutation erweitert (packages optional) - DONE
 - [ ] GigDetail: Package-Anzeige mit Upsell-UI
 - [ ] Checkout: Package-basierte Preisberechnung
 

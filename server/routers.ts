@@ -143,9 +143,19 @@ export const appRouter = router({
         price: z.number().min(100).max(25000),
         deliveryDays: z.number().default(3),
         imageUrl: z.string().optional(),
+        // Optional packages for package-based pricing
+        packages: z.array(z.object({
+          packageType: z.enum(["basic", "standard", "premium"]),
+          name: z.string().min(3).max(100),
+          description: z.string().min(10),
+          price: z.number().min(100).max(50000),
+          deliveryDays: z.number().min(1).max(30),
+          revisions: z.number().min(0).max(999),
+          features: z.array(z.string()),
+        })).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        await db.createGig({
+        const gigResult = await db.createGig({
           sellerId: ctx.user.id,
           title: sanitizeText(input.title),
           description: sanitizeHTML(input.description),
@@ -157,10 +167,26 @@ export const appRouter = router({
           active: true,
         });
         
+        // If packages are provided, create them
+        if (input.packages && input.packages.length > 0) {
+          for (const pkg of input.packages) {
+            await db.createGigPackage({
+              gigId: gigResult.id,
+              packageType: pkg.packageType,
+              name: pkg.name,
+              description: pkg.description,
+              price: pkg.price,
+              deliveryDays: pkg.deliveryDays,
+              revisions: pkg.revisions,
+              features: JSON.stringify(pkg.features.filter(f => f.trim() !== '')),
+            });
+          }
+        }
+        
         // Invalidate gigs list cache
         await deletePattern("gigs:list:*");
         console.log("[Cache INVALIDATE] gigs:list:* (new gig created)");
-        return { success: true };
+        return { success: true, gigId: gigResult.id };
       }),
 
     update: protectedProcedure
