@@ -1,5 +1,16 @@
 # Flinkly TODO
 
+## ✅ CRITICAL - Production Marketplace Issue (FIXED)
+
+- [x] **URGENT: Fix 0 Gigs on Production Marketplace**
+  - [x] Analyze database configuration (dev vs production) - SAME DB confirmed
+  - [x] Delete all test/seed gigs from database (68 seed gigs deleted)
+  - [x] Verify CreateGig → Database → Marketplace flow - WORKING
+  - [x] Fix maxPrice filter (was 1000 cents, now 100000 cents = 1000€)
+  - [x] Fix usePricingFormat hook (convert cents to euros)
+  - [x] Test end-to-end: User creates gig → appears in marketplace - WORKING
+  - [x] Remove all example/seed data (SOTA 2025: real user data only) - DONE
+
 ## ✅ Abgeschlossen (v1.0.0)
 
 - [x] Projekt-Dateien aus vorherigem Account integrieren

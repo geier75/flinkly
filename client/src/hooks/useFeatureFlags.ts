@@ -89,15 +89,17 @@ export function usePricingFormat(): (price: number) => string {
   const variant = useFeatureFlag('pricing_format', 'standard');
 
   return (price: number) => {
+    // Price is in cents, convert to euros
+    const euros = price / 100;
     switch (variant) {
       case 'standard':
-        return `€${price}`;
+        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(euros);
       case 'with_cents':
-        return `€${price.toFixed(2)}`;
+        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(euros);
       case 'with_prefix':
-        return `Nur €${price}`;
+        return `Nur ${new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(euros)}`;
       default:
-        return `€${price}`;
+        return new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0 }).format(euros);
     }
   };
 }

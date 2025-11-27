@@ -39,7 +39,7 @@ export default function Marketplace() {
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
-  const [maxPrice, setMaxPrice] = useState<number>(1000);
+  const [maxPrice, setMaxPrice] = useState<number>(100000); // 1000€ in cents
   const [sortBy, setSortBy] = useState<"relevance" | "price" | "delivery" | "rating" | "popularity">("relevance");
   const [showFilters, setShowFilters] = useState(false);
   const [quickViewGig, setQuickViewGig] = useState<any | null>(null);
