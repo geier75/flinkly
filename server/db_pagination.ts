@@ -15,7 +15,10 @@ export async function getGigsPaginated(options: {
   sortBy?: "relevance" | "price" | "delivery" | "rating" | "popularity";
 }) {
   const db = await getDb();
-  if (!db) return [];
+  if (!db) {
+    console.error('[getGigsPaginated] Database connection not available');
+    return [];
+  }
 
   const { limit, cursor, category, minPrice, maxPrice, sortBy = "relevance" } = options;
 
@@ -65,32 +68,37 @@ export async function getGigsPaginated(options: {
   }
   
   // Join with users table to get seller info (prevents N+1 query problem)
-  const result = await db
-    .select({
-      gig: gigs,
-      seller: {
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        avatarUrl: users.avatarUrl,
-        verified: users.verified,
-        emailVerified: users.emailVerified,
-        phoneVerified: users.phoneVerified,
-        verificationLevel: users.verificationLevel,
-        sellerLevel: users.sellerLevel,
-        completedOrders: users.completedOrders,
-        averageRating: users.averageRating,
-      },
-    })
-    .from(gigs)
-    .leftJoin(users, eq(gigs.sellerId, users.id))
-    .where(and(...conditions))
-    .orderBy(orderByClause)
-    .limit(limit);
+  try {
+    const result = await db
+      .select({
+        gig: gigs,
+        seller: {
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          avatarUrl: users.avatarUrl,
+          verified: users.verified,
+          emailVerified: users.emailVerified,
+          phoneVerified: users.phoneVerified,
+          verificationLevel: users.verificationLevel,
+          sellerLevel: users.sellerLevel,
+          completedOrders: users.completedOrders,
+          averageRating: users.averageRating,
+        },
+      })
+      .from(gigs)
+      .leftJoin(users, eq(gigs.sellerId, users.id))
+      .where(and(...conditions))
+      .orderBy(orderByClause)
+      .limit(limit);
 
-  // Flatten structure for consistency
-  return result.map((r) => ({
-    ...r.gig,
-    seller: r.seller,
-  }));
+    // Flatten structure for consistency
+    return result.map((r) => ({
+      ...r.gig,
+      seller: r.seller,
+    }));
+  } catch (error) {
+    console.error('[getGigsPaginated] Database query failed:', error);
+    return [];
+  }
 }

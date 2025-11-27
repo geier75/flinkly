@@ -64,12 +64,20 @@ async function startServer() {
   );
   
   // Security headers (Helmet)
+  const isDevelopment = process.env.NODE_ENV === "development";
+  
   app.use(
     helmet({
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://manus-analytics.com"], // Allow inline scripts for Vite HMR + Manus Analytics
+          // Only allow unsafe-eval in development for Vite HMR
+          scriptSrc: [
+            "'self'",
+            "'unsafe-inline'",
+            ...(isDevelopment ? ["'unsafe-eval'"] : []),
+            "https://manus-analytics.com"
+          ],
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           fontSrc: ["'self'", "https://fonts.gstatic.com"],
           imgSrc: ["'self'", "data:", "https:", "blob:"],
