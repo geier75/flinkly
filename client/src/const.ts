@@ -79,9 +79,9 @@ export const getLoginUrl = () => {
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
   
-  // Use dev-login in development mode when OAuth is not configured
+  // Use Supabase login page when OAuth is not configured
   if (!oauthPortalUrl || oauthPortalUrl === 'undefined') {
-    _cachedLoginUrl = '/api/dev-login';
+    _cachedLoginUrl = '/login';
     return _cachedLoginUrl;
   }
   

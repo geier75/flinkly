@@ -142,17 +142,7 @@ export default function Login() {
       }
       
       if (data.user) {
-        // Sync user to our database
-        await fetch("/api/auth/sync", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            id: data.user.id,
-            email: data.user.email,
-            name: data.user.user_metadata?.name || data.user.email?.split("@")[0],
-          }),
-        });
-        
+        // User is synced via Supabase auth
         setLocation("/dashboard");
       }
     } catch (error) {
