@@ -138,12 +138,41 @@ export interface GigListResponse {
   nextCursor?: number;
 }
 
+export interface GigCreateInput {
+  title: string;
+  description: string;
+  category: string;
+  price: number;
+  deliveryDays?: number;
+  imageUrl?: string;
+  tags?: string;
+}
+
+export interface GigUpdateInput {
+  title?: string;
+  description?: string;
+  category?: string;
+  price?: number;
+  deliveryDays?: number;
+  imageUrl?: string;
+  status?: string;
+}
+
 export const gigsApi = {
   list: (params?: GigListParams): Promise<GigListResponse> => 
     apiCall('gigs', { params: params as Record<string, string | number | undefined> }),
   
   get: (id: number): Promise<GigWithDetails> => 
     apiCall(`gigs/${id}`),
+  
+  create: (input: GigCreateInput): Promise<Gig> =>
+    apiCall('gigs', { method: 'POST', body: input }),
+  
+  update: (id: number, input: GigUpdateInput): Promise<Gig> =>
+    apiCall(`gigs/${id}`, { method: 'PUT', body: input }),
+  
+  delete: (id: number): Promise<{ success: boolean }> =>
+    apiCall(`gigs/${id}`, { method: 'DELETE' }),
 };
 
 // ============ AUTH API ============
@@ -201,6 +230,25 @@ export const ordersApi = {
     apiCall(`orders/${id}`),
 };
 
+// ============ CHECKOUT API ============
+
+export interface CheckoutInput {
+  gigId: number;
+  selectedPackage: 'basic' | 'standard' | 'premium';
+  selectedExtras?: number[];
+  buyerMessage?: string;
+}
+
+export interface CheckoutSession {
+  url: string;
+  sessionId: string;
+}
+
+export const checkoutApi = {
+  createSession: (input: CheckoutInput): Promise<CheckoutSession> =>
+    apiCall('checkout', { method: 'POST', body: input }),
+};
+
 // ============ USERS API ============
 
 export interface PublicUser {
@@ -239,6 +287,7 @@ export const api = {
   auth: authApi,
   orders: ordersApi,
   users: usersApi,
+  checkout: checkoutApi,
 };
 
 export default api;

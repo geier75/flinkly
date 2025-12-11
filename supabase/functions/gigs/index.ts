@@ -9,6 +9,27 @@ import { getSupabaseClient, getServiceClient } from '../_shared/supabase.ts';
 import { jsonResponse, errorResponse, notFoundResponse, unauthorizedResponse, setCurrentRequest } from '../_shared/response.ts';
 import type { DbGig, GigListInput } from '../_shared/types.ts';
 
+// Get user from Supabase auth header
+async function getUser(req: Request) {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+  
+  const token = authHeader.replace('Bearer ', '');
+  const supabase = getServiceClient();
+  
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error || !user) return null;
+  
+  // Get user from our users table
+  const { data: dbUser } = await supabase
+    .from('users')
+    .select('id, email, name, role')
+    .eq('open_id', user.id)
+    .single();
+  
+  return dbUser;
+}
+
 // Snake case to camelCase conversion
 function toDbGig(row: any): DbGig {
   return {
@@ -210,6 +231,138 @@ serve(async (req: Request) => {
       if (!gig) return notFoundResponse('Gig not found');
       
       return jsonResponse(gig);
+    }
+    
+    // POST /gigs - Create new gig
+    if (method === 'POST' && pathParts.length === 1) {
+      const user = await getUser(req);
+      if (!user) return unauthorizedResponse();
+      
+      const input = await req.json();
+      const supabase = getServiceClient();
+      
+      // Create gig
+      const { data: gig, error: gigError } = await supabase
+        .from('gigs')
+        .insert({
+          seller_id: user.id,
+          title: input.title,
+          description: input.description,
+          category: input.category,
+          tags: input.tags || '[]',
+          price: input.price,
+          delivery_days: input.deliveryDays || 3,
+          image_url: input.imageUrl,
+          status: 'draft',
+          active: true,
+        })
+        .select()
+        .single();
+      
+      if (gigError) {
+        console.error('[gigs.create] Error:', gigError);
+        return errorResponse('Failed to create gig', 500);
+      }
+      
+      // Create default package if price provided
+      if (input.price) {
+        await supabase
+          .from('gig_packages')
+          .insert({
+            gig_id: gig.id,
+            package_type: 'basic',
+            name: 'Standard',
+            description: input.description?.substring(0, 200) || '',
+            price: input.price,
+            delivery_days: input.deliveryDays || 3,
+            revisions: 1,
+            features: '[]',
+            active: true,
+          });
+      }
+      
+      return jsonResponse(toDbGig(gig));
+    }
+    
+    // PUT /gigs/:id - Update gig
+    if (method === 'PUT' && pathParts.length === 2) {
+      const user = await getUser(req);
+      if (!user) return unauthorizedResponse();
+      
+      const id = parseInt(pathParts[1]);
+      if (isNaN(id)) return errorResponse('Invalid gig ID');
+      
+      const input = await req.json();
+      const supabase = getServiceClient();
+      
+      // Check ownership
+      const { data: existing } = await supabase
+        .from('gigs')
+        .select('seller_id')
+        .eq('id', id)
+        .single();
+      
+      if (!existing || existing.seller_id !== user.id) {
+        return errorResponse('Not authorized', 403);
+      }
+      
+      const { data: gig, error } = await supabase
+        .from('gigs')
+        .update({
+          title: input.title,
+          description: input.description,
+          category: input.category,
+          tags: input.tags,
+          price: input.price,
+          delivery_days: input.deliveryDays,
+          image_url: input.imageUrl,
+          status: input.status,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('[gigs.update] Error:', error);
+        return errorResponse('Failed to update gig', 500);
+      }
+      
+      return jsonResponse(toDbGig(gig));
+    }
+    
+    // DELETE /gigs/:id - Delete gig
+    if (method === 'DELETE' && pathParts.length === 2) {
+      const user = await getUser(req);
+      if (!user) return unauthorizedResponse();
+      
+      const id = parseInt(pathParts[1]);
+      if (isNaN(id)) return errorResponse('Invalid gig ID');
+      
+      const supabase = getServiceClient();
+      
+      // Check ownership
+      const { data: existing } = await supabase
+        .from('gigs')
+        .select('seller_id')
+        .eq('id', id)
+        .single();
+      
+      if (!existing || existing.seller_id !== user.id) {
+        return errorResponse('Not authorized', 403);
+      }
+      
+      const { error } = await supabase
+        .from('gigs')
+        .delete()
+        .eq('id', id);
+      
+      if (error) {
+        console.error('[gigs.delete] Error:', error);
+        return errorResponse('Failed to delete gig', 500);
+      }
+      
+      return jsonResponse({ success: true });
     }
     
     return errorResponse('Not found', 404);

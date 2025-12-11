@@ -9,6 +9,7 @@ import {
   authApi, 
   ordersApi, 
   usersApi,
+  checkoutApi,
   type Gig,
   type GigWithDetails,
   type GigListParams,
@@ -209,6 +210,32 @@ export function useInfiniteGigs(params?: Omit<GigListParams, 'cursor'>): UseInfi
   }, [fetchGigs]);
 
   return { gigs, isLoading, isFetchingMore, error, hasMore, loadMore, refetch };
+}
+
+// ============ CHECKOUT HOOKS ============
+
+export function useCheckout() {
+  return useMutation((input: { gigId: number; selectedPackage: 'basic' | 'standard' | 'premium'; selectedExtras?: number[]; buyerMessage?: string }) => 
+    checkoutApi.createSession(input)
+  );
+}
+
+// ============ GIG MUTATION HOOKS ============
+
+export function useCreateGig() {
+  return useMutation((input: { title: string; description: string; category: string; price: number; deliveryDays?: number; imageUrl?: string; tags?: string }) =>
+    gigsApi.create(input)
+  );
+}
+
+export function useUpdateGig() {
+  return useMutation((input: { id: number; title?: string; description?: string; category?: string; price?: number; deliveryDays?: number; imageUrl?: string; status?: string }) =>
+    gigsApi.update(input.id, input)
+  );
+}
+
+export function useDeleteGig() {
+  return useMutation((id: number) => gigsApi.delete(id));
 }
 
 // Re-export types
