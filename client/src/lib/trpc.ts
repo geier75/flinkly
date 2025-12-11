@@ -41,13 +41,18 @@ const createStubInfiniteQuery = () => ({
   }),
 });
 
-// Create stub trpc object with all commonly used paths
+// Create stub trpc object with ALL paths used in the codebase
 export const trpc = {
   useUtils: () => ({
-    gigs: { list: { invalidate: () => {} } },
+    gigs: { 
+      list: { invalidate: () => {} },
+      myGigs: { invalidate: () => {} },
+      getDrafts: { invalidate: () => {} },
+    },
     favorites: { list: { invalidate: () => {} } },
     orders: { list: { invalidate: () => {} } },
     user: { me: { invalidate: () => {} } },
+    auth: { me: { invalidate: () => {}, setData: () => {} } },
   }),
   
   // Gigs
@@ -55,9 +60,11 @@ export const trpc = {
     list: createStubQuery(),
     getById: createStubQuery(),
     myGigs: createStubQuery(),
+    getDrafts: createStubQuery(),
     create: createStubMutation(),
     update: createStubMutation(),
     delete: createStubMutation(),
+    publish: createStubMutation(),
     search: createStubQuery(),
   },
   
@@ -72,7 +79,10 @@ export const trpc = {
     getProfile: createStubQuery(),
     updateProfile: createStubMutation(),
     requestDataExport: createStubMutation(),
+    exportData: createStubMutation(),
     deleteAccount: createStubMutation(),
+    cancelAccountDeletion: createStubMutation(),
+    getAccountDeletionStatus: createStubQuery(),
   },
   
   // Favorites
@@ -89,6 +99,7 @@ export const trpc = {
     myPurchases: createStubQuery(),
     mySales: createStubQuery(),
     create: createStubMutation(),
+    createFromStripeSession: createStubMutation(),
     updateStatus: createStubMutation(),
   },
   
@@ -102,8 +113,12 @@ export const trpc = {
   messages: {
     list: createStubQuery(),
     getConversation: createStubQuery(),
+    getConversations: createStubQuery(),
+    getMessages: createStubQuery(),
     send: createStubMutation(),
+    sendMessage: createStubMutation(),
     markAsRead: createStubMutation(),
+    uploadFile: createStubMutation(),
   },
   conversations: {
     list: createStubQuery(),
@@ -132,7 +147,7 @@ export const trpc = {
     verify: createStubMutation(),
   },
   
-  // Admin
+  // Admin / Moderation
   admin: {
     users: createStubQuery(),
     gigs: createStubQuery(),
@@ -140,6 +155,15 @@ export const trpc = {
     stats: createStubQuery(),
     updateUser: createStubMutation(),
     deleteUser: createStubMutation(),
+  },
+  moderation: {
+    getPendingAlerts: createStubQuery(),
+    reviewAlert: createStubMutation(),
+  },
+  disputes: {
+    all: createStubQuery(),
+    create: createStubMutation(),
+    resolve: createStubMutation(),
   },
   
   // Similar Gigs
@@ -151,6 +175,11 @@ export const trpc = {
   checkout: {
     createSession: createStubMutation(),
     verifyPayment: createStubQuery(),
+  },
+  payment: {
+    createCheckout: createStubMutation(),
+    createIntent: createStubMutation(),
+    confirm: createStubMutation(),
   },
   payments: {
     createIntent: createStubMutation(),
@@ -169,11 +198,16 @@ export const trpc = {
   verification: {
     status: createStubQuery(),
     submit: createStubMutation(),
+    getStatus: createStubQuery(),
+    submitDocuments: createStubMutation(),
   },
   
   // Analytics
   analytics: {
     platform: createStubQuery(),
     seller: createStubQuery(),
+    getRevenue: createStubQuery(),
+    getPerformance: createStubQuery(),
+    getTopGigs: createStubQuery(),
   },
 };
