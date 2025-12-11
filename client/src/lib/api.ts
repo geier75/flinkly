@@ -39,7 +39,6 @@ async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T
   const response = await fetch(url, {
     method,
     headers,
-    credentials: 'include', // Include cookies for session
     body: body ? JSON.stringify(body) : undefined,
   });
   
