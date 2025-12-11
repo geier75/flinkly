@@ -55,6 +55,11 @@ export const trpc = {
     auth: { me: { invalidate: () => {}, setData: () => {} } },
   }),
   
+  // AI
+  ai: {
+    chat: createStubMutation(),
+  },
+  
   // Gigs
   gigs: {
     list: createStubQuery(),
@@ -83,6 +88,17 @@ export const trpc = {
     deleteAccount: createStubMutation(),
     cancelAccountDeletion: createStubMutation(),
     getAccountDeletionStatus: createStubQuery(),
+    logConsent: createStubMutation(),
+  },
+  
+  // Data Export
+  dataExport: {
+    exportMyData: createStubMutation(),
+  },
+  
+  // Discount
+  discount: {
+    createExitIntentDiscount: createStubMutation(),
   },
   
   // Favorites
@@ -101,6 +117,9 @@ export const trpc = {
     create: createStubMutation(),
     createFromStripeSession: createStubMutation(),
     updateStatus: createStubMutation(),
+    acceptDelivery: createStubMutation(),
+    openDispute: createStubMutation(),
+    requestRevision: createStubMutation(),
   },
   
   // Reviews
@@ -171,6 +190,11 @@ export const trpc = {
     byGigId: createStubQuery(),
   },
   
+  // Templates
+  templates: {
+    getByCategory: createStubQuery(),
+  },
+  
   // Checkout / Payments
   checkout: {
     createSession: createStubMutation(),
@@ -186,6 +210,29 @@ export const trpc = {
     confirm: createStubMutation(),
   },
   
+  // Payment Methods
+  paymentMethods: {
+    list: createStubQuery(),
+    createSetupIntent: createStubMutation(),
+    save: createStubMutation(),
+    delete: createStubMutation(),
+    setDefault: createStubMutation(),
+  },
+  
+  // Payout
+  payout: {
+    getEarnings: createStubQuery(),
+    getPayouts: createStubQuery(),
+    requestPayout: createStubMutation(),
+  },
+  
+  // Stripe Connect
+  stripeConnect: {
+    createAccount: createStubMutation(),
+    getAccountStatus: createStubQuery(),
+    getOnboardingLink: createStubMutation(),
+  },
+  
   // Privacy / GDPR
   privacy: {
     getConsent: createStubQuery(),
@@ -194,20 +241,27 @@ export const trpc = {
     deleteData: createStubMutation(),
   },
   
-  // Verification
+  // Verification - ALL methods
   verification: {
     status: createStubQuery(),
     submit: createStubMutation(),
     getStatus: createStubQuery(),
+    getVerificationStatus: createStubQuery(),
     submitDocuments: createStubMutation(),
+    requestAdminApproval: createStubMutation(),
+    requestEmailVerification: createStubMutation(),
+    requestPhoneVerification: createStubMutation(),
+    verifyEmail: createStubMutation(),
+    verifyPhone: createStubMutation(),
   },
   
-  // Analytics
+  // Analytics - ALL methods
   analytics: {
     platform: createStubQuery(),
     seller: createStubQuery(),
     getRevenue: createStubQuery(),
     getPerformance: createStubQuery(),
     getTopGigs: createStubQuery(),
+    getPlatformSummary: createStubQuery(),
   },
 };
