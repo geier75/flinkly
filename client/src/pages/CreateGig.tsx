@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
-import { trpc } from "@/lib/trpc";
+import { useCreateGig } from "@/hooks/useApi";
+import { gigsApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -107,14 +108,23 @@ export default function CreateGig() {
     }
   }, []);
 
-  // Fetch templates
-  const { data: templates } = trpc.templates.getByCategory.useQuery(
-    { category: formData.category },
-    { enabled: !!formData.category && currentStep === 0 }
-  );
-
-  const createGigMutation = trpc.gigs.create.useMutation({
-    onSuccess: () => {
+  // Templates are not yet implemented via Edge Function - use empty array
+  const templates: any[] = [];
+  
+  const [isCreating, setIsCreating] = useState(false);
+  
+  const handleCreateGig = async () => {
+    setIsCreating(true);
+    try {
+      await gigsApi.create({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        price: parseInt(formData.price) * 100, // Convert to cents
+        deliveryDays: parseInt(formData.deliveryDays),
+        imageUrl: formData.imageUrl,
+      });
+      
       toast.success("✓ Gig erfolgreich erstellt!", {
         description: `Dein Gig "${formData.title}" wurde gespeichert.`,
         duration: 3000,
@@ -122,17 +132,16 @@ export default function CreateGig() {
       setTimeout(() => {
         setLocation(`/seller-dashboard`);
       }, 1500);
-    },
-    onError: (error) => {
+    } catch (error: any) {
       let errorMessage = "Bitte versuche es später erneut.";
       
-      if (error.message.includes("title")) {
+      if (error.message?.includes("title")) {
         errorMessage = "Bitte gib einen gültigen Titel ein (10-100 Zeichen).";
-      } else if (error.message.includes("price")) {
+      } else if (error.message?.includes("price")) {
         errorMessage = "Preis muss zwischen 1€ und 500€ liegen.";
-      } else if (error.message.includes("description")) {
+      } else if (error.message?.includes("description")) {
         errorMessage = "Beschreibung muss mindestens 50 Zeichen lang sein.";
-      } else if (error.message.includes("category")) {
+      } else if (error.message?.includes("category")) {
         errorMessage = "Bitte wähle eine Kategorie aus.";
       } else if (error.message) {
         errorMessage = error.message;
@@ -142,8 +151,10 @@ export default function CreateGig() {
         description: errorMessage,
         duration: 4000,
       });
-    },
-  });
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   if (!isAuthenticated) {
     return (
@@ -231,15 +242,7 @@ export default function CreateGig() {
       },
     ].filter(pkg => pkg.price > 0) : undefined; // Only include packages with price > 0
 
-    await createGigMutation.mutateAsync({
-      title: formData.title,
-      description: formData.description,
-      category: formData.category,
-      price: price * 100, // Convert Euro to Cent
-      deliveryDays: parseInt(formData.deliveryDays),
-      imageUrl: formData.imageUrl || undefined,
-      packages: packagesData,
-    });
+    await handleCreateGig();
   };
 
   const nextStep = () => {
@@ -669,10 +672,10 @@ export default function CreateGig() {
                       >
                         <Button
                           type="submit"
-                          disabled={createGigMutation.isPending || !canProceed()}
+                          disabled={isCreating || !canProceed()}
                           className="bg-accent hover:bg-accent/90 shadow-lg shadow-accent/30 disabled:opacity-50"
                         >
-                          {createGigMutation.isPending ? (
+                          {isCreating ? (
                             <>
                               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                               Wird erstellt...

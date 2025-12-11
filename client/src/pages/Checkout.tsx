@@ -10,7 +10,8 @@ import { Separator } from "@/components/ui/separator";
 import { useParams, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { trpc } from "@/lib/trpc";
+import { useGig, useCheckout } from "@/hooks/useApi";
+import { checkoutApi } from "@/lib/api";
 import { CheckoutSkeleton } from "@/components/SkeletonUI";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -45,21 +46,15 @@ export default function Checkout() {
   // Analytics
   const { trackFocus, trackBlur, trackSubmit, trackError } = useFormTracking('checkout_form');
 
-  const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: parseInt(id!) });
-  const { data: gigPackagesRaw } = trpc.gigPackages.list.useQuery(
-    { gigId: parseInt(id!) },
-    { enabled: !!id }
-  );
-  const { data: gigExtras } = trpc.gigExtras.list.useQuery(
-    { gigId: parseInt(id!) },
-    { enabled: !!id }
-  );
+  const gigId = id ? parseInt(id) : 0;
+  const { data: gig, isLoading } = useGig(gigId);
   
-  // Transform gigPackages: Parse JSON features string to array
-  const gigPackages = gigPackagesRaw?.map(pkg => ({
+  // Get packages and extras from gig data (included in useGig response)
+  const gigPackages = gig?.packages?.map((pkg: any) => ({
     ...pkg,
-    features: pkg.features ? JSON.parse(pkg.features as string) : null
-  }));
+    features: typeof pkg.features === 'string' ? JSON.parse(pkg.features) : pkg.features
+  })) || [];
+  const gigExtras = gig?.extras || [];
   
   // Track checkout started event
   useEffect(() => {
@@ -152,20 +147,9 @@ export default function Checkout() {
   
   const totalPrice = calculateTotalPrice();
 
-  const createCheckoutMutation = trpc.payment.createCheckout.useMutation({
-    onSuccess: (session) => {
-      console.log('[Checkout] Session created, redirecting to:', session.url);
-      // Redirect to Stripe Checkout
-      window.location.href = session.url;
-    },
-    onError: (error) => {
-      console.error('[Checkout] Error creating checkout session:', error);
-      toast.error(`Fehler beim Erstellen der Checkout-Session: ${error.message}`);
-      trackError('checkout_error', error.message);
-    },
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!isAuthenticated) {
       toast.error("Bitte melde dich an");
       trackError('authentication', 'User not authenticated');
@@ -174,6 +158,8 @@ export default function Checkout() {
 
     if (!gig) return;
     
+    setIsSubmitting(true);
+    
     // Track form submission
     trackSubmit({
       gig_id: gig.id,
@@ -181,12 +167,22 @@ export default function Checkout() {
       needs_avv: legal.needsAVV,
     });
 
-    createCheckoutMutation.mutate({
-      gigId: gig.id,
-      buyerMessage: JSON.stringify(briefing),
-      selectedPackage,
-      selectedExtras,
-    });
+    try {
+      const session = await checkoutApi.createSession({
+        gigId: gig.id,
+        buyerMessage: JSON.stringify(briefing),
+        selectedPackage,
+        selectedExtras,
+      });
+      
+      console.log('[Checkout] Session created, redirecting to:', session.url);
+      window.location.href = session.url;
+    } catch (error: any) {
+      console.error('[Checkout] Error creating checkout session:', error);
+      toast.error(`Fehler beim Erstellen der Checkout-Session: ${error.message}`);
+      trackError('checkout_error', error.message);
+      setIsSubmitting(false);
+    }
   };
 
   if (!isAuthenticated) {
@@ -831,9 +827,9 @@ export default function Checkout() {
                     <Button
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold text-base py-6"
                       onClick={handleSubmit}
-                      disabled={!isStepComplete(4) || createCheckoutMutation.isPending}
+                      disabled={!isStepComplete(4) || isSubmitting}
                     >
-                      {createCheckoutMutation.isPending
+                      {isSubmitting
                         ? "Weiterleitung zu Stripe..."
                         : "💳 Zahlungspflichtig bestellen"}
                     </Button>
