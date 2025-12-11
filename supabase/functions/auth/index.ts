@@ -6,7 +6,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { handleCors } from '../_shared/cors.ts';
 import { getSupabaseClient, getServiceClient } from '../_shared/supabase.ts';
-import { jsonResponse, errorResponse, unauthorizedResponse } from '../_shared/response.ts';
+import { jsonResponse, errorResponse, unauthorizedResponse, setCurrentRequest } from '../_shared/response.ts';
 
 // Get current user from session cookie or auth header
 async function getCurrentUser(req: Request) {
@@ -70,6 +70,9 @@ async function getCurrentUser(req: Request) {
 }
 
 serve(async (req: Request) => {
+  // Set request for dynamic CORS headers
+  setCurrentRequest(req);
+  
   // Handle CORS
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;

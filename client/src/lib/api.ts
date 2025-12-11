@@ -84,6 +84,30 @@ export interface GigPackage {
   active: boolean;
 }
 
+export interface GigReview {
+  id: number;
+  gigId: number;
+  reviewerId: number;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  reviewer: {
+    id: number;
+    name: string | null;
+    avatarUrl: string | null;
+  } | null;
+}
+
+export interface GigExtra {
+  id: number;
+  gigId: number;
+  name: string;
+  description: string | null;
+  price: number;
+  deliveryDays: number;
+  active: boolean;
+}
+
 export interface GigWithDetails extends Gig {
   packages: GigPackage[];
   seller: {
@@ -94,7 +118,10 @@ export interface GigWithDetails extends Gig {
     sellerLevel: string | null;
     completedOrders: number;
     averageRating: number | null;
+    bio?: string | null;
   } | null;
+  reviews: GigReview[];
+  extras: GigExtra[];
 }
 
 export interface GigListParams {

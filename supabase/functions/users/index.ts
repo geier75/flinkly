@@ -6,7 +6,7 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { handleCors } from '../_shared/cors.ts';
 import { getServiceClient } from '../_shared/supabase.ts';
-import { jsonResponse, errorResponse, notFoundResponse, unauthorizedResponse } from '../_shared/response.ts';
+import { jsonResponse, errorResponse, notFoundResponse, unauthorizedResponse, setCurrentRequest } from '../_shared/response.ts';
 
 function toPublicUser(row: any) {
   return {
@@ -87,6 +87,9 @@ async function updateProfile(userId: number, updates: any) {
 }
 
 serve(async (req: Request) => {
+  // Set request for dynamic CORS headers
+  setCurrentRequest(req);
+  
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
   

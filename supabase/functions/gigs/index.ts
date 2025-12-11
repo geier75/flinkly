@@ -4,9 +4,9 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { handleCors, corsHeaders } from '../_shared/cors.ts';
+import { handleCors } from '../_shared/cors.ts';
 import { getSupabaseClient, getServiceClient } from '../_shared/supabase.ts';
-import { jsonResponse, errorResponse, notFoundResponse, unauthorizedResponse } from '../_shared/response.ts';
+import { jsonResponse, errorResponse, notFoundResponse, unauthorizedResponse, setCurrentRequest } from '../_shared/response.ts';
 import type { DbGig, GigListInput } from '../_shared/types.ts';
 
 // Snake case to camelCase conversion
@@ -81,7 +81,7 @@ async function listGigs(input: GigListInput) {
   return { gigs, nextCursor };
 }
 
-// GET /gigs/:id - Get single gig with packages
+// GET /gigs/:id - Get single gig with packages, reviews, extras
 async function getGig(id: number) {
   const supabase = getServiceClient();
   
@@ -104,9 +104,24 @@ async function getGig(id: number) {
   // Get seller info
   const { data: seller } = await supabase
     .from('users')
-    .select('id, name, avatar_url, verified, seller_level, completed_orders, average_rating')
+    .select('id, name, avatar_url, verified, seller_level, completed_orders, average_rating, bio')
     .eq('id', gig.seller_id)
     .single();
+  
+  // Get reviews
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('*, reviewer:users!reviewer_id(id, name, avatar_url)')
+    .eq('gig_id', id)
+    .order('created_at', { ascending: false });
+  
+  // Get extras
+  const { data: extras } = await supabase
+    .from('gig_extras')
+    .select('*')
+    .eq('gig_id', id)
+    .eq('active', true)
+    .order('price', { ascending: true });
   
   return {
     ...toDbGig(gig),
@@ -130,11 +145,37 @@ async function getGig(id: number) {
       sellerLevel: seller.seller_level,
       completedOrders: seller.completed_orders,
       averageRating: seller.average_rating,
+      bio: seller.bio,
     } : null,
+    reviews: (reviews || []).map((r: any) => ({
+      id: r.id,
+      gigId: r.gig_id,
+      reviewerId: r.reviewer_id,
+      rating: r.rating,
+      comment: r.comment,
+      createdAt: r.created_at,
+      reviewer: r.reviewer ? {
+        id: r.reviewer.id,
+        name: r.reviewer.name,
+        avatarUrl: r.reviewer.avatar_url,
+      } : null,
+    })),
+    extras: (extras || []).map((e: any) => ({
+      id: e.id,
+      gigId: e.gig_id,
+      name: e.name,
+      description: e.description,
+      price: e.price,
+      deliveryDays: e.delivery_days,
+      active: e.active,
+    })),
   };
 }
 
 serve(async (req: Request) => {
+  // Set request for CORS headers
+  setCurrentRequest(req);
+  
   // Handle CORS
   const corsResponse = handleCors(req);
   if (corsResponse) return corsResponse;
