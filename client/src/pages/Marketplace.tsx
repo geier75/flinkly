@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { trpc } from "@/lib/trpc";
+import { useGigsList } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import MetaTags from "@/components/MetaTags";
@@ -75,80 +75,23 @@ export default function Marketplace() {
     }
   }, [searchQuery, category, sortBy]);
 
-  const { data: gigs, isLoading, error, isError, isSuccess } = trpc.gigs.list.useQuery({ limit: 100 });
+  const { data: gigs, isLoading, error } = useGigsList({ limit: 100 });
   
   // DEBUG: Log API response
   useEffect(() => {
     console.log('[Marketplace] Query State:', { 
       isLoading, 
-      isError, 
-      isSuccess, 
       hasData: !!gigs, 
       gigsCount: gigs?.gigs?.length || 0,
       error: error?.message || null
     });
-    if (gigs) {
-      console.log('[Marketplace] Gigs data:', gigs);
-      console.log('[Marketplace] First gig:', gigs.gigs?.[0]);
-    }
-    if (error) {
-      console.error('[Marketplace] Query Error:', error);
-    }
-  }, [gigs, isLoading, error, isError, isSuccess]);
+  }, [gigs, isLoading, error]);
   
-  // TEMPORARY: Mock data for debugging
-  const mockGigs = {
-    gigs: [
-      {
-        id: 1,
-        title: "Test Gig 1",
-        description: "Test description",
-        price: 5000,
-        deliveryDays: 3,
-        category: "design",
-        imageUrl: null,
-        sellerId: 1,
-        status: "published",
-        active: true,
-        completedOrders: 0,
-        averageRating: 0,
-        popularityScore: 0,
-        seller: {
-          id: 1,
-          name: "Test Seller",
-          email: "test@test.com",
-          averageRating: 500,
-          completedOrders: 10,
-          sellerLevel: "top_rated",
-          verified: true
-        }
-      }
-    ],
-    nextCursor: null
-  };
-  
-  // Use mock data if query is loading for too long
-  const displayGigs = (isLoading || !gigs) ? mockGigs : gigs;
-  
-  const utils = trpc.useUtils();
+  // Use actual data
+  const displayGigs = gigs || { gigs: [], nextCursor: undefined };
 
-  // Favorites
-  const addFavoriteMutation = trpc.favorites.add.useMutation({
-    onSuccess: () => {
-      utils.favorites.list.invalidate();
-    },
-  });
-
-  const removeFavoriteMutation = trpc.favorites.remove.useMutation({
-    onSuccess: () => {
-      utils.favorites.list.invalidate();
-    },
-  });
-
-  const { data: favoritesList } = trpc.favorites.list.useQuery(undefined, {
-    enabled: isAuthenticated, // Only fetch if user is logged in
-  });
-  const favoriteGigIds = new Set(favoritesList?.map((f: { gigId: number }) => f.gigId) || []);
+  // Favorites - temporarily disabled until Edge Function is ready
+  const favoriteGigIds = new Set<number>();
 
   const toggleFavorite = (e: React.MouseEvent, gigId: number) => {
     e.preventDefault();
@@ -160,11 +103,8 @@ export default function Marketplace() {
       return;
     }
     
-    if (favoriteGigIds.has(gigId)) {
-      removeFavoriteMutation.mutate({ gigId });
-    } else {
-      addFavoriteMutation.mutate({ gigId });
-    }
+    // Favorites temporarily disabled - Edge Function needed
+    console.log('Toggle favorite:', gigId);
   };
 
   // Dynamic category counts from database
@@ -555,14 +495,6 @@ export default function Marketplace() {
 
                           {/* Trust Badges (Seller Verification) */}
                           <div className="absolute bottom-4 left-4 flex gap-2">
-                            {gig.seller?.emailVerified && (
-                              <Badge className="bg-success/20 text-success border-success/40 backdrop-blur-sm text-xs flex items-center gap-1">
-                                <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
-                                  <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                </svg>
-                                Verifiziert
-                              </Badge>
-                            )}
                             {(gig.completedOrders || 0) > 0 && (
                               <Badge className="bg-primary/20 text-primary border-primary/40 backdrop-blur-sm text-xs">
                                 {gig.completedOrders} Aufträge
@@ -598,10 +530,10 @@ export default function Marketplace() {
                           {/* Seller Info */}
                           <div className="flex items-center gap-2 mb-3">
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center text-white font-bold text-sm">
-                              {gig.seller?.name?.charAt(0).toUpperCase() || "?"}
+                              {gig.title?.charAt(0).toUpperCase() || "?"}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-white truncate">{gig.seller?.name || "Unbekannt"}</p>
+                              <p className="text-sm font-semibold text-white truncate">Seller #{gig.sellerId}</p>
                               <p className="text-xs text-slate-400">
                                 {(gig.completedOrders || 0) > 10 ? "Top Seller" : (gig.completedOrders || 0) > 5 ? "Pro" : (gig.completedOrders || 0) > 0 ? "Rising" : "Neu"}
                               </p>

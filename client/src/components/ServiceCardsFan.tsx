@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Sparkles, X, Check, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { trpc } from "@/lib/trpc";
+import { useGigsList } from "@/hooks/useApi";
 import { useLocation } from "wouter";
 import { useAuth } from "@/_core/hooks/useAuth";
 
@@ -63,7 +63,7 @@ interface GigData {
   title: string;
   description: string | null;
   imageUrl: string | null;
-  price: string;
+  price: number;
   category: string | null;
 }
 
@@ -73,7 +73,7 @@ interface CategoryData {
   icon: string;
   color: string;
   gigCount: number;
-  sampleGigs: Array<{ title: string; imageUrl: string | null; id: number; description: string | null; price: string }>;
+  sampleGigs: Array<{ title: string; imageUrl: string | null; id: number; description: string; price: number }>;
 }
 
 export default function ServiceCardsFan() {
@@ -85,7 +85,7 @@ export default function ServiceCardsFan() {
   const { isAuthenticated } = useAuth();
 
   // Fetch all gigs from database
-  const { data: gigsData, isLoading } = trpc.gigs.list.useQuery({ limit: 100 });
+  const { data: gigsData, isLoading } = useGigsList({ limit: 100 });
 
   // Extract unique categories from gigs and build category data
   const categories: CategoryData[] = useMemo(() => {
