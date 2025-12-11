@@ -110,11 +110,19 @@ export default function GigDetail() {
   const allReviews = gig?.reviews || [];
   const gigExtras = gig?.extras || [];
   
-  // Transform gigPackages: Parse JSON features string to array
-  const gigPackages = gig?.packages?.map(pkg => ({
-    ...pkg,
-    features: pkg.features ? JSON.parse(pkg.features) : null
-  })) || [];
+  // Transform gigPackages: Parse JSON features string to array (safely)
+  const gigPackages = gig?.packages?.map(pkg => {
+    let features = null;
+    if (pkg.features) {
+      try {
+        features = typeof pkg.features === 'string' ? JSON.parse(pkg.features) : pkg.features;
+      } catch (e) {
+        console.error('Failed to parse package features:', e);
+        features = null;
+      }
+    }
+    return { ...pkg, features };
+  }) || [];
 
   // Filter, sort and paginate reviews
   const reviews = allReviews
@@ -352,7 +360,7 @@ export default function GigDetail() {
                             size="icon"
                             variant="outline"
                             onClick={handleToggleFavorite}
-                            disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                            disabled={false}
                             className={`backdrop-blur-sm border-2 transition-all duration-300 ${
                               isFavorited 
                                 ? "bg-rose-500 border-rose-500 text-white hover:bg-rose-600" 
