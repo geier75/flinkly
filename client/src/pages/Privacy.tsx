@@ -2,81 +2,81 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { Shield, Lock, Eye, Database, UserCheck, FileText, AlertTriangle } from "lucide-react";
+import { Shield, Lock, Eye, Database, UserCheck, FileText, AlertTriangle, ArrowLeft } from "lucide-react";
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
-      {/* Animated Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98120_1px,transparent_1px),linear-gradient(to_bottom,#10b98120_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-      
-      {/* Neon Glow Orbs */}
-      <div className="absolute top-0 left-1/4 w-96 h-96 bg-emerald-500/20 rounded-full blur-[120px] animate-pulse" />
-      <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
-
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="border-b-2 border-emerald-500/30 bg-slate-950/80 backdrop-blur-xl">
-          <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      {/* Premium Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+        <div className="container mx-auto px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
             <Link href="/">
-              <Button 
-                variant="outline" 
-                className="mb-6 border-2 border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500 transition-all duration-300"
-              >
-                ← Zurück zur Startseite
+              <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/10 mb-6">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Zurück zur Startseite
               </Button>
             </Link>
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <h1 className="text-6xl font-extrabold mb-4 tracking-tight cyber-chrome-text flex items-center gap-4">
-                <Shield className="h-12 w-12 text-emerald-500 animate-pulse" />
-                DATENSCHUTZ<span className="cyber-neon-green">ERKLÄRUNG</span>
-              </h1>
-              <p className="text-slate-300 text-xl font-light">
-                Informationen zum Schutz Ihrer personenbezogenen Daten gemäß <span className="cyber-neon-orange font-semibold">DSGVO</span>
-              </p>
-            </motion.div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="container mx-auto px-4 py-16 max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            {/* Important Notice */}
-            <Card className="cyber-glass-card border-2 border-orange-500/30 mb-12 p-8">
-              <div className="flex items-start gap-4">
-                <AlertTriangle className="h-8 w-8 text-orange-500 cyber-neon-orange flex-shrink-0 mt-1" />
-                <div>
-                  <h3 className="text-2xl font-bold text-white mb-3 cyber-chrome-text">
-                    WICHTIGER HINWEIS
-                  </h3>
-                  <p className="text-slate-300 leading-relaxed">
-                    Diese Datenschutzerklärung wurde mit größter Sorgfalt erstellt, ersetzt jedoch <span className="cyber-neon-orange font-semibold">keine rechtliche Beratung</span>. 
-                    Für rechtsverbindliche Datenschutzerklärungen konsultieren Sie bitte einen auf Datenschutzrecht spezialisierten Anwalt. 
-                    Diese Version basiert auf den <span className="cyber-neon-green font-semibold">DSGVO-Anforderungen</span> und muss ggf. an Ihre spezifischen Geschäftsanforderungen angepasst werden.
-                  </p>
-                </div>
+            <div className="flex items-center gap-4">
+              <div className="p-4 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-2xl shadow-emerald-500/30">
+                <Shield className="h-8 w-8 text-white" />
               </div>
-            </Card>
+              <div>
+                <h1 className="text-4xl font-bold text-white">Datenschutzerklärung</h1>
+                <p className="text-slate-400 mt-1">Informationen zum Schutz Ihrer personenbezogenen Daten gemäß DSGVO</p>
+                <p className="text-emerald-400 text-sm mt-1 font-medium">Gültig für: flinkly.eu – Marktplatz für digitale Dienstleistungen</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
 
-            {/* Section 1: Datenschutz auf einen Blick */}
-            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
-              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text flex items-center gap-3">
-                <Eye className="h-8 w-8 text-emerald-500" />
-                DATENSCHUTZ AUF EINEN <span className="cyber-neon-green">BLICK</span>
-              </h2>
-              
-              <div className="space-y-6 text-slate-300 leading-relaxed">
-                <div>
-                  <h3 className="text-xl font-bold text-white mb-4">Allgemeine Hinweise</h3>
-                  <p>
+      {/* Content */}
+      <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="space-y-8"
+        >
+          {/* Important Notice */}
+          <Card className="relative overflow-hidden bg-white border-0 shadow-xl shadow-slate-200/50 rounded-3xl p-8">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-orange-500" />
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-amber-500/10 rounded-xl flex-shrink-0">
+                <AlertTriangle className="h-6 w-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-800 mb-3">
+                  Wichtiger Hinweis
+                </h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Diese Datenschutzerklärung wurde mit größter Sorgfalt erstellt, ersetzt jedoch <span className="font-semibold text-amber-600">keine rechtliche Beratung</span>. 
+                  Für rechtsverbindliche Datenschutzerklärungen konsultieren Sie bitte einen auf Datenschutzrecht spezialisierten Anwalt. 
+                  Diese Version basiert auf den <span className="font-semibold text-emerald-600">DSGVO-Anforderungen</span> und muss ggf. an Ihre spezifischen Geschäftsanforderungen angepasst werden.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Section 1: Datenschutz auf einen Blick */}
+          <Card className="relative overflow-hidden bg-white border-0 shadow-xl shadow-slate-200/50 rounded-3xl p-8">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-teal-500" />
+            <h2 className="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+              <div className="p-2 bg-emerald-500/10 rounded-xl">
+                <Eye className="h-6 w-6 text-emerald-600" />
+              </div>
+              Datenschutz auf einen Blick
+            </h2>
+            
+            <div className="space-y-6 text-slate-600 leading-relaxed">
+              <div>
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Allgemeine Hinweise</h3>
+                <p>
                     Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, 
                     wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
                   </p>
@@ -280,6 +280,65 @@ export default function Privacy() {
                     Flinkly speichert <span className="cyber-neon-orange font-semibold">keine Kreditkartendaten</span>. 
                     Alle Zahlungsinformationen werden direkt von Stripe verarbeitet und gespeichert.
                   </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Section 4.5: Supabase (Authentifizierung & Datenbank) */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                AUTHENTIFIZIERUNG & <span className="cyber-neon-orange">DATENBANK</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Supabase</h3>
+                  <p className="mb-3">
+                    Wir nutzen <span className="cyber-neon-orange font-semibold">Supabase</span> für Benutzerauthentifizierung und Datenspeicherung.
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Anbieter:</span> Supabase Inc., 970 Toa Payoh North #07-04, Singapore 318992
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Verarbeitete Daten:</span> E-Mail-Adresse, Passwort (gehasht), Profilinformationen, Session-Daten, Nutzungsdaten
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Rechtsgrundlage:</span> Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung - Bereitstellung des Nutzerkontos)
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Serverstandort:</span> EU (Frankfurt, Deutschland) - Keine Drittlandübermittlung
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Auftragsverarbeitung:</span> Mit Supabase wurde ein Auftragsverarbeitungsvertrag (AVV) gem. Art. 28 DSGVO geschlossen.
+                  </p>
+                  <p className="mb-3">
+                    <span className="font-semibold">Speicherfrist:</span> Bis zur Account-Löschung durch den Nutzer
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Weitere Informationen: <a href="https://supabase.com/privacy" target="_blank" rel="noopener noreferrer" className="cyber-neon-green hover:text-emerald-400 transition-colors">https://supabase.com/privacy</a>
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <h4 className="font-bold text-white mb-3">Sicherheitsmaßnahmen:</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span>Passwörter werden mit bcrypt gehasht (niemals im Klartext gespeichert)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span>Row Level Security (RLS) für Datenbankzugriffe</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span>JWT-basierte Session-Verwaltung</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span>E-Mail-Verifizierung bei Registrierung</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </Card>
@@ -565,23 +624,21 @@ export default function Privacy() {
                 </div>
 
                 <p className="text-sm text-slate-400 mt-6">
-                  Stand dieser Datenschutzerklärung: November 2025 | Version 1.0
+                  Stand dieser Datenschutzerklärung: Dezember 2024 | Version 2.0 (DSGVO-konform)
                 </p>
               </div>
             </Card>
 
-            {/* Back to Top */}
-            <div className="mt-12 text-center">
-              <Link href="/">
-                <Button 
-                  className="cyber-neon-button px-12 py-6 text-lg"
-                >
-                  ← Zurück zur Startseite
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
+          {/* Back to Top */}
+          <div className="mt-12 text-center">
+            <Link href="/">
+              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Zurück zur Startseite
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

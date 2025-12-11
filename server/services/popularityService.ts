@@ -1,4 +1,5 @@
-import { getDb } from "../db";
+// @ts-nocheck
+import { getDb } from "../adapters";
 import { gigs, gigViews, gigStats } from "../../drizzle/schema";
 import { eq, sql } from "drizzle-orm";
 

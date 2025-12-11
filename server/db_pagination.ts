@@ -1,11 +1,9 @@
-import { and, eq, gte, lte, lt, desc, asc } from "drizzle-orm";
-import { getDb } from "./db";
-import { gigs, users } from "../drizzle/schema";
-
 /**
  * Cursor-based pagination for gigs with filtering
- * More efficient than offset-based pagination for large datasets
+ * Uses Supabase for database operations
  */
+import { supabase } from './_core/supabase';
+
 export async function getGigsPaginated(options: {
   limit: number;
   cursor?: number; // Last seen gig ID
@@ -14,89 +12,71 @@ export async function getGigsPaginated(options: {
   maxPrice?: number;
   sortBy?: "relevance" | "price" | "delivery" | "rating" | "popularity";
 }) {
-  const db = await getDb();
-  if (!db) {
-    console.error('[getGigsPaginated] Database connection not available');
-    return [];
-  }
-
   const { limit, cursor, category, minPrice, maxPrice, sortBy = "relevance" } = options;
 
-  // Build where conditions
-  const conditions = [
-    eq(gigs.active, true),
-    eq(gigs.status, "published"),
-  ];
-
-  // Cursor-based pagination: Get gigs with ID less than cursor (older gigs)
-  if (cursor) {
-    conditions.push(lt(gigs.id, cursor));
-  }
-
-  // Category filter
-  if (category) {
-    conditions.push(eq(gigs.category, category));
-  }
-
-  // Price range filter
-  if (minPrice !== undefined) {
-    conditions.push(gte(gigs.price, minPrice));
-  }
-  if (maxPrice !== undefined) {
-    conditions.push(lte(gigs.price, maxPrice));
-  }
-
-  // Determine sort order based on sortBy parameter
-  let orderByClause;
-  switch (sortBy) {
-    case "price":
-      orderByClause = asc(gigs.price);
-      break;
-    case "delivery":
-      orderByClause = asc(gigs.deliveryDays);
-      break;
-    case "rating":
-      orderByClause = desc(gigs.averageRating);
-      break;
-    case "popularity":
-      orderByClause = desc(gigs.popularityScore);
-      break;
-    case "relevance":
-    default:
-      orderByClause = desc(gigs.id); // Most recent first
-      break;
-  }
-  
-  // Join with users table to get seller info (prevents N+1 query problem)
   try {
-    const result = await db
-      .select({
-        gig: gigs,
-        seller: {
-          id: users.id,
-          name: users.name,
-          email: users.email,
-          avatarUrl: users.avatarUrl,
-          verified: users.verified,
-          emailVerified: users.emailVerified,
-          phoneVerified: users.phoneVerified,
-          verificationLevel: users.verificationLevel,
-          sellerLevel: users.sellerLevel,
-          completedOrders: users.completedOrders,
-          averageRating: users.averageRating,
-        },
-      })
-      .from(gigs)
-      .leftJoin(users, eq(gigs.sellerId, users.id))
-      .where(and(...conditions))
-      .orderBy(orderByClause)
-      .limit(limit);
+    // Build query with Supabase
+    let query = supabase
+      .from('gigs')
+      .select(`
+        *,
+        seller:users!seller_id(
+          id, name, email, avatar_url, verified, email_verified,
+          phone_verified, verification_level, seller_level,
+          completed_orders, average_rating
+        )
+      `)
+      .eq('active', true)
+      .eq('status', 'published');
 
-    // Flatten structure for consistency
-    return result.map((r) => ({
-      ...r.gig,
-      seller: r.seller,
-    }));
+    // Cursor-based pagination
+    if (cursor) {
+      query = query.lt('id', cursor);
+    }
+
+    // Category filter
+    if (category) {
+      query = query.eq('category', category);
+    }
+
+    // Price range filter
+    if (minPrice !== undefined) {
+      query = query.gte('price', minPrice);
+    }
+    if (maxPrice !== undefined) {
+      query = query.lte('price', maxPrice);
+    }
+
+    // Sorting
+    switch (sortBy) {
+      case "price":
+        query = query.order('price', { ascending: true });
+        break;
+      case "delivery":
+        query = query.order('delivery_days', { ascending: true });
+        break;
+      case "rating":
+        query = query.order('average_rating', { ascending: false });
+        break;
+      case "popularity":
+        query = query.order('popularity_score', { ascending: false });
+        break;
+      case "relevance":
+      default:
+        query = query.order('id', { ascending: false });
+        break;
+    }
+
+    query = query.limit(limit);
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('[getGigsPaginated] Supabase query failed:', error);
+      return [];
+    }
+
+    return data || [];
   } catch (error) {
     console.error('[getGigsPaginated] Database query failed:', error);
     return [];

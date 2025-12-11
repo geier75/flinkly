@@ -135,7 +135,7 @@ export function generateProductSchema(gig: {
     "image": gig.imageUrl || "/og-image.jpg",
     "offers": {
       "@type": "Offer",
-      "url": `https://flinkly.com/gigs/${gig.id}`,
+      "url": `https://flinkly.de/gigs/${gig.id}`,
       "priceCurrency": "EUR",
       "price": (gig.price / 100).toFixed(2),
       "availability": "https://schema.org/InStock",

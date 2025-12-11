@@ -51,8 +51,8 @@ describe('Gig Packages & Extras', () => {
       });
 
       expect(result).toBeDefined();
-      expect(Number(result)).toBeGreaterThan(0);
-      testPackageId = Number(result);
+      expect(result.id).toBeGreaterThan(0);
+      testPackageId = result.id;
     });
 
     it('should get packages for a gig', async () => {
@@ -129,8 +129,8 @@ describe('Gig Packages & Extras', () => {
       });
 
       expect(result).toBeDefined();
-      expect(Number(result)).toBeGreaterThan(0);
-      testExtraId = Number(result);
+      expect(result.id).toBeGreaterThan(0);
+      testExtraId = result.id;
     });
 
     it('should get extras for a gig', async () => {

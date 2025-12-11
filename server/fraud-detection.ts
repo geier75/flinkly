@@ -10,7 +10,7 @@
  * Integrates with Stripe Radar for payment fraud detection.
  */
 
-import { getDb } from "./db";
+import { getDb } from "./adapters";
 import { DeviceFingerprint, isSuspiciousFingerprint } from "./middleware/fingerprint";
 
 export interface FraudAlert {

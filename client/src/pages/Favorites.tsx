@@ -49,22 +49,22 @@ export default function Favorites() {
   // Redirect if not authenticated
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-        
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
         <motion.div
-          className="container mx-auto px-4 py-20 text-center max-w-md relative z-10"
+          className="container mx-auto px-4 py-20 text-center max-w-md"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="cyber-glass-card border-2 border-accent/40 p-8 shadow-[0_0_60px_oklch(0.70_0.20_35_/_0.6)]">
-            <Heart className="h-16 w-16 text-accent mx-auto mb-6 animate-pulse" />
-            <h1 className="text-3xl font-bold cyber-chrome-text mb-3">Authentifizierung erforderlich</h1>
-            <p className="text-slate-300 mb-8 text-lg font-medium">Du musst angemeldet sein, um deine Favoriten zu sehen.</p>
+          <div className="bg-white rounded-3xl shadow-xl p-8">
+            <div className="w-20 h-20 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Heart className="h-10 w-10 text-rose-500" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-800 mb-3">Authentifizierung erforderlich</h1>
+            <p className="text-slate-500 mb-8">Du musst angemeldet sein, um deine Favoriten zu sehen.</p>
             <Button 
               onClick={() => setLocation("/")}
-              className="cyber-neon-button text-white font-bold px-10 py-4 text-lg"
+              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-rose-500/20"
             >
               Zur Startseite
             </Button>
@@ -105,48 +105,48 @@ export default function Favorites() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       <MetaTags 
         title="Meine Favoriten | Flinkly"
         description="Verwalte deine gespeicherten Gigs und finde schnell die perfekte Dienstleistung."
         type="website"
       />
 
-      {/* Animated Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-      
-      {/* Header */}
-      <div className="relative z-10 cyber-neon-border bg-slate-900/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-12">
+      {/* Premium Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+        <div className="container mx-auto px-4 py-16">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="flex items-center gap-6"
           >
-            <h1 className="text-6xl font-extrabold mb-3 tracking-tight cyber-chrome-text flex items-center gap-4">
-              <Heart className="h-12 w-12 text-accent animate-pulse fill-accent" />
-              MEINE <span className="cyber-neon-orange">FAVORITEN</span>
-            </h1>
-            <p className="text-slate-300 text-xl font-light tracking-wide">
-              {sortedFavorites.length} gespeicherte Gigs
-            </p>
+            <div className="p-4 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl shadow-2xl shadow-rose-500/30">
+              <Heart className="h-10 w-10 text-white fill-white" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white">Meine Favoriten</h1>
+              <p className="text-slate-400 mt-1">
+                {sortedFavorites.length} gespeicherte Gigs
+              </p>
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-12 relative z-10">
+      <div className="container mx-auto px-4 py-12">
         {/* Filters & Sort */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-col md:flex-row gap-4 mb-8"
+          className="flex flex-col md:flex-row gap-4 mb-8 p-6 bg-white rounded-2xl shadow-lg shadow-slate-200/50"
         >
           <div className="flex-1">
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger className="w-full border-slate-700 bg-slate-900/40 backdrop-blur-sm text-white">
-                <Filter className="h-4 w-4 mr-2" />
+              <SelectTrigger className="w-full border-slate-200 bg-slate-50 text-slate-800 rounded-xl">
+                <Filter className="h-4 w-4 mr-2 text-slate-500" />
                 <SelectValue placeholder="Alle Kategorien" />
               </SelectTrigger>
               <SelectContent>
@@ -161,7 +161,8 @@ export default function Favorites() {
           </div>
 
           <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-            <SelectTrigger className="w-full md:w-[200px] border-slate-700 bg-slate-900/40 backdrop-blur-sm text-white">
+            <SelectTrigger className="w-full md:w-[200px] border-slate-200 bg-slate-50 text-slate-800 rounded-xl">
+              <TrendingUp className="h-4 w-4 mr-2 text-slate-500" />
               <SelectValue placeholder="Sortieren nach" />
             </SelectTrigger>
             <SelectContent>
@@ -177,7 +178,7 @@ export default function Favorites() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-700/50 rounded-2xl h-96" />
+                <div className="bg-white rounded-3xl shadow-lg h-96" />
               </div>
             ))}
           </div>
@@ -188,16 +189,16 @@ export default function Favorites() {
             transition={{ duration: 0.6 }}
             className="text-center py-20"
           >
-            <div className="inline-flex items-center justify-center w-32 h-32 bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-full mb-6">
-              <Heart className="h-16 w-16 text-slate-400" />
+            <div className="inline-flex items-center justify-center w-32 h-32 bg-rose-50 rounded-3xl mb-6">
+              <Heart className="h-16 w-16 text-rose-300" />
             </div>
-            <h3 className="text-3xl font-bold text-white mb-4">Keine Favoriten gespeichert</h3>
-            <p className="text-slate-400 mb-8 text-lg">
+            <h3 className="text-3xl font-bold text-slate-800 mb-4">Keine Favoriten gespeichert</h3>
+            <p className="text-slate-500 mb-8 text-lg max-w-md mx-auto">
               Entdecke spannende Gigs und speichere sie mit einem Klick auf das Herz-Icon
             </p>
             <Button
               onClick={() => setLocation("/marketplace")}
-              className="bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90 text-white shadow-lg shadow-accent/30 hover:scale-105 transition-all duration-300 px-8 py-6 text-lg"
+              className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg shadow-rose-500/20 hover:scale-105 transition-all duration-300 px-8 py-4 text-lg rounded-xl"
             >
               <ShoppingBag className="h-5 w-5 mr-2" />
               Zum Marketplace
@@ -211,77 +212,96 @@ export default function Favorites() {
 
               return (
                 <motion.div
-                  key={favorite.id}
+                  key={favorite.gigId}
                   initial={{ opacity: 0, y: 40 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.1 * index }}
                 >
                   <Link href={`/gig/${gig.id}`}>
-                    <Card className="group relative bg-slate-900/40 border-2 border-slate-700/50 hover:border-accent/80 backdrop-blur-xl overflow-hidden cursor-pointer transition-all duration-500 hover:scale-105 hover:-translate-y-2 shadow-[0_8px_16px_rgba(0,0,0,0.3),0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.5),0_50px_80px_rgba(255,107,53,0.4),0_0_100px_rgba(255,107,53,0.2)]">
-                      {/* Gradient Border Glow */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-secondary/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+                    <Card className="group relative bg-gradient-to-br from-white via-white to-rose-50/30 border border-slate-200/80 hover:border-rose-300 overflow-hidden cursor-pointer transition-all duration-500 hover:scale-[1.03] hover:-translate-y-2 shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_50px_rgba(244,63,94,0.15)] rounded-3xl">
+                      {/* Luxury Shimmer Effect */}
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out bg-gradient-to-r from-transparent via-white/60 to-transparent z-10 pointer-events-none" />
                       
-                      {/* Shimmer Effect */}
-                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1200 ease-in-out bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
                       <CardContent className="p-0">
                         {/* Image */}
-                        <div className="relative h-48 overflow-hidden">
+                        <div className="relative h-52 overflow-hidden">
                           <img
                             src={gig.imageUrl || "/placeholder.jpg"}
                             alt={gig.title}
-                            className="w-full h-full object-cover group-hover:scale-110 group-hover:brightness-110 transition-all duration-700"
+                            className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-transparent opacity-70 group-hover:opacity-40 transition-opacity duration-500" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+                          
+                          {/* Premium Badge Overlay */}
+                          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-rose-400 via-pink-500 to-rose-400" />
                           
                           {/* Category Badge */}
-                          <Badge className="absolute top-4 left-4 bg-gradient-to-r from-accent to-primary text-white border-0 backdrop-blur-sm shadow-lg shadow-accent/30">
+                          <Badge className="absolute top-5 left-5 bg-white/95 text-slate-700 border-0 shadow-lg backdrop-blur-sm font-semibold px-3 py-1">
                             {gig.category}
                           </Badge>
+
+                          {/* Favorite Heart */}
+                          <div className="absolute bottom-4 left-5">
+                            <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg">
+                              <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
+                              <span className="text-xs font-semibold text-slate-700">Favorit</span>
+                            </div>
+                          </div>
 
                           {/* Remove Button */}
                           <button
                             onClick={(e) => handleRemoveFavorite(e, gig.id)}
                             disabled={removeFavoriteMutation.isPending}
-                            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-slate-900/60 backdrop-blur-xl border-2 border-red-500/50 rounded-full hover:border-red-500 hover:bg-red-500/20 transition-all duration-300 hover:scale-110 z-10 disabled:opacity-50"
+                            className="absolute top-5 right-5 w-11 h-11 flex items-center justify-center bg-white/95 backdrop-blur-sm rounded-xl hover:bg-rose-50 transition-all duration-300 hover:scale-110 z-20 disabled:opacity-50 shadow-lg group/btn"
                           >
-                            <Trash2 className="h-5 w-5 text-red-400" />
+                            <Trash2 className="h-5 w-5 text-slate-400 group-hover/btn:text-rose-500 transition-colors" />
                           </button>
                         </div>
 
                         {/* Content */}
-                        <div className="p-6">
-                          <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 group-hover:text-accent transition-colors duration-300">
+                        <div className="p-6 bg-gradient-to-b from-white to-slate-50/50">
+                          {/* Seller Info */}
+                          {gig.seller && (
+                            <div className="flex items-center gap-2 mb-3">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                                {gig.seller.name?.charAt(0).toUpperCase() || "S"}
+                              </div>
+                              <span className="text-sm text-slate-600 font-medium">{gig.seller.name}</span>
+                            </div>
+                          )}
+                          
+                          <h3 className="text-lg font-bold text-slate-800 mb-2 line-clamp-2 group-hover:text-rose-600 transition-colors duration-300">
                             {gig.title}
                           </h3>
                           
-                          <p className="text-slate-400 text-sm mb-4 line-clamp-2">
+                          <p className="text-slate-500 text-sm mb-4 line-clamp-2 leading-relaxed">
                             {gig.description}
                           </p>
 
                           {/* Stats */}
-                          <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 text-success fill-success" />
-                              <span className="text-white font-bold">5.0</span>
+                          <div className="flex items-center gap-3 mb-5">
+                            <div className="flex items-center gap-1.5 bg-amber-50 px-2.5 py-1 rounded-lg">
+                              <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
+                              <span className="text-slate-700 font-bold text-sm">5.0</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-4 w-4" />
-                              <span>{gig.deliveryDays}d</span>
+                            <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-lg">
+                              <Clock className="h-4 w-4 text-slate-500" />
+                              <span className="text-slate-600 text-sm">{gig.deliveryDays}d</span>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <TrendingUp className="h-4 w-4" />
-                              <span>Neu</span>
+                            <div className="flex items-center gap-1.5 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                              <TrendingUp className="h-4 w-4 text-emerald-500" />
+                              <span className="text-emerald-600 text-sm font-medium">Neu</span>
                             </div>
                           </div>
 
                           {/* Price */}
-                          <div className="flex items-center justify-between pt-4 border-t border-slate-700/50">
-                            <span className="text-slate-400 text-sm">Ab</span>
-                            <div className="text-right">
-                              <span className="text-3xl font-black text-white group-hover:text-success transition-colors duration-300">
-                                {gig.price}€
+                          <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                            <span className="text-slate-400 text-sm">Preis ab</span>
+                            <div className="flex items-baseline gap-1">
+                              <span className="text-3xl font-black bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 bg-clip-text text-transparent">
+                                {(gig.price / 100).toFixed(0)}
                               </span>
+                              <span className="text-xl font-bold text-rose-500">€</span>
                             </div>
                           </div>
                         </div>

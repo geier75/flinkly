@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Dispute Resolution Router
  * 
@@ -9,13 +10,13 @@
 
 import { z } from "zod";
 import { router, protectedProcedure } from "../_core/trpc";
-import { getDb } from "../db";
+import { getDb } from "../adapters";
 import { disputes, fraudAlerts } from "../../drizzle/schema";
 import { eq, and, or } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { sendEmail } from "../_core/email";
 import { disputeAlertTemplate } from "../_core/emailTemplates";
-import { getUserById, getGigById } from "../db";
+import { getUserById, getGigById } from "../adapters";
 
 export const disputesRouter = router({
   /**

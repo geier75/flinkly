@@ -2,7 +2,7 @@ export { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 
 export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "App";
 
-export const APP_LOGO = import.meta.env.VITE_APP_LOGO || "https://placehold.co/128x128/3B82F6/FFFFFF?text=Flinkly";
+export const APP_LOGO = import.meta.env.VITE_APP_LOGO || "https://placehold.co/128x128/10B981/FFFFFF?text=Flinkly";
 
 // Generate login URL at runtime so redirect URI reflects the current origin.
 // Flinkly specific constants
@@ -70,17 +70,34 @@ export function formatRelativeTime(date: Date | string | null | undefined): stri
   return `vor ${Math.floor(days / 365)} Jahren`;
 }
 
+// Cache the login URL to avoid repeated console logs
+let _cachedLoginUrl: string | null = null;
+
 export const getLoginUrl = () => {
+  if (_cachedLoginUrl) return _cachedLoginUrl;
+  
   const oauthPortalUrl = import.meta.env.VITE_OAUTH_PORTAL_URL;
   const appId = import.meta.env.VITE_APP_ID;
+  
+  // Use dev-login in development mode when OAuth is not configured
+  if (!oauthPortalUrl || oauthPortalUrl === 'undefined') {
+    _cachedLoginUrl = '/api/dev-login';
+    return _cachedLoginUrl;
+  }
+  
   const redirectUri = `${window.location.origin}/api/oauth/callback`;
   const state = btoa(redirectUri);
 
   const url = new URL(`${oauthPortalUrl}/app-auth`);
-  url.searchParams.set("appId", appId);
+  url.searchParams.set("appId", appId || 'flinkly-dev');
   url.searchParams.set("redirectUri", redirectUri);
   url.searchParams.set("state", state);
   url.searchParams.set("type", "signIn");
 
   return url.toString();
+};
+
+// Get URL to login as a specific seller (for testing)
+export const getDevLoginUrl = (sellerId: number) => {
+  return `/api/dev-login/${sellerId}`;
 };

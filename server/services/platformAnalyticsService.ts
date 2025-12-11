@@ -6,11 +6,11 @@
  * - Seller payouts
  * - Revenue breakdown
  * - Payment method statistics
+ * 
+ * Uses Supabase for database operations
  */
 
-import { getDb } from '../db';
-import { transactions, orders, users } from '../../drizzle/schema';
-import { eq, and, gte, lte, sql } from 'drizzle-orm';
+import { supabase } from '../_core/supabase';
 
 export interface PlatformFeeAnalytics {
   totalRevenue: number; // Total amount processed (in cents)
@@ -51,31 +51,31 @@ export async function getPlatformFeeAnalytics(
   startDate: Date,
   endDate: Date
 ): Promise<PlatformFeeAnalytics> {
-  const db = await getDb();
-  if (!db) {
-    throw new Error('Database not available');
+  // Get all captured transactions in date range
+  const { data: completedTransactions, error } = await supabase
+    .from('transactions')
+    .select('amount, seller_id, order_id')
+    .eq('status', 'captured')
+    .gte('created_at', startDate.toISOString())
+    .lte('created_at', endDate.toISOString());
+
+  if (error) {
+    console.error('[PlatformAnalytics] Failed to get transactions:', error);
+    // Return empty analytics instead of throwing
+    return {
+      totalRevenue: 0,
+      platformFees: 0,
+      sellerPayouts: 0,
+      transactionCount: 0,
+      averageOrderValue: 0,
+      topSellersByRevenue: [],
+    };
   }
 
-  // Get all captured transactions in date range (captured = payment completed)
-  const completedTransactions = await db
-    .select({
-      amount: transactions.amount,
-      sellerId: transactions.sellerId,
-      sellerName: users.name,
-      orderId: transactions.orderId,
-    })
-    .from(transactions)
-    .leftJoin(users, eq(transactions.sellerId, users.id))
-    .where(
-      and(
-        eq(transactions.status, 'captured'),
-        gte(transactions.createdAt, startDate),
-        lte(transactions.createdAt, endDate)
-      )
-    );
+  const txns = completedTransactions || [];
 
   // Calculate totals
-  const totalRevenue = completedTransactions.reduce((sum, t) => sum + t.amount, 0);
+  const totalRevenue = txns.reduce((sum, t) => sum + (t.amount || 0), 0);
   const platformFees = Math.round(totalRevenue * 0.15); // 15% platform fee
   const sellerPayouts = totalRevenue - platformFees; // 85% to sellers
 
@@ -86,15 +86,16 @@ export async function getPlatformFeeAnalytics(
     orderCount: number;
   }>();
 
-  for (const transaction of completedTransactions) {
-    const existing = sellerRevenueMap.get(transaction.sellerId);
+  for (const transaction of txns) {
+    const sellerId = transaction.seller_id;
+    const existing = sellerRevenueMap.get(sellerId);
     if (existing) {
-      existing.totalRevenue += transaction.amount;
+      existing.totalRevenue += transaction.amount || 0;
       existing.orderCount += 1;
     } else {
-      sellerRevenueMap.set(transaction.sellerId, {
-        sellerName: transaction.sellerName,
-        totalRevenue: transaction.amount,
+      sellerRevenueMap.set(sellerId, {
+        sellerName: null, // Will be fetched separately if needed
+        totalRevenue: transaction.amount || 0,
         orderCount: 1,
       });
     }
@@ -116,9 +117,9 @@ export async function getPlatformFeeAnalytics(
     totalRevenue,
     platformFees,
     sellerPayouts,
-    transactionCount: completedTransactions.length,
-    averageOrderValue: completedTransactions.length > 0 
-      ? Math.round(totalRevenue / completedTransactions.length) 
+    transactionCount: txns.length,
+    averageOrderValue: txns.length > 0 
+      ? Math.round(totalRevenue / txns.length) 
       : 0,
     topSellersByRevenue,
   };
@@ -128,51 +129,71 @@ export async function getPlatformFeeAnalytics(
  * Get payout statistics
  */
 export async function getPayoutStatistics(): Promise<PayoutStatistics> {
-  const db = await getDb();
-  if (!db) {
-    throw new Error('Database not available');
+  // Get all sellers with orders
+  const { data: sellers, error: sellersError } = await supabase
+    .from('users')
+    .select('id, stripe_account_id, stripe_onboarding_complete')
+    .not('id', 'is', null);
+
+  if (sellersError) {
+    console.error('[PlatformAnalytics] Failed to get sellers:', sellersError);
+    throw new Error('Failed to get sellers');
   }
 
-  // Get all sellers with published gigs
-  const allSellers = await db
-    .selectDistinct({
-      id: users.id,
-      stripeAccountId: users.stripeAccountId,
-      stripeOnboardingComplete: users.stripeOnboardingComplete,
-    })
-    .from(users)
-    .innerJoin(orders, eq(orders.sellerId, users.id));
+  // Get unique sellers from orders
+  const { data: orderSellers } = await supabase
+    .from('orders')
+    .select('seller_id');
 
-  const totalSellers = allSellers.length;
-  const sellersWithStripe = allSellers.filter(s => s.stripeAccountId && s.stripeAccountId !== '').length;
+  const uniqueSellerIds = new Set((orderSellers || []).map(o => o.seller_id));
+  const sellersWithOrders = (sellers || []).filter(s => uniqueSellerIds.has(s.id));
+
+  const totalSellers = sellersWithOrders.length;
+  const sellersWithStripe = sellersWithOrders.filter(s => s.stripe_account_id && s.stripe_account_id !== '').length;
   const sellersWithoutStripe = totalSellers - sellersWithStripe;
 
-  // Get captured transactions (captured = payment completed)
-  const completedTxns = await db
-    .select({
-      amount: transactions.amount,
-      sellerId: transactions.sellerId,
-      sellerStripeAccountId: users.stripeAccountId,
-    })
-    .from(transactions)
-    .leftJoin(users, eq(transactions.sellerId, users.id))
-    .where(eq(transactions.status, 'captured'));
+  // Get captured transactions
+  const { data: completedTxns, error: txnError } = await supabase
+    .from('transactions')
+    .select('amount, seller_id')
+    .eq('status', 'captured');
+
+  if (txnError) {
+    console.error('[PlatformAnalytics] Failed to get transactions:', txnError);
+    // Return empty stats instead of throwing
+    return {
+      totalPayouts: 0,
+      pendingPayouts: 0,
+      completedPayouts: 0,
+      sellersWithStripe,
+      sellersWithoutStripe,
+      totalSellers,
+    };
+  }
+
+  const txns = completedTxns || [];
 
   // Calculate payouts
-  const totalPayouts = completedTxns.reduce((sum, t) => {
-    const sellerAmount = Math.round(t.amount * 0.85); // 85% to seller
+  const totalPayouts = txns.reduce((sum, t) => {
+    const sellerAmount = Math.round((t.amount || 0) * 0.85);
     return sum + sellerAmount;
   }, 0);
 
+  // Get seller stripe status for payout calculation
+  const sellerStripeMap = new Map<number, boolean>();
+  for (const seller of sellersWithOrders) {
+    sellerStripeMap.set(seller.id, !!(seller.stripe_account_id && seller.stripe_account_id !== ''));
+  }
+
   // Payouts to sellers WITH Stripe Connect (automatic)
-  const completedPayouts = completedTxns
-    .filter(t => t.sellerStripeAccountId && t.sellerStripeAccountId !== '')
-    .reduce((sum, t) => sum + Math.round(t.amount * 0.85), 0);
+  const completedPayouts = txns
+    .filter(t => sellerStripeMap.get(t.seller_id) === true)
+    .reduce((sum, t) => sum + Math.round((t.amount || 0) * 0.85), 0);
 
   // Payouts to sellers WITHOUT Stripe Connect (manual/pending)
-  const pendingPayouts = completedTxns
-    .filter(t => !t.sellerStripeAccountId || t.sellerStripeAccountId === '')
-    .reduce((sum, t) => sum + Math.round(t.amount * 0.85), 0);
+  const pendingPayouts = txns
+    .filter(t => sellerStripeMap.get(t.seller_id) !== true)
+    .reduce((sum, t) => sum + Math.round((t.amount || 0) * 0.85), 0);
 
   return {
     totalPayouts,
@@ -191,35 +212,40 @@ export async function getRevenueTimeSeries(
   startDate: Date,
   endDate: Date
 ): Promise<RevenueTimeSeries[]> {
-  const db = await getDb();
-  if (!db) {
-    throw new Error('Database not available');
+  // Get all captured transactions in date range
+  const { data: txns, error } = await supabase
+    .from('transactions')
+    .select('amount, created_at')
+    .eq('status', 'captured')
+    .gte('created_at', startDate.toISOString())
+    .lte('created_at', endDate.toISOString())
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('[PlatformAnalytics] Failed to get transactions:', error);
+    throw new Error('Failed to get transactions');
   }
 
-  // Get all captured transactions grouped by date (captured = payment completed)
-  const dailyRevenue = await db
-    .select({
-      date: sql<string>`DATE(${transactions.createdAt})`,
-      revenue: sql<number>`SUM(${transactions.amount})`,
-      transactionCount: sql<number>`COUNT(*)`,
-    })
-    .from(transactions)
-    .where(
-      and(
-        eq(transactions.status, 'captured'),
-        gte(transactions.createdAt, startDate),
-        lte(transactions.createdAt, endDate)
-      )
-    )
-    .groupBy(sql`DATE(${transactions.createdAt})`)
-    .orderBy(sql`DATE(${transactions.createdAt})`);
+  // Group by date manually
+  const dailyMap = new Map<string, { revenue: number; count: number }>();
+  
+  for (const txn of txns || []) {
+    const date = txn.created_at.split('T')[0]; // YYYY-MM-DD
+    const existing = dailyMap.get(date);
+    if (existing) {
+      existing.revenue += txn.amount || 0;
+      existing.count += 1;
+    } else {
+      dailyMap.set(date, { revenue: txn.amount || 0, count: 1 });
+    }
+  }
 
-  return dailyRevenue.map(day => ({
-    date: day.date,
-    revenue: day.revenue,
-    platformFees: Math.round(day.revenue * 0.15),
-    sellerPayouts: Math.round(day.revenue * 0.85),
-    transactionCount: day.transactionCount,
+  return Array.from(dailyMap.entries()).map(([date, data]) => ({
+    date,
+    revenue: data.revenue,
+    platformFees: Math.round(data.revenue * 0.15),
+    sellerPayouts: Math.round(data.revenue * 0.85),
+    transactionCount: data.count,
   }));
 }
 
@@ -227,11 +253,6 @@ export async function getRevenueTimeSeries(
  * Get platform fee summary (for admin dashboard)
  */
 export async function getPlatformFeeSummary() {
-  const db = await getDb();
-  if (!db) {
-    throw new Error('Database not available');
-  }
-
   // Last 30 days
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

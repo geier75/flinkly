@@ -17,6 +17,7 @@ import {
 import { Search, SlidersHorizontal, X, Star, Clock, TrendingUp, Sparkles, Heart } from "lucide-react";
 import { useLocation } from "wouter";
 import { Link } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { ParticleSystem } from "@/components/3d/ParticleSystem";
 import { MagneticButton } from "@/components/3d/MagneticButton";
 import { TiltCard } from "@/components/3d/TiltCard";
@@ -28,6 +29,7 @@ import { usePricingFormat } from "@/hooks/useFeatureFlags";
 export default function Marketplace() {
   const [location, setLocation] = useLocation();
   const searchParams = new URLSearchParams(location.split("?")[1]);
+  const { isAuthenticated } = useAuth();
   
   // Analytics
   const trackFilter = useFilterTracking();
@@ -45,6 +47,20 @@ export default function Marketplace() {
   const [quickViewGig, setQuickViewGig] = useState<any | null>(null);
   const [displayCount, setDisplayCount] = useState(12); // Infinite-Scroll: Start with 12 gigs
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Sync URL params to state when URL changes (e.g., from header search)
+  useEffect(() => {
+    const params = new URLSearchParams(location.split("?")[1]);
+    const urlQuery = params.get("q") || "";
+    const urlCategory = params.get("category") || "";
+    
+    if (urlQuery !== searchQuery) {
+      setSearchQuery(urlQuery);
+    }
+    if (urlCategory !== category) {
+      setCategory(urlCategory);
+    }
+  }, [location]);
   
   // Sync filter state to URL
   useEffect(() => {
@@ -129,12 +145,21 @@ export default function Marketplace() {
     },
   });
 
-  const { data: favoritesList } = trpc.favorites.list.useQuery();
-  const favoriteGigIds = new Set(favoritesList?.map(f => f.gigId) || []);
+  const { data: favoritesList } = trpc.favorites.list.useQuery(undefined, {
+    enabled: isAuthenticated, // Only fetch if user is logged in
+  });
+  const favoriteGigIds = new Set(favoritesList?.map((f: { gigId: number }) => f.gigId) || []);
 
   const toggleFavorite = (e: React.MouseEvent, gigId: number) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Redirect to login if not authenticated
+    if (!isAuthenticated) {
+      setLocation('/login?redirect=' + encodeURIComponent(location));
+      return;
+    }
+    
     if (favoriteGigIds.has(gigId)) {
       removeFavoriteMutation.mutate({ gigId });
     } else {
@@ -408,6 +433,67 @@ export default function Marketplace() {
               </Select>
             </div>
 
+            {/* Filter Panel */}
+            {showFilters && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-8 p-6 bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-2xl max-w-7xl mx-auto"
+              >
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Kategorie */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Kategorie</label>
+                    <Select value={category} onValueChange={setCategory}>
+                      <SelectTrigger className="border-slate-700 bg-slate-800/50 text-white">
+                        <SelectValue placeholder="Alle Kategorien" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Alle Kategorien</SelectItem>
+                        <SelectItem value="design">Design</SelectItem>
+                        <SelectItem value="marketing">Marketing</SelectItem>
+                        <SelectItem value="video">Video</SelectItem>
+                        <SelectItem value="music">Music & Audio</SelectItem>
+                        <SelectItem value="business">Business</SelectItem>
+                        <SelectItem value="tech">Tech</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Max Preis */}
+                  <div>
+                    <label className="block text-sm font-medium text-slate-300 mb-2">Max. Preis: {(maxPrice / 100).toFixed(0)}€</label>
+                    <input
+                      type="range"
+                      min="1000"
+                      max="50000"
+                      step="1000"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+                      className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-accent"
+                    />
+                  </div>
+
+                  {/* Reset */}
+                  <div className="flex items-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setCategory("");
+                        setMaxPrice(50000);
+                        setSearchQuery("");
+                      }}
+                      className="w-full border-slate-700 hover:border-accent text-slate-300 hover:text-white"
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Filter zurücksetzen
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Gigs Grid */}
             {isLoading ? (
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
@@ -487,7 +573,7 @@ export default function Marketplace() {
                           {/* Favorite Heart Icon */}
                           <button
                             onClick={(e) => toggleFavorite(e, gig.id)}
-                            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-full hover:border-accent hover:bg-accent/20 transition-all duration-300 hover:scale-110 z-10"
+                            className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center bg-slate-900/60 backdrop-blur-xl border-2 border-slate-700/50 rounded-full hover:border-accent hover:bg-accent/20 transition-all duration-300 hover:scale-110 z-20"
                           >
                             <Heart
                               className={`h-5 w-5 transition-all duration-300 ${

@@ -1,11 +1,17 @@
 import Stripe from "stripe";
 import { ENV } from "./_core/env";
 
-if (!ENV.stripeSecretKey) {
-  throw new Error("STRIPE_SECRET_KEY is required for Stripe Connect");
+// Lazy initialization to prevent startup crash when STRIPE_SECRET_KEY is not set
+let stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!stripe) {
+    if (!ENV.stripeSecretKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    stripe = new Stripe(ENV.stripeSecretKey);
+  }
+  return stripe;
 }
-
-const stripe = new Stripe(ENV.stripeSecretKey);
 
 /**
  * Create a Stripe Connect Express account for a seller
@@ -15,7 +21,7 @@ export async function createConnectAccount(params: {
   email: string;
   country: string; // 'DE', 'AT', 'CH'
 }): Promise<{ accountId: string }> {
-  const account = await stripe.accounts.create({
+  const account = await getStripe().accounts.create({
     type: "express",
     country: params.country,
     email: params.email,
@@ -38,7 +44,7 @@ export async function createAccountLink(params: {
   refreshUrl: string;
   returnUrl: string;
 }): Promise<{ url: string }> {
-  const accountLink = await stripe.accountLinks.create({
+  const accountLink = await getStripe().accountLinks.create({
     account: params.accountId,
     refresh_url: params.refreshUrl,
     return_url: params.returnUrl,
@@ -56,7 +62,7 @@ export async function getAccountStatus(accountId: string): Promise<{
   payoutsEnabled: boolean;
   detailsSubmitted: boolean;
 }> {
-  const account = await stripe.accounts.retrieve(accountId);
+  const account = await getStripe().accounts.retrieve(accountId);
 
   return {
     chargesEnabled: account.charges_enabled,
@@ -70,7 +76,7 @@ export async function getAccountStatus(accountId: string): Promise<{
  * This is where they can see earnings, payouts, and manage their account
  */
 export async function createLoginLink(accountId: string): Promise<{ url: string }> {
-  const loginLink = await stripe.accounts.createLoginLink(accountId);
+  const loginLink = await getStripe().accounts.createLoginLink(accountId);
   return { url: loginLink.url };
 }
 
@@ -106,8 +112,8 @@ export async function createConnectPaymentIntent(params: {
   const sellerEarnings = totalAmount - platformFee;
 
   // Create Payment Intent with destination charges
-  // https://docs.stripe.com/connect/destination-charges
-  const paymentIntent = await stripe.paymentIntents.create({
+  // https://docs.getStripe().com/connect/destination-charges
+  const paymentIntent = await getStripe().paymentIntents.create({
     amount: totalAmount,
     currency,
     application_fee_amount: platformFee, // Platform keeps this
@@ -136,7 +142,7 @@ export async function createConnectPaymentIntent(params: {
  * Retrieve a Payment Intent to check its status
  */
 export async function getPaymentIntent(paymentIntentId: string): Promise<Stripe.PaymentIntent> {
-  return await stripe.paymentIntents.retrieve(paymentIntentId);
+  return await getStripe().paymentIntents.retrieve(paymentIntentId);
 }
 
 /**
@@ -148,7 +154,7 @@ export async function createRefund(params: {
   amount?: number; // Optional: partial refund amount in cents
   reason?: "duplicate" | "fraudulent" | "requested_by_customer";
 }): Promise<{ refundId: string }> {
-  const refund = await stripe.refunds.create({
+  const refund = await getStripe().refunds.create({
     payment_intent: params.paymentIntentId,
     amount: params.amount,
     reason: params.reason,

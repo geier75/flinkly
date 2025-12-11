@@ -15,31 +15,39 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 /**
- * DSGVO-konformes Cookie-Consent-Banner
+ * DSGVO/TDDDG-konformes Cookie-Consent-Banner
  * 
- * Implementiert nach GDPR/ePrivacy-Richtlinien 2025:
- * - Opt-in (keine Pre-Checked Boxes)
- * - Granulare Auswahl (Essential, Analytics, Marketing)
- * - Klare Sprache (keine Dark Patterns)
+ * Implementiert nach GDPR/ePrivacy/TDDDG-Richtlinien 2024:
+ * - Opt-in (keine Pre-Checked Boxes) - Art. 7 DSGVO
+ * - Granulare Auswahl (Essential, Functional, Analytics, Marketing) - § 25 TDDDG
+ * - Klare Sprache (keine Dark Patterns) - Art. 25 DSA
  * - Gleichwertige Buttons (Accept/Reject gleich prominent)
- * - Widerrufsmöglichkeit
+ * - Widerrufsmöglichkeit jederzeit - Art. 7 Abs. 3 DSGVO
+ * - Keine Kopplung von Diensten an Cookie-Einwilligung
  * 
  * Cookies-Kategorien:
- * - Essential: Session, Auth (immer aktiv, keine Zustimmung nötig)
- * - Analytics: PostHog, Tracking (opt-in)
+ * - Essential: Session, Auth, CSRF (immer aktiv, keine Zustimmung nötig gem. § 25 Abs. 2 TDDDG)
+ * - Functional: Spracheinstellungen, Präferenzen (opt-in)
+ * - Analytics: PostHog, Sentry (opt-in)
  * - Marketing: Keine (aktuell nicht verwendet)
+ * 
+ * Rechtsgrundlagen:
+ * - Essential: § 25 Abs. 2 Nr. 2 TDDDG (technisch erforderlich)
+ * - Functional/Analytics/Marketing: Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
  */
 
 interface CookiePreferences {
-  essential: boolean; // Always true
-  analytics: boolean;
-  marketing: boolean;
+  essential: boolean; // Always true - technisch erforderlich
+  functional: boolean; // Spracheinstellungen, UI-Präferenzen
+  analytics: boolean; // PostHog, Sentry
+  marketing: boolean; // Aktuell nicht verwendet
 }
 
 export default function CookieConsent() {
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>({
     essential: true,
+    functional: false,
     analytics: false,
     marketing: false,
   });
@@ -71,6 +79,7 @@ export default function CookieConsent() {
   const acceptAll = () => {
     savePreferences({
       essential: true,
+      functional: true,
       analytics: true,
       marketing: true,
     });
@@ -79,6 +88,7 @@ export default function CookieConsent() {
   const rejectAll = () => {
     savePreferences({
       essential: true,
+      functional: false,
       analytics: false,
       marketing: false,
     });
@@ -109,17 +119,19 @@ export default function CookieConsent() {
           padding: "12px 24px",
           borderRadius: "8px",
           fontWeight: "600",
-          border: "none",
+          border: "2px solid #2563eb",
           cursor: "pointer",
         }}
         declineButtonStyle={{
-          background: "transparent",
+          // DSA Art. 25: Gleichwertige Buttons - keine Dark Patterns
+          // Ablehnen-Button ist gleich prominent wie Akzeptieren-Button
+          background: "#dc2626",
           color: "#ffffff",
           fontSize: "14px",
           padding: "12px 24px",
           borderRadius: "8px",
           fontWeight: "600",
-          border: "2px solid #64748b",
+          border: "2px solid #dc2626",
           cursor: "pointer",
         }}
         expires={365}
@@ -165,21 +177,46 @@ export default function CookieConsent() {
                           <Label className="text-base font-semibold">Essenzielle Cookies</Label>
                           <Badge className="bg-green-100 text-green-800 text-xs">Erforderlich</Badge>
                         </div>
-                        <p className="text-sm text-slate-600">
-                          Notwendig für die Grundfunktionen der Website (Login, Warenkorb, Sicherheit). 
+                        <p className="text-sm text-slate-600 mb-2">
+                          Technisch notwendig für die Grundfunktionen der Website (Login, Session, CSRF-Schutz). 
                           Diese Cookies können nicht deaktiviert werden.
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          <strong>Rechtsgrundlage:</strong> § 25 Abs. 2 Nr. 2 TDDDG (technisch erforderlich)
                         </p>
                       </div>
                       <Switch checked={true} disabled />
+                    </div>
+
+                    {/* Functional Cookies */}
+                    <div className="flex items-start justify-between gap-4 p-4 bg-slate-50 rounded-lg">
+                      <div className="flex-1">
+                        <Label className="text-base font-semibold mb-2 block">Funktionale Cookies</Label>
+                        <p className="text-sm text-slate-600 mb-2">
+                          Ermöglichen erweiterte Funktionen wie Spracheinstellungen, Theme-Präferenzen und personalisierte Inhalte.
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
+                        </p>
+                      </div>
+                      <Switch
+                        checked={preferences.functional}
+                        onCheckedChange={(checked) =>
+                          setPreferences({ ...preferences, functional: checked })
+                        }
+                      />
                     </div>
 
                     {/* Analytics Cookies */}
                     <div className="flex items-start justify-between gap-4 p-4 bg-slate-50 rounded-lg">
                       <div className="flex-1">
                         <Label className="text-base font-semibold mb-2 block">Analytics-Cookies</Label>
-                        <p className="text-sm text-slate-600">
+                        <p className="text-sm text-slate-600 mb-2">
                           Helfen uns zu verstehen, wie Besucher unsere Website nutzen. 
-                          Wir verwenden PostHog für anonymisierte Nutzungsstatistiken.
+                          Wir verwenden PostHog für anonymisierte Nutzungsstatistiken und Sentry für Fehleranalyse.
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
                         </p>
                       </div>
                       <Switch
@@ -194,8 +231,11 @@ export default function CookieConsent() {
                     <div className="flex items-start justify-between gap-4 p-4 bg-slate-50 rounded-lg opacity-50">
                       <div className="flex-1">
                         <Label className="text-base font-semibold mb-2 block">Marketing-Cookies</Label>
-                        <p className="text-sm text-slate-600">
-                          Aktuell nicht verwendet. Würden für personalisierte Werbung genutzt werden.
+                        <p className="text-sm text-slate-600 mb-2">
+                          Aktuell nicht verwendet. Würden für personalisierte Werbung und Retargeting genutzt werden.
+                        </p>
+                        <p className="text-xs text-slate-500">
+                          <strong>Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
                         </p>
                       </div>
                       <Switch checked={false} disabled />

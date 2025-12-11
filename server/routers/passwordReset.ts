@@ -4,7 +4,7 @@
 
 import { router, publicProcedure } from "../_core/trpc";
 import { z } from "zod";
-import { getUserByEmail, getUserById } from "../db";
+import { getUserByEmail, getUserById } from "../adapters";
 import { createPasswordResetToken, validatePasswordResetToken, markTokenAsUsed } from "../_core/passwordReset";
 import { sendEmail } from "../_core/email";
 import { passwordResetTemplate } from "../_core/emailTemplates";

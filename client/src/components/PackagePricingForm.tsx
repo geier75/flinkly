@@ -194,15 +194,6 @@ export function PackagePricingForm({ packages, setPackages }: PackagePricingForm
         {renderPackageForm('standard', '⭐', 'purple')}
         {renderPackageForm('premium', '👑', 'amber')}
       </div>
-      
-      <Card className="bg-blue-500/10 border-blue-500/30">
-        <CardContent className="p-4">
-          <p className="text-sm text-blue-300">
-            💡 <strong>Tipp:</strong> Pakete ermöglichen es Käufern, das passende Angebot für ihr Budget zu wählen. 
-            Empfehlung: Basic (50-100€), Standard (100-200€), Premium (200-500€)
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 }

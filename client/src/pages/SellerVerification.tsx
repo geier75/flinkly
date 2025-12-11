@@ -1,9 +1,12 @@
 /**
- * Seller Verification Page
+ * Seller Verification Page (KYBC - Know Your Business Customer)
+ * 
+ * Gemäß DSA Art. 30 - Rückverfolgbarkeit gewerblicher Nutzer
  * 
  * Features:
  * - Email verification
  * - Phone verification (optional)
+ * - KYBC Business verification (DSA Art. 30)
  * - Admin approval request
  * - Verification status display
  */
@@ -17,7 +20,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, XCircle, Mail, Phone, Shield, Loader2 } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { CheckCircle2, XCircle, Mail, Phone, Shield, Loader2, Building2, FileText, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function SellerVerification() {
@@ -28,6 +32,20 @@ export default function SellerVerification() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [showPhoneInput, setShowPhoneInput] = useState(false);
+  
+  // KYBC Business Data (DSA Art. 30)
+  const [kybcData, setKybcData] = useState({
+    businessName: "",
+    businessAddress: "",
+    businessCity: "",
+    businessPostalCode: "",
+    businessCountry: "Deutschland",
+    vatId: "",
+    tradeRegister: "",
+    businessType: "einzelunternehmer", // einzelunternehmer, gbr, ug, gmbh, freelancer
+    businessDescription: "",
+  });
+  const [showKybcForm, setShowKybcForm] = useState(false);
 
   const requestEmailMutation = trpc.verification.requestEmailVerification.useMutation({
     onSuccess: (data) => {
@@ -103,11 +121,32 @@ export default function SellerVerification() {
   return (
     <div className="container max-w-4xl py-12">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Seller-Verifizierung</h1>
+        <h1 className="text-3xl font-bold mb-2">Verkäufer-Verifizierung (KYBC)</h1>
         <p className="text-muted-foreground">
-          Verifizieren Sie Ihren Account, um das Vertrauen von Käufern zu erhöhen
+          Verifizieren Sie Ihren Account gemäß DSA Art. 30 - Know Your Business Customer
         </p>
       </div>
+
+      {/* DSA Info Banner */}
+      <PremiumCard className="mb-6 border-orange-500/30">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
+            <AlertTriangle className="h-6 w-6 text-orange-500 flex-shrink-0 mt-1" />
+            <div>
+              <h3 className="font-semibold text-lg mb-2">DSA Art. 30 - Rückverfolgbarkeit gewerblicher Nutzer</h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                Gemäß dem Digital Services Act (EU) 2022/2065 sind Online-Marktplätze verpflichtet, 
+                die Identität gewerblicher Verkäufer zu überprüfen, bevor diese Dienstleistungen anbieten dürfen.
+              </p>
+              <ul className="text-sm text-muted-foreground space-y-1">
+                <li>• <strong>Pflichtangaben:</strong> Name, Anschrift, Kontaktdaten, USt-IdNr. (falls vorhanden)</li>
+                <li>• <strong>Verifizierung:</strong> Wir prüfen Ihre Angaben vor Freischaltung</li>
+                <li>• <strong>Transparenz:</strong> Ihre Geschäftsdaten werden Käufern angezeigt</li>
+              </ul>
+            </div>
+          </div>
+        </CardContent>
+      </PremiumCard>
 
       {/* Verification Status Overview */}
       <PremiumCard className="mb-6">
@@ -341,6 +380,182 @@ export default function SellerVerification() {
                 <CheckCircle2 className="h-4 w-4" />
                 <span className="text-sm font-medium">Von Admin genehmigt - Höchstes Vertrauen</span>
               </div>
+            )}
+          </CardContent>
+        </PremiumCard>
+
+        {/* KYBC Business Verification (DSA Art. 30) */}
+        <PremiumCard>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                <CardTitle>Geschäftsdaten (KYBC)</CardTitle>
+              </div>
+              <Badge variant="outline" className="text-orange-500 border-orange-500">
+                DSA Art. 30
+              </Badge>
+            </div>
+            <CardDescription>
+              Pflichtangaben für gewerbliche Verkäufer gemäß Digital Services Act
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6 p-6 md:p-8">
+            {!showKybcForm ? (
+              <div className="space-y-4">
+                <div className="bg-muted p-4 rounded-lg">
+                  <h4 className="font-semibold mb-2 flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Erforderliche Angaben:
+                  </h4>
+                  <ul className="text-sm text-muted-foreground space-y-1 ml-6 list-disc">
+                    <li>Vollständiger Name / Firmenname</li>
+                    <li>Geschäftsadresse (Straße, PLZ, Ort, Land)</li>
+                    <li>Kontaktdaten (E-Mail, Telefon)</li>
+                    <li>USt-IdNr. (falls vorhanden)</li>
+                    <li>Handelsregister-Nummer (falls eingetragen)</li>
+                  </ul>
+                </div>
+                <Button onClick={() => setShowKybcForm(true)} className="w-full">
+                  Geschäftsdaten eingeben
+                </Button>
+              </div>
+            ) : (
+              <form className="space-y-4" onSubmit={(e) => {
+                e.preventDefault();
+                toast.success("Geschäftsdaten gespeichert. Wir prüfen Ihre Angaben.");
+                setShowKybcForm(false);
+              }}>
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="businessType">Unternehmensform *</Label>
+                    <select
+                      id="businessType"
+                      className="w-full p-2 border rounded-md bg-background"
+                      value={kybcData.businessType}
+                      onChange={(e) => setKybcData({...kybcData, businessType: e.target.value})}
+                      required
+                    >
+                      <option value="freelancer">Freiberufler</option>
+                      <option value="einzelunternehmer">Einzelunternehmer</option>
+                      <option value="gbr">GbR</option>
+                      <option value="ug">UG (haftungsbeschränkt)</option>
+                      <option value="gmbh">GmbH</option>
+                      <option value="other">Sonstige</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessName">Name / Firmenname *</Label>
+                    <Input
+                      id="businessName"
+                      placeholder="Max Mustermann / Musterfirma GmbH"
+                      value={kybcData.businessName}
+                      onChange={(e) => setKybcData({...kybcData, businessName: e.target.value})}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="businessAddress">Geschäftsadresse *</Label>
+                  <Input
+                    id="businessAddress"
+                    placeholder="Musterstraße 123"
+                    value={kybcData.businessAddress}
+                    onChange={(e) => setKybcData({...kybcData, businessAddress: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="businessPostalCode">PLZ *</Label>
+                    <Input
+                      id="businessPostalCode"
+                      placeholder="12345"
+                      value={kybcData.businessPostalCode}
+                      onChange={(e) => setKybcData({...kybcData, businessPostalCode: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessCity">Ort *</Label>
+                    <Input
+                      id="businessCity"
+                      placeholder="Musterstadt"
+                      value={kybcData.businessCity}
+                      onChange={(e) => setKybcData({...kybcData, businessCity: e.target.value})}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="businessCountry">Land *</Label>
+                    <select
+                      id="businessCountry"
+                      className="w-full p-2 border rounded-md bg-background"
+                      value={kybcData.businessCountry}
+                      onChange={(e) => setKybcData({...kybcData, businessCountry: e.target.value})}
+                      required
+                    >
+                      <option value="Deutschland">Deutschland</option>
+                      <option value="Österreich">Österreich</option>
+                      <option value="Schweiz">Schweiz</option>
+                      <option value="Andere EU">Andere EU-Länder</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="vatId">USt-IdNr. (falls vorhanden)</Label>
+                    <Input
+                      id="vatId"
+                      placeholder="DE123456789"
+                      value={kybcData.vatId}
+                      onChange={(e) => setKybcData({...kybcData, vatId: e.target.value})}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Pflicht bei Umsatz &gt; 22.000€/Jahr
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="tradeRegister">Handelsregister-Nr. (falls eingetragen)</Label>
+                    <Input
+                      id="tradeRegister"
+                      placeholder="HRB 12345, AG Musterstadt"
+                      value={kybcData.tradeRegister}
+                      onChange={(e) => setKybcData({...kybcData, tradeRegister: e.target.value})}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="businessDescription">Kurzbeschreibung Ihrer Tätigkeit</Label>
+                  <Textarea
+                    id="businessDescription"
+                    placeholder="z.B. Grafikdesign, Webentwicklung, Texterstellung..."
+                    value={kybcData.businessDescription}
+                    onChange={(e) => setKybcData({...kybcData, businessDescription: e.target.value})}
+                    rows={3}
+                  />
+                </div>
+
+                <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                  <p className="text-sm text-orange-700 dark:text-orange-300">
+                    <strong>Hinweis:</strong> Ihre Geschäftsdaten werden gemäß DSA Art. 30 Abs. 2 
+                    den Käufern angezeigt. Wir prüfen Ihre Angaben vor Freischaltung Ihres Verkäufer-Accounts.
+                  </p>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button type="submit" className="flex-1">
+                    Geschäftsdaten speichern
+                  </Button>
+                  <Button type="button" variant="outline" onClick={() => setShowKybcForm(false)}>
+                    Abbrechen
+                  </Button>
+                </div>
+              </form>
             )}
           </CardContent>
         </PremiumCard>

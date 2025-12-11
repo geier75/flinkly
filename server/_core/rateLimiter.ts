@@ -3,22 +3,26 @@
  * 
  * Protects API endpoints from abuse and DDoS attacks.
  * 
- * Limits:
+ * Limits (Production):
  * - Authenticated users: 100 requests/minute
  * - Anonymous users: 20 requests/minute
  * - Stripe webhooks: No limit (verified by signature)
+ * 
+ * Development: Higher limits for testing
  */
 
 import rateLimit from "express-rate-limit";
 import type { Request } from "express";
 
+const isDev = process.env.NODE_ENV !== 'production';
+
 /**
  * Rate limiter for authenticated users
- * 100 requests per minute per user
+ * 100 requests per minute per user (1000 in dev)
  */
 export const authRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 100,
+  max: isDev ? 1000 : 100,
   message: {
     error: "Zu viele Anfragen. Bitte versuche es in einer Minute erneut.",
     code: "RATE_LIMIT_EXCEEDED",
@@ -44,11 +48,11 @@ export const authRateLimiter = rateLimit({
 
 /**
  * Rate limiter for anonymous users
- * 20 requests per minute per IP
+ * 20 requests per minute per IP (500 in dev)
  */
 export const anonRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 20,
+  max: isDev ? 500 : 20,
   message: {
     error: "Zu viele Anfragen. Bitte versuche es in einer Minute erneut.",
     code: "RATE_LIMIT_EXCEEDED",
@@ -69,11 +73,11 @@ export const anonRateLimiter = rateLimit({
 
 /**
  * Strict rate limiter for sensitive endpoints
- * 10 requests per minute
+ * 10 requests per minute (100 in dev)
  */
 export const strictRateLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 10,
+  max: isDev ? 100 : 10,
   message: {
     error: "Zu viele Anfragen an diesen Endpunkt. Bitte versuche es später erneut.",
     code: "RATE_LIMIT_EXCEEDED",
@@ -93,11 +97,11 @@ export const strictRateLimiter = rateLimit({
 
 /**
  * Rate limiter for login/signup endpoints
- * 5 attempts per 15 minutes
+ * 5 attempts per 15 minutes (50 in dev)
  */
 export const authEndpointRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
+  max: isDev ? 50 : 5,
   message: {
     error: "Zu viele Login-Versuche. Bitte versuche es in 15 Minuten erneut.",
     code: "AUTH_RATE_LIMIT_EXCEEDED",

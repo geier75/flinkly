@@ -129,7 +129,7 @@ export default function CreateGig() {
       if (error.message.includes("title")) {
         errorMessage = "Bitte gib einen gültigen Titel ein (10-100 Zeichen).";
       } else if (error.message.includes("price")) {
-        errorMessage = "Preis muss zwischen 10€ und 250€ liegen.";
+        errorMessage = "Preis muss zwischen 1€ und 500€ liegen.";
       } else if (error.message.includes("description")) {
         errorMessage = "Beschreibung muss mindestens 50 Zeichen lang sein.";
       } else if (error.message.includes("category")) {
@@ -190,8 +190,8 @@ export default function CreateGig() {
       return;
     }
     const price = parseInt(formData.price);
-    if (!price || price < 10 || price > 250) {
-      toast.error("Preis muss zwischen 10€ und 250€ liegen");
+    if (!price || price < 1 || price > 500) {
+      toast.error("Preis muss zwischen 1€ und 500€ liegen");
       return;
     }
     // Quick Win #6: Alt-Text Validation
@@ -511,14 +511,14 @@ export default function CreateGig() {
                                   placeholder="299"
                                   className="bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all pl-8"
                                   min="10"
-                                  max="250"
+                                  max="500"
                                 />
                                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                                   €
                                 </span>
                               </div>
                               <p className="text-sm text-slate-400">
-                                Empfohlener Preisbereich: 50€ - 200€
+                                Empfohlener Preisbereich: 10€ - 500€
                               </p>
                             </div>
 
@@ -549,24 +549,6 @@ export default function CreateGig() {
                           </TabsContent>
                         </Tabs>
 
-                        {/* Pricing Info Card */}
-                        <Card className="bg-accent/10 border-accent/30">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              <Sparkles className="w-5 h-5 text-primary mt-0.5" />
-                              <div>
-                                <p className="text-sm font-medium text-primary mb-1">
-                                  Premium-Tipp
-                                </p>
-                                <p className="text-sm text-slate-300">
-                                  {pricingMode === 'simple' 
-                                    ? 'Gigs zwischen 100€ und 200€ haben die höchste Conversion-Rate. Biete mehrere Pakete an für mehr Flexibilität.'
-                                    : 'Pakete ermöglichen es Käufern, das passende Angebot für ihr Budget zu wählen. Die meisten erfolgreichen Seller nutzen 3 Pakete.'}
-                                </p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
                       </motion.div>
                     )}
 

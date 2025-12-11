@@ -76,12 +76,20 @@ async function startServer() {
             "'self'",
             "'unsafe-inline'",
             ...(isDevelopment ? ["'unsafe-eval'"] : []),
-            "https://manus-analytics.com"
+            "https://manus-analytics.com",
+            "https://*.supabase.co"
           ],
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           fontSrc: ["'self'", "https://fonts.gstatic.com"],
           imgSrc: ["'self'", "data:", "https:", "blob:"],
-          connectSrc: ["'self'", "wss:", "ws:", "https://manus-analytics.com"],
+          connectSrc: [
+            "'self'", 
+            "wss:", 
+            "ws:", 
+            "https://manus-analytics.com",
+            "https://*.supabase.co",
+            "https://fpiszghehrjmkbxhbwqr.supabase.co"
+          ],
           frameSrc: ["'self'", "https://js.stripe.com"],
         },
       },
@@ -104,6 +112,51 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
+
+  // Auth sync endpoint for Supabase authentication
+  app.post("/api/auth/sync", async (req, res) => {
+    try {
+      const { id, email, name } = req.body;
+      
+      if (!id || !email) {
+        return res.status(400).json({ error: "Missing required fields: id, email" });
+      }
+      
+      const adapters = await import("../adapters");
+      const { sdk } = await import("./sdk");
+      const { getSessionCookieOptions } = await import("./cookies");
+      const { COOKIE_NAME, ONE_YEAR_MS } = await import("@shared/const");
+      
+      // Upsert user (create or update)
+      await adapters.upsertUser({
+        openId: id,
+        name: name || email.split("@")[0],
+        email,
+        loginMethod: "supabase",
+        lastSignedIn: new Date(),
+      });
+      
+      // Get the user to return the ID
+      const user = await adapters.getUserByOpenId(id);
+      
+      // Create session token
+      const sessionToken = await sdk.createSessionToken(id, {
+        name: name || email.split("@")[0],
+        expiresInMs: ONE_YEAR_MS,
+      });
+      
+      // Set session cookie
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+      
+      console.log("[Auth Sync] User synced:", user?.id, email);
+      return res.json({ success: true, userId: user?.id });
+      
+    } catch (error) {
+      console.error("[Auth Sync] Error:", error);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+  });
 
   // Health-Check-Endpoints (for Load-Balancers, Kubernetes, etc.)
   app.get("/health", (req, res) => {

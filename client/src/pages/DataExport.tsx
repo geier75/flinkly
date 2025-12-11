@@ -103,24 +103,24 @@ export default function DataExport() {
       <div className="container mx-auto px-4 py-12 max-w-3xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-slate-900 mb-4">
+          <h1 className="text-4xl font-bold text-white mb-4">
             Datenexport
           </h1>
-          <p className="text-slate-600">
+          <p className="text-slate-300">
             Exportieren Sie Ihre personenbezogenen Daten gemäß Art. 20 DSGVO (Recht auf Datenübertragbarkeit).
           </p>
         </div>
 
         {/* Info Card */}
-        <PremiumCard className="mb-8 bg-blue-50 border-blue-200">
+        <PremiumCard className="mb-8 bg-emerald-900/30 border-emerald-500/30">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-primary" />
+            <CardTitle className="flex items-center gap-2 text-white">
+              <AlertCircle className="h-5 w-5 text-emerald-500" />
               Was wird exportiert?
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-slate-700">
+            <p className="text-sm text-slate-300">
               Der Export enthält alle Daten, die Sie uns zur Verfügung gestellt haben oder die im Rahmen
               der Nutzung unserer Dienste erhoben wurden. Die Daten werden in einem maschinenlesbaren
               Format (JSON oder CSV) bereitgestellt.
@@ -129,10 +129,10 @@ export default function DataExport() {
         </PremiumCard>
 
         {/* Data Selection */}
-        <PremiumCard className="mb-8">
+        <PremiumCard className="mb-8 bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <CardTitle>Wählen Sie die zu exportierenden Daten</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Wählen Sie die zu exportierenden Daten</CardTitle>
+            <CardDescription className="text-slate-400">
               Sie können auswählen, welche Datenkategorien exportiert werden sollen.
             </CardDescription>
           </CardHeader>
@@ -147,7 +147,7 @@ export default function DataExport() {
               />
               <label
                 htmlFor="profile"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-white"
               >
                 Profildaten (Name, E-Mail, Bio, Avatar)
               </label>
@@ -163,7 +163,7 @@ export default function DataExport() {
               />
               <label
                 htmlFor="gigs"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-white"
               >
                 Gigs (Titel, Beschreibung, Preis, Bilder)
               </label>
@@ -179,7 +179,7 @@ export default function DataExport() {
               />
               <label
                 htmlFor="orders"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-white"
               >
                 Bestellungen (Käufe und Verkäufe)
               </label>
@@ -195,7 +195,7 @@ export default function DataExport() {
               />
               <label
                 htmlFor="messages"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-white"
               >
                 Nachrichten (Konversationen mit anderen Nutzern)
               </label>
@@ -211,7 +211,7 @@ export default function DataExport() {
               />
               <label
                 htmlFor="reviews"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-white"
               >
                 Bewertungen (Abgegebene und erhaltene Reviews)
               </label>
@@ -227,7 +227,7 @@ export default function DataExport() {
               />
               <label
                 htmlFor="transactions"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer text-white"
               >
                 Transaktionen (Zahlungshistorie, Auszahlungen)
               </label>
@@ -236,14 +236,14 @@ export default function DataExport() {
         </PremiumCard>
 
         {/* Format Selection */}
-        <PremiumCard className="mb-8">
+        <PremiumCard className="mb-8 bg-slate-800/50 border-slate-700">
           <CardHeader>
-            <CardTitle>Exportformat</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-white">Exportformat</CardTitle>
+            <CardDescription className="text-slate-400">
               Wählen Sie das Format, in dem Ihre Daten exportiert werden sollen.
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 p-6 md:p-8 p-6 md:p-8">
+          <CardContent className="space-y-4 p-6 md:p-8">
             <div className="flex items-center space-x-3">
               <Checkbox
                 id="json"
@@ -252,9 +252,9 @@ export default function DataExport() {
               />
               <label
                 htmlFor="json"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2 text-white"
               >
-                <FileJson className="h-4 w-4" />
+                <FileJson className="h-4 w-4 text-emerald-500" />
                 JSON (empfohlen für technische Nutzer)
               </label>
             </div>
@@ -267,9 +267,9 @@ export default function DataExport() {
               />
               <label
                 htmlFor="csv"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2 text-white"
               >
-                <FileText className="h-4 w-4" />
+                <FileText className="h-4 w-4 text-emerald-500" />
                 CSV (für Excel/Spreadsheets)
               </label>
             </div>
@@ -277,10 +277,10 @@ export default function DataExport() {
         </PremiumCard>
 
         {/* Export Button */}
-        <PremiumCard>
-          <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
+        <PremiumCard className="bg-slate-800/50 border-slate-700">
+          <CardContent className="pt-6 p-6 md:p-8">
             {exportSuccess ? (
-              <div className="flex items-center justify-center gap-3 text-green-600 mb-4">
+              <div className="flex items-center justify-center gap-3 text-emerald-400 mb-4">
                 <CheckCircle2 className="h-6 w-6" />
                 <span className="font-semibold">Export erfolgreich!</span>
               </div>
@@ -289,7 +289,7 @@ export default function DataExport() {
             <Button
               onClick={handleExport}
               disabled={isExporting}
-              className="w-full"
+              className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white font-bold"
               size="lg"
             >
               {isExporting ? (
@@ -305,7 +305,7 @@ export default function DataExport() {
               )}
             </Button>
 
-            <p className="text-xs text-slate-500 mt-4 text-center">
+            <p className="text-xs text-slate-400 mt-4 text-center">
               Der Export kann je nach Datenmenge einige Sekunden dauern.
               Die Datei wird automatisch heruntergeladen.
             </p>
@@ -313,9 +313,9 @@ export default function DataExport() {
         </PremiumCard>
 
         {/* Legal Notice */}
-        <div className="mt-8 p-4 bg-slate-100 rounded-lg">
-          <p className="text-xs text-slate-600">
-            <strong>Rechtlicher Hinweis:</strong> Dieser Export erfolgt gemäß Art. 20 DSGVO (Recht auf Datenübertragbarkeit).
+        <div className="mt-8 p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+          <p className="text-xs text-slate-400">
+            <strong className="text-white">Rechtlicher Hinweis:</strong> Dieser Export erfolgt gemäß Art. 20 DSGVO (Recht auf Datenübertragbarkeit).
             Die exportierten Daten enthalten alle personenbezogenen Daten, die Sie uns zur Verfügung gestellt haben.
             Bitte beachten Sie, dass der Export keine Daten Dritter (z.B. Nachrichten anderer Nutzer) enthält.
           </p>

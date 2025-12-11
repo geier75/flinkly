@@ -7,13 +7,23 @@ import {
   deletePaymentMethod,
   setDefaultPaymentMethod,
   getDefaultPaymentMethod,
-} from "../db";
+} from "../adapters";
 import Stripe from "stripe";
 import { ENV } from "../_core/env";
 
-const stripe = new Stripe(ENV.stripeSecretKey, {
-  apiVersion: "2025-11-17.clover" as any,
-});
+// Lazy initialization to prevent startup crash when STRIPE_SECRET_KEY is not set
+let stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!stripe) {
+    if (!ENV.stripeSecretKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    stripe = new Stripe(ENV.stripeSecretKey, {
+      apiVersion: "2025-11-17.clover" as any,
+    });
+  }
+  return stripe;
+}
 
 /**
  * Payment Methods Router - Stripe Payment Method Management
@@ -30,6 +40,59 @@ const stripe = new Stripe(ENV.stripeSecretKey, {
  * - User can only access their own payment methods
  */
 export const paymentMethodsRouter = router({
+  /**
+   * Create a SetupIntent for adding a new payment method
+   * This is required before the frontend can collect card details
+   * 
+   * Flow:
+   * 1. Frontend calls this to get clientSecret
+   * 2. Frontend uses Stripe Elements with clientSecret
+   * 3. User enters card details
+   * 4. Frontend confirms SetupIntent
+   * 5. Frontend calls save() with the PaymentMethod ID
+   */
+  createSetupIntent: protectedProcedure.mutation(async ({ ctx }) => {
+    try {
+      const stripe = getStripe();
+      
+      // Get or create Stripe Customer for this user
+      let customerId = (ctx.user as any).stripeCustomerId as string | null;
+      
+      if (!customerId) {
+        // Create a new Stripe Customer
+        const customer = await stripe.customers.create({
+          email: ctx.user.email || undefined,
+          name: ctx.user.name || undefined,
+          metadata: {
+            userId: ctx.user.id.toString(),
+          },
+        });
+        customerId = customer.id;
+        
+        // TODO: Save customerId to user in database
+        // For now, we'll just use it for this session
+      }
+      
+      // Create SetupIntent
+      const setupIntent = await stripe.setupIntents.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        usage: 'off_session', // Allow future payments without customer present
+      });
+      
+      return {
+        clientSecret: setupIntent.client_secret,
+        customerId,
+      };
+    } catch (error) {
+      console.error("[PaymentMethods] CreateSetupIntent error:", error);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Fehler beim Erstellen des Setup-Intents",
+      });
+    }
+  }),
+
   /**
    * Save a new payment method from Stripe
    * 
@@ -52,7 +115,7 @@ export const paymentMethodsRouter = router({
     .mutation(async ({ ctx, input }) => {
       try {
         // Retrieve PaymentMethod from Stripe to get card details
-        const paymentMethod = await stripe.paymentMethods.retrieve(
+        const paymentMethod = await getStripe().paymentMethods.retrieve(
           input.stripePaymentMethodId
         );
 
@@ -144,7 +207,7 @@ export const paymentMethodsRouter = router({
 
         // Detach from Stripe (if attached to customer)
         try {
-          await stripe.paymentMethods.detach(
+          await getStripe().paymentMethods.detach(
             paymentMethod.stripePaymentMethodId
           );
         } catch (stripeError: any) {

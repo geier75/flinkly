@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { AlertCircle, User, Mail, MapPin, LogOut, Edit2, Save, X, Zap, Download, Trash2, Shield, Clock, Building2 } from "lucide-react";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { ImpressumCard } from "@/components/ImpressumCard";
@@ -24,8 +24,8 @@ export default function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
-    bio: "",
-    country: "DE",
+    bio: user?.bio || "",
+    country: user?.country || "DE",
     // Commercial seller fields (§ 5 TMG)
     isCommercial: user?.isCommercial || false,
     companyName: user?.companyName || "",
@@ -33,6 +33,22 @@ export default function Profile() {
     taxId: user?.taxId || "",
     tradeRegister: user?.tradeRegister || "",
   });
+
+  // Sync formData when user data changes
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        bio: user.bio || "",
+        country: user.country || "DE",
+        isCommercial: user.isCommercial || false,
+        companyName: user.companyName || "",
+        companyAddress: user.companyAddress || "",
+        taxId: user.taxId || "",
+        tradeRegister: user.tradeRegister || "",
+      });
+    }
+  }, [user]);
 
   // DSGVO: Data Export
   const exportDataMutation = trpc.user.exportData.useMutation({
@@ -145,13 +161,15 @@ export default function Profile() {
     }));
   };
 
+  const utils = trpc.useUtils();
+
   // Update profile mutation
   const updateProfileMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
       toast.success("Profil erfolgreich aktualisiert!");
       setIsEditing(false);
-      // Refresh page to show updated data
-      window.location.reload();
+      // Invalidate auth query to refresh user data
+      utils.auth.me.invalidate();
     },
     onError: (error) => {
       toast.error("Fehler beim Speichern", {
@@ -178,52 +196,68 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
-      {/* Animated Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px),linear-gradient(to_bottom,oklch(0.70_0.25_150_/_0.1)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
-      
-      {/* Cyberpunk Header */}
-      <div className="relative z-10 cyber-neon-border bg-slate-900/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      {/* Premium Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+        <div className="container mx-auto px-4 py-16">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
+            className="flex items-center gap-6"
           >
-            <h1 className="text-6xl font-extrabold mb-3 tracking-tight cyber-chrome-text flex items-center gap-4">
-              <User className="h-12 w-12 text-primary animate-pulse" />
-              MEIN <span className="cyber-neon-green">PROFIL</span>
-            </h1>
-            <p className="text-slate-300 text-xl font-light tracking-wide">
-              Verwalte deine <span className="cyber-neon-orange font-semibold">Profilinformationen</span>
-            </p>
+            {/* Avatar */}
+            <div className="relative">
+              <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 via-primary to-accent rounded-2xl flex items-center justify-center text-white text-4xl font-bold shadow-2xl shadow-emerald-500/30">
+                {user?.name?.charAt(0).toUpperCase() || "U"}
+              </div>
+              <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center border-4 border-slate-900">
+                <Shield className="h-4 w-4 text-white" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white mb-2">{user?.name}</h1>
+              <p className="text-slate-400">{user?.email}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-sm font-medium rounded-full">
+                  Verifiziert
+                </span>
+                <span className="px-3 py-1 bg-slate-700 text-slate-300 text-sm font-medium rounded-full">
+                  Mitglied seit {new Date(user?.createdAt || Date.now()).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' })}
+                </span>
+              </div>
+            </div>
           </motion.div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-12 max-w-3xl relative z-10">
+      <div className="container mx-auto px-4 py-12 max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
+          className="space-y-8"
         >
           {/* Profile Card */}
-          <Card className="cyber-glass-card border-2 border-primary/40 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)] transition-all duration-500 mb-8">
-            <CardHeader className="pb-4 border-b border-slate-700/50">
+          <Card className="relative overflow-hidden bg-white border-0 shadow-xl shadow-slate-200/50 rounded-3xl">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-primary to-accent" />
+            <CardHeader className="pb-4 border-b border-slate-100">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-3xl font-extrabold cyber-chrome-text flex items-center gap-3">
-                    <Zap className="h-8 w-8 text-primary" />
+                  <CardTitle className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                    <div className="p-2 bg-emerald-500/10 rounded-xl">
+                      <User className="h-6 w-6 text-emerald-600" />
+                    </div>
                     Profilinformationen
                   </CardTitle>
-                  <CardDescription className="text-slate-400 mt-2 text-lg font-medium">Deine persönlichen Daten</CardDescription>
+                  <CardDescription className="text-slate-500 mt-2">Deine persönlichen Daten verwalten</CardDescription>
                 </div>
                 {!isEditing && (
                   <Button
                     variant="outline"
                     onClick={() => setIsEditing(true)}
-                    className="border-2 border-accent/30 hover:border-accent hover:bg-accent/10 hover:shadow-[0_0_30px_oklch(0.70_0.20_35_/_0.4)] text-accent font-semibold transition-all duration-300 hover:scale-105 px-6 py-3"
+                    className="border-2 border-emerald-200 hover:border-emerald-500 hover:bg-emerald-50 text-emerald-600 font-semibold transition-all duration-300 rounded-xl px-6"
                   >
                     <Edit2 className="h-4 w-4 mr-2" />
                     Bearbeiten
@@ -231,13 +265,13 @@ export default function Profile() {
                 )}
               </div>
             </CardHeader>
-            <CardContent className="space-y-6 p-6 md:p-8">
+            <CardContent className="space-y-6 p-8">
               {isEditing ? (
                 <>
                   {/* Name */}
                   <div>
-                    <label className="block text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
-                      <User className="h-5 w-5 text-primary" />
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                      <User className="h-4 w-4 text-emerald-600" />
                       Name
                     </label>
                     <Input
@@ -246,14 +280,14 @@ export default function Profile() {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Dein Name"
-                      className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary focus:ring-4 focus:ring-primary/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                      className="bg-slate-50 border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-300 rounded-xl py-6"
                     />
                   </div>
 
                   {/* Bio */}
                   <div>
-                    <label className="block text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
-                      <Mail className="h-5 w-5 text-accent" />
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                      <Mail className="h-4 w-4 text-violet-600" />
                       Bio
                     </label>
                     <textarea
@@ -261,25 +295,25 @@ export default function Profile() {
                       value={formData.bio}
                       onChange={handleChange}
                       placeholder="Erzähle uns etwas über dich..."
-                      rows={6}
-                      className="w-full px-4 py-3 bg-slate-900/60 border-2 border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-accent focus:ring-4 focus:ring-accent/30 transition-all duration-300 text-lg backdrop-blur-xl resize-none"
+                      rows={4}
+                      className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all duration-300 resize-none"
                     />
                   </div>
 
                   {/* Land */}
                   <div>
-                    <label className="block text-lg font-bold text-slate-200 mb-3 flex items-center gap-2">
-                      <MapPin className="h-5 w-5 text-primary" />
+                    <label className="block text-sm font-semibold text-slate-700 mb-2 flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-blue-600" />
                       Land
                     </label>
                     <select
                       name="country"
                       value={formData.country}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 bg-slate-900/60 border-2 border-slate-700 rounded-lg text-white focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/30 transition-all duration-300 text-lg backdrop-blur-xl"
+                      className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all duration-300"
                     >
                       {COUNTRIES.map((country) => (
-                        <option key={country.code} value={country.code} className="bg-slate-900">
+                        <option key={country.code} value={country.code}>
                           {country.name}
                         </option>
                       ))}
@@ -287,37 +321,39 @@ export default function Profile() {
                   </div>
 
                   {/* Commercial Seller Section (§ 5 TMG) */}
-                  <div className="border-t-2 border-cyan-400/30 pt-6 mt-6">
+                  <div className="border-t border-slate-200 pt-6 mt-6">
                     <div className="flex items-center gap-3 mb-6">
-                      <Building2 className="h-6 w-6 text-cyan-400" />
-                      <h3 className="text-xl font-bold text-white">Gewerbliche Angaben</h3>
+                      <div className="p-2 bg-amber-500/10 rounded-xl">
+                        <Building2 className="h-5 w-5 text-amber-600" />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800">Gewerbliche Angaben</h3>
                     </div>
                     
                     {/* Gewerblich Checkbox */}
-                    <div className="flex items-center gap-3 mb-6 p-4 bg-slate-900/60 rounded-lg border-2 border-slate-700">
+                    <div className="flex items-center gap-3 mb-6 p-4 bg-amber-50 rounded-xl border border-amber-200">
                       <Checkbox
                         id="isCommercial"
                         name="isCommercial"
                         checked={formData.isCommercial}
                         onCheckedChange={(checked) => setFormData(prev => ({ ...prev, isCommercial: checked as boolean }))}
-                        className="border-cyan-400 data-[state=checked]:bg-cyan-400 data-[state=checked]:border-cyan-400"
+                        className="border-amber-500 data-[state=checked]:bg-amber-500 data-[state=checked]:border-amber-500"
                       />
-                      <Label htmlFor="isCommercial" className="text-lg text-slate-200 cursor-pointer">
-                        Ich bin <strong className="text-cyan-400">gewerblicher Anbieter</strong> und unterliege der Impressumspflicht (§ 5 TMG)
+                      <Label htmlFor="isCommercial" className="text-slate-700 cursor-pointer">
+                        Ich bin <strong className="text-amber-600">gewerblicher Anbieter</strong> und unterliege der Impressumspflicht (§ 5 TMG)
                       </Label>
                     </div>
 
                     {/* Conditional Impressum Fields */}
                     {formData.isCommercial && (
-                      <div className="space-y-6 p-6 bg-cyan-400/5 border-2 border-cyan-400/20 rounded-lg">
-                        <p className="text-sm text-cyan-300 mb-4">
+                      <div className="space-y-6 p-6 bg-amber-50/50 border border-amber-200 rounded-xl">
+                        <p className="text-sm text-amber-700 mb-4">
                           ⚠️ Als gewerblicher Anbieter musst du gemäß § 5 TMG folgende Angaben machen:
                         </p>
                         
                         {/* Firmenname */}
                         <div>
-                          <label className="block text-lg font-bold text-slate-200 mb-3">
-                            Firmenname <span className="text-red-400">*</span>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Firmenname <span className="text-red-500">*</span>
                           </label>
                           <Input
                             type="text"
@@ -325,33 +361,33 @@ export default function Profile() {
                             value={formData.companyName}
                             onChange={handleChange}
                             placeholder="z.B. MiMi Tech Ai UG (haftungsbeschränkt)"
-                            className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                            className="bg-white border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-300 rounded-xl"
                             required
                           />
                         </div>
 
                         {/* Vollständige Adresse */}
                         <div>
-                          <label className="block text-lg font-bold text-slate-200 mb-3">
-                            Vollständige Adresse <span className="text-red-400">*</span>
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
+                            Vollständige Adresse <span className="text-red-500">*</span>
                           </label>
                           <textarea
                             name="companyAddress"
                             value={formData.companyAddress}
                             onChange={handleChange}
                             placeholder="Straße Hausnummer\nPLZ Ort\nLand"
-                            rows={4}
-                            className="w-full px-4 py-3 bg-slate-900/60 border-2 border-slate-700 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg backdrop-blur-xl resize-none"
+                            rows={3}
+                            className="w-full px-4 py-3 bg-white border-2 border-slate-200 rounded-xl text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-300 resize-none"
                             required
                           />
-                          <p className="text-xs text-slate-400 mt-2">
+                          <p className="text-xs text-slate-500 mt-2">
                             Beispiel: Lindenplatz 23, 75378 Bad Liebenzell, Deutschland
                           </p>
                         </div>
 
                         {/* USt-IdNr. */}
                         <div>
-                          <label className="block text-lg font-bold text-slate-200 mb-3">
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
                             Umsatzsteuer-ID (optional)
                           </label>
                           <Input
@@ -360,13 +396,13 @@ export default function Profile() {
                             value={formData.taxId}
                             onChange={handleChange}
                             placeholder="z.B. DE123456789"
-                            className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                            className="bg-white border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-300 rounded-xl"
                           />
                         </div>
 
                         {/* Handelsregister */}
                         <div>
-                          <label className="block text-lg font-bold text-slate-200 mb-3">
+                          <label className="block text-sm font-semibold text-slate-700 mb-2">
                             Handelsregister (optional)
                           </label>
                           <Input
@@ -375,7 +411,7 @@ export default function Profile() {
                             value={formData.tradeRegister}
                             onChange={handleChange}
                             placeholder="z.B. HRB 12345 B (Amtsgericht Charlottenburg)"
-                            className="bg-slate-900/60 border-2 border-slate-700 text-white placeholder:text-slate-500 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-400/30 transition-all duration-300 text-lg py-6 backdrop-blur-xl"
+                            className="bg-white border-2 border-slate-200 text-slate-800 placeholder:text-slate-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-300 rounded-xl"
                           />
                         </div>
                       </div>
@@ -387,7 +423,7 @@ export default function Profile() {
                     <Button
                       variant="outline"
                       onClick={() => setIsEditing(false)}
-                      className="flex-1 border-2 border-slate-600 text-white hover:border-red-500 hover:bg-red-500/10 hover:shadow-[0_0_30px_rgba(239,68,68,0.4)] font-semibold transition-all duration-300 hover:scale-105 text-lg py-6"
+                      className="flex-1 border-2 border-slate-200 text-slate-600 hover:border-red-300 hover:bg-red-50 hover:text-red-600 font-semibold transition-all duration-300 rounded-xl py-6"
                     >
                       <X className="h-5 w-5 mr-2" />
                       Abbrechen
@@ -395,7 +431,7 @@ export default function Profile() {
                     <Button
                       onClick={handleSave}
                       disabled={updateProfileMutation.isPending}
-                      className="flex-1 cyber-neon-button text-white font-bold text-lg py-6"
+                      className="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold rounded-xl py-6 shadow-lg shadow-emerald-500/30"
                     >
                       {updateProfileMutation.isPending ? (
                         <>
@@ -416,33 +452,39 @@ export default function Profile() {
                   {/* Display Mode */}
                   <div className="space-y-4">
                     <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="flex items-center gap-3 p-6 bg-slate-900/60 rounded-xl border-2 border-primary/40 backdrop-blur-xl hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300"
+                      whileHover={{ scale: 1.01, x: 4 }}
+                      className="flex items-center gap-4 p-5 bg-gradient-to-r from-emerald-50 to-white rounded-2xl border border-emerald-100 hover:border-emerald-200 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300"
                     >
-                      <User className="h-6 w-6 text-primary" />
+                      <div className="p-3 bg-emerald-500/10 rounded-xl">
+                        <User className="h-5 w-5 text-emerald-600" />
+                      </div>
                       <div>
-                        <p className="text-sm text-slate-400 font-medium">Name</p>
-                        <p className="text-white font-bold text-lg cyber-neon-green">{user.name || "Nicht angegeben"}</p>
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Name</p>
+                        <p className="text-slate-800 font-semibold text-lg">{user.name || "Nicht angegeben"}</p>
                       </div>
                     </motion.div>
                     <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="flex items-center gap-3 p-6 bg-slate-900/60 rounded-xl border-2 border-accent/40 backdrop-blur-xl hover:shadow-[0_0_30px_oklch(0.70_0.20_35_/_0.4)] transition-all duration-300"
+                      whileHover={{ scale: 1.01, x: 4 }}
+                      className="flex items-center gap-4 p-5 bg-gradient-to-r from-violet-50 to-white rounded-2xl border border-violet-100 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-500/5 transition-all duration-300"
                     >
-                      <Mail className="h-6 w-6 text-accent" />
+                      <div className="p-3 bg-violet-500/10 rounded-xl">
+                        <Mail className="h-5 w-5 text-violet-600" />
+                      </div>
                       <div>
-                        <p className="text-sm text-slate-400 font-medium">E-Mail</p>
-                        <p className="text-white font-bold text-lg cyber-neon-orange">{user.email || "Nicht angegeben"}</p>
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">E-Mail</p>
+                        <p className="text-slate-800 font-semibold text-lg">{user.email || "Nicht angegeben"}</p>
                       </div>
                     </motion.div>
                     <motion.div 
-                      whileHover={{ scale: 1.02 }}
-                      className="flex items-center gap-3 p-6 bg-slate-900/60 rounded-xl border-2 border-primary/40 backdrop-blur-xl hover:shadow-[0_0_30px_oklch(0.70_0.25_150_/_0.4)] transition-all duration-300"
+                      whileHover={{ scale: 1.01, x: 4 }}
+                      className="flex items-center gap-4 p-5 bg-gradient-to-r from-blue-50 to-white rounded-2xl border border-blue-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-300"
                     >
-                      <MapPin className="h-6 w-6 text-primary" />
+                      <div className="p-3 bg-blue-500/10 rounded-xl">
+                        <MapPin className="h-5 w-5 text-blue-600" />
+                      </div>
                       <div>
-                        <p className="text-sm text-slate-400 font-medium">Land</p>
-                        <p className="text-white font-bold text-lg">{COUNTRIES.find(c => c.code === formData.country)?.name || "Deutschland"}</p>
+                        <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Land</p>
+                        <p className="text-slate-800 font-semibold text-lg">{COUNTRIES.find(c => c.code === formData.country)?.name || "Deutschland"}</p>
                       </div>
                     </motion.div>
                   </div>
@@ -472,28 +514,33 @@ export default function Profile() {
           </Card>
 
           {/* DSGVO: Data Export Card */}
-          <Card className="cyber-glass-card border-2 border-primary/40 hover:shadow-[0_0_60px_oklch(0.70_0.25_150_/_0.6)] transition-all duration-500 mb-8">
-            <CardHeader className="pb-4 border-b border-slate-700/50">
-              <CardTitle className="text-3xl font-extrabold cyber-chrome-text flex items-center gap-3">
-                <Shield className="h-8 w-8 text-primary" />
+          <Card className="relative overflow-hidden bg-white border-0 shadow-xl shadow-slate-200/50 rounded-3xl">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-violet-500 to-purple-500" />
+            <CardHeader className="pb-4 border-b border-slate-100">
+              <CardTitle className="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                <div className="p-2 bg-blue-500/10 rounded-xl">
+                  <Shield className="h-6 w-6 text-blue-600" />
+                </div>
                 Datenschutz (DSGVO)
               </CardTitle>
-              <CardDescription className="text-slate-400 mt-2 text-lg font-medium">Deine Rechte nach Art. 20 DSGVO</CardDescription>
+              <CardDescription className="text-slate-500 mt-2">Deine Rechte nach Art. 20 DSGVO</CardDescription>
             </CardHeader>
-            <CardContent className="p-6 md:p-8 space-y-6">
+            <CardContent className="p-8 space-y-6">
               {/* Data Export */}
-              <div className="p-6 bg-slate-900/60 rounded-xl border-2 border-primary/40 backdrop-blur-xl">
+              <div className="p-6 bg-gradient-to-r from-blue-50 to-white rounded-2xl border border-blue-100">
                 <div className="flex items-start gap-4 mb-4">
-                  <Download className="h-6 w-6 text-primary mt-1" />
+                  <div className="p-3 bg-blue-500/10 rounded-xl">
+                    <Download className="h-5 w-5 text-blue-600" />
+                  </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-white mb-2">Datenexport</h3>
-                    <p className="text-slate-400 text-sm mb-4">
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Datenexport</h3>
+                    <p className="text-slate-500 text-sm mb-4">
                       Lade alle deine gespeicherten Daten als JSON-Datei herunter. Dies umfasst dein Profil, Bestellungen, Nachrichten und mehr.
                     </p>
                     <Button
                       onClick={handleDataExport}
                       disabled={exportDataMutation.isPending}
-                      className="cyber-neon-button text-white font-bold px-6 py-3"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-xl shadow-lg shadow-blue-500/20"
                     >
                       {exportDataMutation.isPending ? (
                         <>
@@ -512,11 +559,13 @@ export default function Profile() {
               </div>
 
               {/* Account Deletion */}
-              <div className="p-6 bg-slate-900/60 rounded-xl border-2 border-red-500/40 backdrop-blur-xl">
+              <div className="p-6 bg-gradient-to-r from-red-50 to-white rounded-2xl border border-red-100">
                 <div className="flex items-start gap-4 mb-4">
-                  <Trash2 className="h-6 w-6 text-red-500 mt-1" />
+                  <div className="p-3 bg-red-500/10 rounded-xl">
+                    <Trash2 className="h-5 w-5 text-red-500" />
+                  </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-white mb-2">Account löschen</h3>
+                    <h3 className="text-lg font-bold text-slate-800 mb-2">Account löschen</h3>
                     {deletionStatus?.scheduledDeletionAt ? (
                       <div className="space-y-4">
                         <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">

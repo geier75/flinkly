@@ -48,7 +48,7 @@ export function SimilarGigs({ gigId, k = 8, excludeSameSeller = true }: SimilarG
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {data.map((gig) => (
+      {data.map((gig: Parameters<typeof GigCard>[0]['gig']) => (
         <GigCard 
           key={gig.id} 
           gig={gig} 

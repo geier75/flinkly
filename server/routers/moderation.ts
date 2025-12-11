@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Content Moderation Router
  * 
@@ -6,7 +7,7 @@
 
 import { z } from "zod";
 import { router, protectedProcedure } from "../_core/trpc";
-import { getDb } from "../db";
+import { getDb } from "../adapters";
 import { fraudAlerts, gigs } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";

@@ -1,13 +1,193 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CreditCard, Trash2, Check, Plus } from "lucide-react";
+import { CreditCard, Trash2, Check, Plus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { stripePromise } from "@/lib/stripe";
 
 interface SavedPaymentMethodsProps {
   onSelectPaymentMethod: (paymentMethodId: string) => void;
   selectedPaymentMethodId: string | null;
+}
+
+// ============ Add Payment Method Form ============
+
+interface AddPaymentMethodFormProps {
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+function AddPaymentMethodFormInner({ onSuccess, onCancel }: AddPaymentMethodFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const savePaymentMethodMutation = trpc.paymentMethods.save.useMutation({
+    onSuccess: () => {
+      toast.success("Zahlungsmethode erfolgreich hinzugefügt!");
+      onSuccess();
+    },
+    onError: (err) => {
+      setError(err.message || "Fehler beim Speichern");
+      setIsLoading(false);
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!stripe || !elements) {
+      setError("Stripe ist noch nicht geladen");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Confirm the SetupIntent
+      const { error: stripeError, setupIntent } = await stripe.confirmSetup({
+        elements,
+        confirmParams: {
+          return_url: window.location.href, // Not used for redirect: 'if_required'
+        },
+        redirect: 'if_required',
+      });
+
+      if (stripeError) {
+        setError(stripeError.message || "Fehler bei der Kartenverifizierung");
+        setIsLoading(false);
+        return;
+      }
+
+      if (setupIntent && setupIntent.payment_method) {
+        // Save the payment method to our database
+        savePaymentMethodMutation.mutate({
+          stripePaymentMethodId: setupIntent.payment_method as string,
+          setAsDefault: true,
+        });
+      }
+    } catch (err: any) {
+      setError(err.message || "Ein unerwarteter Fehler ist aufgetreten");
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Card className="p-6 bg-slate-900/40 border-slate-700">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h4 className="font-medium text-white">Neue Karte hinzufügen</h4>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={onCancel}
+            className="text-slate-400"
+            disabled={isLoading}
+          >
+            Abbrechen
+          </Button>
+        </div>
+
+        {/* Stripe Payment Element */}
+        <div className="p-4 bg-white rounded-lg">
+          <PaymentElement 
+            options={{
+              layout: 'tabs',
+            }}
+          />
+        </div>
+
+        {error && (
+          <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
+        )}
+
+        <Button
+          type="submit"
+          disabled={!stripe || isLoading}
+          className="w-full bg-gradient-to-r from-accent to-primary hover:from-accent/90 hover:to-primary/90"
+        >
+          {isLoading ? (
+            <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Wird gespeichert...</>
+          ) : (
+            "Karte speichern"
+          )}
+        </Button>
+      </form>
+    </Card>
+  );
+}
+
+function AddPaymentMethodForm({ onSuccess, onCancel }: AddPaymentMethodFormProps) {
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const createSetupIntentMutation = trpc.paymentMethods.createSetupIntent.useMutation({
+    onSuccess: (data) => {
+      if (data.clientSecret) {
+        setClientSecret(data.clientSecret);
+      }
+      setIsLoading(false);
+    },
+    onError: (err) => {
+      setError(err.message || "Fehler beim Initialisieren");
+      setIsLoading(false);
+    },
+  });
+
+  useEffect(() => {
+    createSetupIntentMutation.mutate();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 bg-slate-900/40 border-slate-700">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="w-8 h-8 animate-spin text-accent" />
+        </div>
+      </Card>
+    );
+  }
+
+  if (error || !clientSecret || !stripePromise) {
+    return (
+      <Card className="p-6 bg-slate-900/40 border-slate-700">
+        <div className="text-center py-4">
+          <p className="text-red-400 mb-4">{error || "Stripe konnte nicht geladen werden"}</p>
+          <Button variant="outline" onClick={onCancel}>Abbrechen</Button>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <Elements 
+      stripe={stripePromise} 
+      options={{ 
+        clientSecret,
+        appearance: {
+          theme: 'night',
+          variables: {
+            colorPrimary: '#10b981',
+            colorBackground: '#1e293b',
+            colorText: '#f1f5f9',
+            colorDanger: '#ef4444',
+            fontFamily: 'system-ui, sans-serif',
+            borderRadius: '8px',
+          },
+        },
+      }}
+    >
+      <AddPaymentMethodFormInner onSuccess={onSuccess} onCancel={onCancel} />
+    </Elements>
+  );
 }
 
 /**
@@ -199,45 +379,15 @@ export function SavedPaymentMethods({
         </div>
       )}
 
-      {/* New Card Form Placeholder */}
+      {/* New Card Form with Stripe Elements */}
       {showNewCardForm && (
-        <Card className="p-6 bg-slate-900/40 border-slate-700">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-medium text-white">Neue Karte hinzufügen</h4>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowNewCardForm(false)}
-                className="text-slate-400"
-              >
-                Abbrechen
-              </Button>
-            </div>
-
-            {/* Stripe Elements will be mounted here */}
-            <div
-              id="stripe-payment-element"
-              className="p-4 bg-white rounded-lg"
-            >
-              {/* Placeholder - Stripe Elements will replace this */}
-              <p className="text-sm text-slate-600">
-                Stripe Payment Element wird hier geladen...
-              </p>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <input
-                type="checkbox"
-                id="save-card"
-                className="w-4 h-4 rounded border-slate-600"
-              />
-              <label htmlFor="save-card" className="text-sm text-slate-300">
-                Diese Karte für zukünftige Zahlungen speichern
-              </label>
-            </div>
-          </div>
-        </Card>
+        <AddPaymentMethodForm 
+          onSuccess={() => {
+            setShowNewCardForm(false);
+            refetch();
+          }}
+          onCancel={() => setShowNewCardForm(false)}
+        />
       )}
 
       {/* Info Text */}

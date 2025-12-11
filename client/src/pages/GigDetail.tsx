@@ -5,7 +5,9 @@ import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { VideoScene } from "@/components/webgl/VideoScene";
+import { toast } from "sonner";
+// VideoScene disabled to fix React DOM errors
+// import { VideoScene } from "@/components/webgl/VideoScene";
 import MetaTags from "@/components/MetaTags";
 import { SEO, generateProductSchema, generateBreadcrumbSchema } from "@/components/SEO";
 import { 
@@ -52,8 +54,68 @@ export default function GigDetail() {
   const [starFilter, setStarFilter] = useState<number | null>(null); // null = all, 1-5 = filter by stars
   const [selectedExtras, setSelectedExtras] = useState<number[]>([]);
   const [extrasTotal, setExtrasTotal] = useState(0);
+  const [isFavorited, setIsFavorited] = useState(false);
 
   const { data: gig, isLoading } = trpc.gigs.getById.useQuery({ id: gigId });
+  
+  // Favorites
+  const utils = trpc.useUtils();
+  const { data: favoritesList } = trpc.favorites.list.useQuery();
+  const addFavoriteMutation = trpc.favorites.add.useMutation({
+    onSuccess: () => {
+      utils.favorites.list.invalidate();
+      setIsFavorited(true);
+    },
+  });
+  const removeFavoriteMutation = trpc.favorites.remove.useMutation({
+    onSuccess: () => {
+      utils.favorites.list.invalidate();
+      setIsFavorited(false);
+    },
+  });
+
+  // Check if this gig is favorited
+  useEffect(() => {
+    if (favoritesList && gigId) {
+      const isFav = favoritesList.some(f => f.gigId === gigId);
+      setIsFavorited(isFav);
+    }
+  }, [favoritesList, gigId]);
+
+  const handleToggleFavorite = () => {
+    if (isFavorited) {
+      removeFavoriteMutation.mutate({ gigId });
+      toast.success("Aus Favoriten entfernt", {
+        description: "Das Gig wurde aus deinen Favoriten entfernt.",
+      });
+    } else {
+      addFavoriteMutation.mutate({ gigId });
+      toast.success("Zu Favoriten hinzugefügt", {
+        description: "Das Gig wurde zu deinen Favoriten hinzugefügt.",
+        icon: "❤️",
+      });
+    }
+  };
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    const title = gig?.title || "Gig auf Flinkly";
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch (err) {
+        // User cancelled or error
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(url);
+      toast.success("Link kopiert!", {
+        description: "Der Link wurde in die Zwischenablage kopiert.",
+        icon: "📋",
+      });
+    }
+  };
   
   // Track gig view event
   useEffect(() => {
@@ -67,10 +129,11 @@ export default function GigDetail() {
     }
   }, [gig]);
   const { data: allReviews } = trpc.reviews.getGigReviews.useQuery({ gigId });
-  const { data: similarGigs } = trpc.similarGigs.byGigId.useQuery(
-    { gigId, k: 6 },
-    { enabled: !!gigId }
-  );
+  // Similar Gigs disabled - we only have 10 gigs
+  // const { data: similarGigs } = trpc.similarGigs.byGigId.useQuery(
+  //   { gigId, k: 6 },
+  //   { enabled: !!gigId }
+  // );
   const { data: gigPackagesRaw } = trpc.gigPackages.list.useQuery(
     { gigId },
     { enabled: !!gigId }
@@ -261,26 +324,13 @@ export default function GigDetail() {
         }}
       />
       <MetaTags 
-        title={`${gig.title} ab ${gig.price}€ | Lieferung in ${gig.deliveryDays} Tagen | Flinkly`}
+        title={`${gig.title} ab ${(gig.price / 100).toFixed(0)}€ | Lieferung in ${gig.deliveryDays} Tagen | Flinkly`}
         description={`${gig.description.slice(0, 150)}... ⭐ ${gig.averageRating || 5.0}/5 Sterne. Sichere Zahlung. DSGVO-konform. Geld-zurück-Garantie.`}
         type="website"
       />
 
-      {/* Full-Screen Video Background */}
-      <div className="fixed inset-0 z-0">
-        <VideoScene
-          videoSrc="/videos/marketplace-luxury.mp4"
-          blendMode="overlay"
-          opacity={0.15}
-          brightness={1.5}
-          contrast={1.2}
-          saturation={1.2}
-          className="w-full h-full scale-110"
-        />
-      </div>
-
-      {/* Gradient Overlay */}
-      <div className="fixed inset-0 bg-gradient-to-b from-violet-950/60 via-slate-900/80 to-slate-950/90 z-[1]" />
+      {/* Background - Video disabled to fix React DOM errors */}
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-violet-950 via-slate-900 to-slate-950" />
 
       {/* Content */}
       <div className="relative z-10">
@@ -334,14 +384,21 @@ export default function GigDetail() {
                           <Button
                             size="icon"
                             variant="outline"
-                            className="bg-slate-900/60 backdrop-blur-sm border-slate-700 hover:border-primary text-white"
+                            onClick={handleToggleFavorite}
+                            disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                            className={`backdrop-blur-sm border-2 transition-all duration-300 ${
+                              isFavorited 
+                                ? "bg-rose-500 border-rose-500 text-white hover:bg-rose-600" 
+                                : "bg-white/90 border-white/50 text-slate-700 hover:border-rose-400 hover:text-rose-500"
+                            }`}
                           >
-                            <Heart className="h-5 w-5" />
+                            <Heart className={`h-5 w-5 ${isFavorited ? "fill-white" : ""}`} />
                           </Button>
                           <Button
                             size="icon"
                             variant="outline"
-                            className="bg-slate-900/60 backdrop-blur-sm border-slate-700 hover:border-primary text-white"
+                            onClick={handleShare}
+                            className="bg-white/90 backdrop-blur-sm border-2 border-white/50 text-slate-700 hover:border-blue-400 hover:text-blue-500 transition-all duration-300"
                           >
                             <Share2 className="h-5 w-5" />
                           </Button>
@@ -782,63 +839,14 @@ export default function GigDetail() {
         </section>
       </div>
 
-      {/* Similar Gigs Section */}
-      {similarGigs && similarGigs.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="container mx-auto px-4 py-12"
-        >
-          <h2 className="text-3xl font-black text-white mb-8">
-            Ähnliche Gigs
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {similarGigs.map((similarGig) => (
-              <Link key={similarGig.id} href={`/gig/${similarGig.id}`}>
-                <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl hover:border-primary/50 transition-all duration-300 cursor-pointer group">
-                  {similarGig.imageUrl && (
-                    <div className="relative h-48 overflow-hidden">
-                      <img
-                        src={similarGig.imageUrl}
-                        alt={similarGig.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  <CardContent className="p-6">
-                    <Badge className="mb-2 bg-primary/20 text-primary border-primary/40">
-                      {similarGig.category}
-                    </Badge>
-                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                      {similarGig.title}
-                    </h3>
-                    <p className="text-slate-400 text-sm line-clamp-2 mb-4">
-                      {similarGig.description}
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-slate-400" />
-                        <span className="text-sm text-slate-400">{similarGig.deliveryDays} Tage</span>
-                      </div>
-                      <p className="text-xl font-bold text-white">
-                        {similarGig.price}€
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </motion.div>
-      )}
+      {/* Similar Gigs Section - Disabled (only 10 gigs available) */}
 
       {/* Sticky Bottom Bar (Mobile) - Quick Win #4 */}
       <div className="fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t-2 border-primary/30 p-4 shadow-2xl z-50 md:hidden">
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm text-slate-400">Preis</p>
-            <p className="text-2xl font-black text-white">{selectedPkg.price}€</p>
+            <p className="text-2xl font-black text-white">{(selectedPkg.price / 100).toFixed(0)}€</p>
           </div>
           <Button 
             size="lg"

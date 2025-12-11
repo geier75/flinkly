@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { router, publicProcedure } from "../_core/trpc";
-import { getSimilarGigs as getSimilarGigsFromDb } from "../db";
+import { getSimilarGigs as getSimilarGigsFromDb } from "../adapters";
 import { getSimilarGigs, getTrendingGigs } from "../recommendation";
 
 /**

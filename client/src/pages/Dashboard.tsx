@@ -4,21 +4,45 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
-import { Plus, Package, ShoppingCart, Star, TrendingUp, Zap } from "lucide-react";
+import { Plus, Package, ShoppingCart, Star, TrendingUp, Zap, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useEffect } from "react";
 
 export default function Dashboard() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading } = useAuth();
   const [, setLocation] = useLocation();
 
-  if (!isAuthenticated) {
-    setLocation("/");
-    return null;
+  // ALL hooks must be called before any conditional returns
+  const { data: myGigs } = trpc.gigs.myGigs.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+  const { data: myPurchases } = trpc.orders.myPurchases.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+  const { data: mySales } = trpc.orders.mySales.useQuery(undefined, {
+    enabled: isAuthenticated,
+  });
+
+  useEffect(() => {
+    // Only redirect after loading is complete and user is not authenticated
+    if (!loading && !isAuthenticated) {
+      setLocation("/login");
+    }
+  }, [loading, isAuthenticated, setLocation]);
+
+  // Show loading spinner while loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+      </div>
+    );
   }
 
-  const { data: myGigs } = trpc.gigs.myGigs.useQuery();
-  const { data: myPurchases } = trpc.orders.myPurchases.useQuery();
-  const { data: mySales } = trpc.orders.mySales.useQuery();
+  // Show nothing if not authenticated (will redirect)
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const getStatusBadge = (status: string) => {
     const colors: Record<string, string> = {
@@ -108,17 +132,20 @@ export default function Dashboard() {
             >
               {/* Active Gigs Card */}
               <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
+                whileHover={{ scale: 1.02, y: -8 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="bg-white shadow-sm border-2 border-primary/40 group transition-all duration-500 hover:shadow-md">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-lg font-bold text-slate-200">Aktive Gigs</CardTitle>
-                    <Package className="h-8 w-8 text-primary animate-pulse" />
+                <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-white border-0 shadow-xl shadow-emerald-500/10 group transition-all duration-500 hover:shadow-2xl hover:shadow-emerald-500/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-bl-full" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-emerald-700 uppercase tracking-wider">Aktive Gigs</CardTitle>
+                    <div className="p-3 bg-emerald-500/10 rounded-xl">
+                      <Package className="h-6 w-6 text-emerald-600" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-5xl font-extrabold text-emerald-600 mb-2">{myGigs?.length || 0}</div>
-                    <p className="text-sm text-slate-600 font-medium">
+                  <CardContent className="relative z-10">
+                    <div className="text-5xl font-black text-emerald-600 mb-2">{myGigs?.length || 0}</div>
+                    <p className="text-sm text-slate-500 font-medium">
                       {myGigs?.filter((g) => g.active).length || 0} aktiv • {myGigs?.filter((g) => !g.active).length || 0} inaktiv
                     </p>
                   </CardContent>
@@ -127,19 +154,22 @@ export default function Dashboard() {
 
               {/* Orders Card */}
               <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
+                whileHover={{ scale: 1.02, y: -8 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="bg-white shadow-sm border-2 border-accent/40 group transition-all duration-500 hover:shadow-md">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-lg font-bold text-slate-200">Bestellungen</CardTitle>
-                    <ShoppingCart className="h-8 w-8 text-accent animate-pulse" />
+                <Card className="relative overflow-hidden bg-gradient-to-br from-orange-50 to-white border-0 shadow-xl shadow-orange-500/10 group transition-all duration-500 hover:shadow-2xl hover:shadow-orange-500/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-orange-500/20 to-transparent rounded-bl-full" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-orange-700 uppercase tracking-wider">Bestellungen</CardTitle>
+                    <div className="p-3 bg-orange-500/10 rounded-xl">
+                      <ShoppingCart className="h-6 w-6 text-orange-600" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-5xl font-extrabold text-orange-600 font-bold mb-2">
+                  <CardContent className="relative z-10">
+                    <div className="text-5xl font-black text-orange-600 mb-2">
                       {(myPurchases?.length || 0) + (mySales?.length || 0)}
                     </div>
-                    <p className="text-sm text-slate-600 font-medium">
+                    <p className="text-sm text-slate-500 font-medium">
                       {myPurchases?.filter((o) => o.status === "completed").length || 0} abgeschlossen
                     </p>
                   </CardContent>
@@ -148,17 +178,20 @@ export default function Dashboard() {
 
               {/* Rating Card */}
               <motion.div
-                whileHover={{ scale: 1.05, y: -5 }}
+                whileHover={{ scale: 1.02, y: -8 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="bg-white shadow-sm border-2 border-yellow-500/40 group transition-all duration-500 hover:shadow-md">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-                    <CardTitle className="text-lg font-bold text-slate-200">Bewertung</CardTitle>
-                    <Star className="h-8 w-8 text-yellow-500 animate-pulse" />
+                <Card className="relative overflow-hidden bg-gradient-to-br from-amber-50 to-white border-0 shadow-xl shadow-amber-500/10 group transition-all duration-500 hover:shadow-2xl hover:shadow-amber-500/20">
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-500/20 to-transparent rounded-bl-full" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-amber-700 uppercase tracking-wider">Bewertung</CardTitle>
+                    <div className="p-3 bg-amber-500/10 rounded-xl">
+                      <Star className="h-6 w-6 text-amber-500 fill-amber-500" />
+                    </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="text-5xl font-extrabold text-yellow-400 mb-2" style={{textShadow: '0 0 20px rgba(234, 179, 8, 0.8)'}}>4.8</div>
-                    <p className="text-sm text-slate-600 font-medium">basierend auf 12 Bewertungen</p>
+                  <CardContent className="relative z-10">
+                    <div className="text-5xl font-black text-amber-500 mb-2">4.8</div>
+                    <p className="text-sm text-slate-500 font-medium">basierend auf 12 Bewertungen</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -170,27 +203,48 @@ export default function Dashboard() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
             >
-              <Card className="bg-white shadow-sm border-2 border-slate-700/50">
+              <Card className="relative overflow-hidden bg-gradient-to-br from-slate-50 to-white border-0 shadow-xl">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-primary to-accent" />
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold text-slate-900 font-bold">Schnellstart</CardTitle>
+                  <CardTitle className="text-xl font-bold text-slate-800">Schnellstart</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="grid md:grid-cols-3 gap-4">
                   <Link href="/marketplace">
-                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-slate-900 hover:border-primary hover:bg-primary/10 hover:shadow-md transition-all duration-300 py-6">
-                      <Zap className="h-5 w-5 mr-3 text-primary" />
-                      Marketplace erkunden
-                    </Button>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      className="p-5 rounded-2xl bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-500/10 transition-all duration-300 cursor-pointer group"
+                    >
+                      <div className="p-3 bg-emerald-500/10 rounded-xl w-fit mb-3 group-hover:bg-emerald-500/20 transition-colors">
+                        <Sparkles className="h-6 w-6 text-emerald-600" />
+                      </div>
+                      <h3 className="font-semibold text-slate-800 mb-1">Marktplatz erkunden</h3>
+                      <p className="text-sm text-slate-500">Entdecke neue Services</p>
+                    </motion.div>
                   </Link>
                   <Link href="/create-gig">
-                    <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-slate-900 hover:border-accent hover:bg-accent/10 hover:shadow-md transition-all duration-300 py-6">
-                      <Plus className="h-5 w-5 mr-3 text-accent" />
-                      Erstes Gig erstellen
-                    </Button>
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      className="p-5 rounded-2xl bg-gradient-to-br from-violet-50 to-white border border-violet-100 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-500/10 transition-all duration-300 cursor-pointer group"
+                    >
+                      <div className="p-3 bg-violet-500/10 rounded-xl w-fit mb-3 group-hover:bg-violet-500/20 transition-colors">
+                        <Plus className="h-6 w-6 text-violet-600" />
+                      </div>
+                      <h3 className="font-semibold text-slate-800 mb-1">Erster Gig erstellen</h3>
+                      <p className="text-sm text-slate-500">Starte als Verkäufer</p>
+                    </motion.div>
                   </Link>
-                  <Button variant="outline" className="w-full justify-start text-lg border-2 border-slate-600 text-slate-900 hover:border-primary hover:bg-primary/10 hover:shadow-md transition-all duration-300 py-6">
-                    <Star className="h-5 w-5 mr-3 text-yellow-500" />
-                    Profil bearbeiten
-                  </Button>
+                  <Link href="/profile">
+                    <motion.div
+                      whileHover={{ scale: 1.02, y: -4 }}
+                      className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-white border border-amber-100 hover:border-amber-300 hover:shadow-lg hover:shadow-amber-500/10 transition-all duration-300 cursor-pointer group"
+                    >
+                      <div className="p-3 bg-amber-500/10 rounded-xl w-fit mb-3 group-hover:bg-amber-500/20 transition-colors">
+                        <Star className="h-6 w-6 text-amber-500" />
+                      </div>
+                      <h3 className="font-semibold text-slate-800 mb-1">Profil bearbeiten</h3>
+                      <p className="text-sm text-slate-500">Optimiere dein Profil</p>
+                    </motion.div>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
@@ -264,7 +318,12 @@ export default function Dashboard() {
                             >
                               {gig.active ? "Aktiv" : "Inaktiv"}
                             </span>
-                            <Button variant="outline" size="sm" className="border-2 border-slate-600 text-slate-900 hover:border-accent hover:bg-accent/10 hover:shadow-md font-semibold px-6">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="border-2 border-slate-600 text-slate-900 hover:border-accent hover:bg-accent/10 hover:shadow-md font-semibold px-6"
+                              onClick={() => setLocation(`/edit-gig/${gig.id}`)}
+                            >
                               Bearbeiten
                             </Button>
                           </div>

@@ -1,0 +1,949 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { motion } from "framer-motion";
+import { Link } from "wouter";
+import { FileText, Shield, AlertTriangle, ArrowLeft } from "lucide-react";
+
+export default function Terms() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+      {/* Premium Header */}
+      <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900">
+        <div className="container mx-auto px-4 py-12">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <Link href="/">
+              <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/10 mb-6">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Zurück zur Startseite
+              </Button>
+            </Link>
+            <div className="flex items-center gap-4">
+              <div className="p-4 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-2xl shadow-blue-500/30">
+                <FileText className="h-8 w-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-4xl font-bold text-white">Allgemeine Geschäftsbedingungen</h1>
+                <p className="text-slate-400 mt-1">Stand: Dezember 2024 | DSA/P2B-konform | EU-weit gültig</p>
+                <p className="text-blue-400 text-sm mt-1 font-medium">Gültig für: flinkly.eu – Marktplatz für digitale Dienstleistungen</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="space-y-8"
+        >
+          {/* Important Notice */}
+          <Card className="relative overflow-hidden bg-white border-0 shadow-xl shadow-slate-200/50 rounded-3xl p-8">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-500 to-orange-500" />
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-amber-500/10 rounded-xl flex-shrink-0">
+                <AlertTriangle className="h-6 w-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-slate-800 mb-3">
+                  Wichtiger Hinweis
+                </h3>
+                <p className="text-slate-600 leading-relaxed">
+                  Diese AGB wurden mit größter Sorgfalt erstellt, ersetzen jedoch <span className="font-semibold text-amber-600">keine rechtliche Beratung</span>. 
+                  Für rechtsverbindliche Nutzungsbedingungen konsultieren Sie bitte einen auf IT-Recht spezialisierten Anwalt. 
+                  Diese Version dient als <span className="font-semibold text-emerald-600">Vorlage</span> und muss an Ihre spezifischen Geschäftsanforderungen angepasst werden.
+                </p>
+              </div>
+            </div>
+          </Card>
+
+            {/* Section 1 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                1. GELTUNGSBEREICH UND <span className="cyber-neon-green">VERTRAGSPARTNER</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Diese Allgemeinen Geschäftsbedingungen (nachfolgend "AGB") gelten für die Nutzung der Online-Plattform 
+                  <span className="cyber-neon-orange font-semibold"> Flinkly</span> (nachfolgend "Plattform") und regeln das Vertragsverhältnis zwischen:
+                </p>
+                
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6 my-6">
+                  <p className="font-semibold text-white mb-3">Betreiber der Plattform:</p>
+                  <p className="text-slate-300">
+                    MiMi Tech Ai UG (haftungsbeschränkt)<br />
+                    Lindenplatz 23<br />
+                    75378 Bad Liebenzell<br />
+                    Deutschland<br />
+                    <br />
+                    Vertreten durch: Michael Bemler (Geschäftsführer)<br />
+                    Handelsregister: Amtsgericht Stuttgart, HRB [NUMMER EINTRAGEN]<br />
+                    USt-IdNr.: DE [UST-ID EINTRAGEN]
+                  </p>
+                </div>
+
+                <p>
+                  und den Nutzern der Plattform (nachfolgend "Nutzer", "Käufer" oder "Verkäufer").
+                </p>
+
+                <p>
+                  Durch die Registrierung auf Flinkly und die Nutzung der Plattform erklären Sie sich mit diesen AGB 
+                  <span className="cyber-neon-green font-semibold"> ausdrücklich einverstanden</span>. 
+                  Abweichende, entgegenstehende oder ergänzende AGB des Nutzers werden nicht Vertragsbestandteil, 
+                  es sei denn, ihrer Geltung wird ausdrücklich zugestimmt.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 2 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                2. LEISTUNGSBESCHREIBUNG UND <span className="cyber-neon-orange">PLATTFORM-FUNKTION</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Flinkly ist ein <span className="cyber-neon-green font-semibold">Online-Marktplatz für Freelancer-Dienstleistungen</span> mit 
+                  Sitz in Deutschland für Nutzer aus der gesamten EU. 
+                  Die Plattform ermöglicht es Verkäufern (Freelancern), ihre Dienstleistungen anzubieten, und Käufern, diese zu erwerben.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Kernfunktionen der Plattform:</h3>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-emerald-400 mb-2">✓ Gig-Erstellung</h4>
+                    <p className="text-sm">Verkäufer können Dienstleistungen ("Gigs") mit Beschreibung, Preis und Lieferzeit einstellen</p>
+                  </div>
+                  
+                  <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-emerald-400 mb-2">✓ Treuhand-System</h4>
+                    <p className="text-sm">Sichere Zahlungsabwicklung via Stripe mit Käuferschutz (Escrow)</p>
+                  </div>
+                  
+                  <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-emerald-400 mb-2">✓ Bewertungssystem</h4>
+                    <p className="text-sm">Transparente 5-Sterne-Bewertungen für Qualitätssicherung</p>
+                  </div>
+                  
+                  <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-emerald-400 mb-2">✓ Messaging-System</h4>
+                    <p className="text-sm">Direkte Kommunikation zwischen Käufer und Verkäufer</p>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Plattform-Beschränkungen:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Maximaler Preis:</span> 250€ pro Gig (inkl. MwSt.)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Nur digitale Dienstleistungen:</span> Keine physischen Produkte oder Vor-Ort-Services</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">EU-Fokus:</span> Plattform für Nutzer aus der gesamten Europäischen Union</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <p className="mt-6">
+                  Flinkly tritt <span className="cyber-neon-green font-semibold">nicht als Vertragspartei</span> der zwischen Käufer und Verkäufer 
+                  geschlossenen Verträge auf, sondern stellt lediglich die technische Infrastruktur bereit. 
+                  Die Verantwortung für die Erfüllung der Verträge liegt ausschließlich bei den jeweiligen Verkäufern.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 3 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                3. REGISTRIERUNG UND <span className="cyber-neon-green">NUTZER-KONTO</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Die Nutzung der Plattform erfordert eine <span className="cyber-neon-orange font-semibold">Registrierung</span>. 
+                  Zur Registrierung sind nur volljährige, geschäftsfähige Personen berechtigt.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Registrierungsprozess:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6 space-y-3">
+                  <p><span className="cyber-neon-green font-semibold">1.</span> Angabe wahrheitsgemäßer und vollständiger Daten (Name, E-Mail, ggf. Telefonnummer)</p>
+                  <p><span className="cyber-neon-green font-semibold">2.</span> Bestätigung der E-Mail-Adresse via Verifizierungslink</p>
+                  <p><span className="cyber-neon-green font-semibold">3.</span> Zustimmung zu diesen AGB und der Datenschutzerklärung</p>
+                  <p><span className="cyber-neon-green font-semibold">4.</span> Für Verkäufer: Zusätzliche Verifizierung (E-Mail, ggf. Telefon, Admin-Approval)</p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Pflichten des Nutzers:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Geheimhaltung der Zugangsdaten:</span> Der Nutzer ist verpflichtet, seine Zugangsdaten geheim zu halten</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Keine Mehrfach-Accounts:</span> Pro Person ist nur ein Account zulässig</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Aktualität der Daten:</span> Änderungen der Kontaktdaten sind unverzüglich mitzuteilen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Missbrauchsmeldung:</span> Bei Verdacht auf unbefugte Nutzung ist Flinkly sofort zu informieren</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <p className="mt-6">
+                  Flinkly behält sich das Recht vor, Registrierungen ohne Angabe von Gründen abzulehnen oder 
+                  Nutzerkonten bei Verstoß gegen diese AGB zu <span className="cyber-neon-orange font-semibold">sperren oder zu löschen</span>.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 4 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                4. VERTRAGSSCHLUSS UND <span className="cyber-neon-orange">ZAHLUNGSABWICKLUNG</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4">Vertragsschluss zwischen Käufer und Verkäufer:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6 space-y-3">
+                  <p><span className="cyber-neon-green font-semibold">1.</span> Der Verkäufer erstellt ein Gig-Angebot (verbindliches Angebot gem. § 145 BGB)</p>
+                  <p><span className="cyber-neon-green font-semibold">2.</span> Der Käufer bestellt das Gig und gibt ein Briefing ab (Annahme des Angebots)</p>
+                  <p><span className="cyber-neon-green font-semibold">3.</span> Der Käufer zahlt den Gig-Preis via Stripe (Treuhand-System)</p>
+                  <p><span className="cyber-neon-green font-semibold">4.</span> Der Verkäufer erhält eine Benachrichtigung und beginnt mit der Arbeit</p>
+                  <p><span className="cyber-neon-green font-semibold">5.</span> Nach Lieferung und Abnahme wird der Betrag an den Verkäufer ausgezahlt</p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Zahlungsabwicklung (Escrow-System):</h3>
+                
+                <p>
+                  Alle Zahlungen werden über <span className="cyber-neon-orange font-semibold">Stripe</span> abgewickelt. 
+                  Der Kaufpreis wird zunächst auf einem Treuhandkonto verwahrt und erst nach erfolgreicher Lieferung und 
+                  Abnahme durch den Käufer an den Verkäufer ausgezahlt.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6 mt-4">
+                  <h4 className="font-bold text-white mb-3">Plattform-Gebühr:</h4>
+                  <p className="mb-2">
+                    Flinkly erhebt eine Provision von <span className="cyber-neon-orange font-semibold">15% des Gig-Preises</span> (zzgl. MwSt.), 
+                    die vom Verkäufer getragen wird.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Beispiel: Bei einem Gig-Preis von 100€ erhält der Verkäufer 85€ (abzgl. Stripe-Gebühren), 
+                    Flinkly erhält 15€ (zzgl. MwSt.).
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Auszahlung an Verkäufer:</h3>
+                
+                <p>
+                  Die Auszahlung erfolgt via <span className="cyber-neon-green font-semibold">Stripe Connect</span> auf das vom Verkäufer 
+                  hinterlegte Bankkonto. Auszahlungen werden in der Regel innerhalb von 
+                  <span className="cyber-neon-orange font-semibold"> 2-7 Werktagen</span> nach Abnahme durch den Käufer veranlasst.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 5 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                5. WIDERRUFSRECHT UND <span className="cyber-neon-green">RÜCKGABERECHT</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Käufer haben gemäß § 312g BGB ein <span className="cyber-neon-orange font-semibold">14-tägiges Widerrufsrecht</span> 
+                  ab Vertragsschluss. Detaillierte Informationen finden Sie in unserer 
+                  <Link href="/widerruf">
+                    <span className="cyber-neon-green font-semibold underline cursor-pointer hover:text-emerald-300 transition-colors"> Widerrufsbelehrung</span>
+                  </Link>.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h4 className="font-bold text-white mb-3 flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-orange-500" />
+                    Wichtiger Hinweis zum Widerrufsrecht:
+                  </h4>
+                  <p className="mb-3">
+                    Das Widerrufsrecht erlischt vorzeitig, wenn der Verkäufer mit der Ausführung der Dienstleistung 
+                    <span className="cyber-neon-orange font-semibold"> vor Ablauf der Widerrufsfrist</span> begonnen hat und 
+                    der Käufer dem ausdrücklich zugestimmt hat.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Durch die Bestätigung des Briefings und die Zahlung stimmt der Käufer der sofortigen Ausführung zu.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Muster-Widerrufsformular:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <p className="mb-4 font-semibold text-white">Wenn Sie den Vertrag widerrufen wollen, füllen Sie bitte dieses Formular aus und senden Sie es an:</p>
+                  <p className="mb-4 text-sm">
+                    MiMi Tech Ai UG (haftungsbeschränkt)<br />
+                    Michael Bemler<br />
+                    Lindenplatz 23<br />
+                    75378 Bad Liebenzell<br />
+                    E-Mail: info@mimitechai.com
+                  </p>
+                  <div className="bg-slate-800/60 border border-emerald-500/30 rounded p-4 font-mono text-sm">
+                    <p className="mb-2">Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung:</p>
+                    <p className="mb-2">_______________________________________</p>
+                    <p className="mb-2">Bestellt am (*) / erhalten am (*): _______________________________________</p>
+                    <p className="mb-2">Name des/der Verbraucher(s): _______________________________________</p>
+                    <p className="mb-2">Anschrift des/der Verbraucher(s): _______________________________________</p>
+                    <p className="mb-2">Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier): _______________________________________</p>
+                    <p>Datum: _______________________________________</p>
+                    <p className="text-xs text-slate-400 mt-4">(*) Unzutreffendes streichen.</p>
+                  </div>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Folgen des Widerrufs:</h3>
+                
+                <p>
+                  Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, 
+                  <span className="cyber-neon-orange font-semibold">unverzüglich und spätestens binnen vierzehn Tagen</span> ab dem Tag zurückzuzahlen, 
+                  an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.
+                </p>
+
+                <p className="mt-4">
+                  Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, 
+                  es sei denn, mit Ihnen wurde ausdrücklich etwas anderes vereinbart.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Rückgaberecht bei Mängeln:</h3>
+                
+                <p>
+                  Bei Mängeln der gelieferten Dienstleistung hat der Käufer Anspruch auf 
+                  <span className="cyber-neon-green font-semibold"> Nachbesserung</span> (Revision). 
+                  Der Verkäufer ist verpflichtet, die Mängel innerhalb einer angemessenen Frist zu beheben.
+                </p>
+
+                <p>
+                  Ist die Nachbesserung nicht möglich oder wird sie verweigert, kann der Käufer vom Vertrag zurücktreten und 
+                  eine <span className="cyber-neon-orange font-semibold">vollständige Rückerstattung</span> verlangen.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 6 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                6. PFLICHTEN DER <span className="cyber-neon-orange">VERKÄUFER</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Verkäufer verpflichten sich zur Einhaltung folgender Grundsätze:
+                </p>
+
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-emerald-400 mb-3">✓ Qualitätsstandards</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• Professionelle Ausführung der Dienstleistung</li>
+                      <li>• Einhaltung der angegebenen Lieferzeit</li>
+                      <li>• Kommunikation mit dem Käufer</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-emerald-400 mb-3">✓ Rechtliche Vorgaben</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• Keine urheberrechtsverletzenden Inhalte</li>
+                      <li>• Keine illegalen oder sittenwidrigen Angebote</li>
+                      <li>• Einhaltung der DSGVO</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-orange-400 mb-3">✓ Impressumspflicht</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• Gewerbliche Verkäufer müssen ein Impressum angeben</li>
+                      <li>• Vollständige Anbieterdaten erforderlich</li>
+                      <li>• Umsatzsteuer-ID bei Umsatz &gt; 22.000€/Jahr</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                    <h4 className="font-bold text-orange-400 mb-3">✓ Steuerpflichten</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>• Eigenverantwortliche Versteuerung der Einnahmen</li>
+                      <li>• Kleinunternehmerregelung (§ 19 UStG) möglich</li>
+                      <li>• Flinkly erstellt keine Rechnungen für Verkäufer</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-red-500/30 rounded-xl p-6 mt-6">
+                  <h4 className="font-bold text-red-400 mb-3 flex items-center gap-2">
+                    <Shield className="h-5 w-5" />
+                    Verbotene Inhalte und Dienstleistungen:
+                  </h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">✗</span>
+                      <span>Illegale Dienstleistungen (Hacking, Betrug, Urheberrechtsverletzungen)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">✗</span>
+                      <span>Gewaltverherrlichende, rassistische oder diskriminierende Inhalte</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">✗</span>
+                      <span>Verkauf von Fake-Bewertungen, Follower-Käufe oder ähnliche Manipulationen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">✗</span>
+                      <span>Phishing, Spam oder andere betrügerische Aktivitäten</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+
+            {/* Section 7 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                7. HAFTUNG UND <span className="cyber-neon-green">GEWÄHRLEISTUNG</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4">Haftung von Flinkly:</h3>
+                
+                <p>
+                  Flinkly haftet <span className="cyber-neon-orange font-semibold">nicht</span> für die Qualität, Rechtmäßigkeit oder 
+                  Vollständigkeit der von Verkäufern angebotenen Dienstleistungen. Die Verantwortung für die Erfüllung der Verträge 
+                  liegt ausschließlich bei den jeweiligen Verkäufern.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <p className="mb-3">
+                    Flinkly haftet nur für <span className="cyber-neon-green font-semibold">Vorsatz und grobe Fahrlässigkeit</span>. 
+                    Die Haftung für leichte Fahrlässigkeit ist ausgeschlossen, soweit nicht wesentliche Vertragspflichten 
+                    (Kardinalpflichten) verletzt werden.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Kardinalpflichten sind solche Pflichten, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags 
+                    überhaupt erst ermöglicht und auf deren Einhaltung der Nutzer regelmäßig vertrauen darf.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Haftung der Verkäufer:</h3>
+                
+                <p>
+                  Verkäufer haften gegenüber Käufern für die <span className="cyber-neon-orange font-semibold">ordnungsgemäße Erfüllung</span> 
+                  der vereinbarten Dienstleistungen. Bei Mängeln oder Verzug gelten die gesetzlichen Gewährleistungsrechte.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Streitbeilegung:</h3>
+                
+                <p>
+                  Bei Streitigkeiten zwischen Käufer und Verkäufer bietet Flinkly ein 
+                  <span className="cyber-neon-green font-semibold"> internes Mediationsverfahren</span> an. 
+                  Beide Parteien können einen Streitfall melden, woraufhin ein Admin-Mediator die Angelegenheit prüft und 
+                  eine Lösung vorschlägt.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 8 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                8. DATENSCHUTZ UND <span className="cyber-neon-orange">DSGVO-COMPLIANCE</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Der Schutz Ihrer personenbezogenen Daten ist uns wichtig. Flinkly verarbeitet alle Daten 
+                  <span className="cyber-neon-green font-semibold"> DSGVO-konform</span> und ausschließlich zu den in der 
+                  <Link href="/privacy">
+                    <span className="cyber-neon-green font-semibold underline cursor-pointer hover:text-emerald-300 transition-colors"> Datenschutzerklärung</span>
+                  </Link> genannten Zwecken.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h4 className="font-bold text-white mb-3">Ihre Rechte gemäß DSGVO:</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Auskunftsrecht (Art. 15):</span> Sie können jederzeit Auskunft über Ihre gespeicherten Daten verlangen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Berichtigungsrecht (Art. 16):</span> Fehlerhafte Daten können korrigiert werden</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Löschungsrecht (Art. 17):</span> Sie können die Löschung Ihrer Daten verlangen (30-Tage-Frist)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Datenportabilität (Art. 20):</span> Export Ihrer Daten in maschinenlesbarem Format (JSON/CSV)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <p className="mt-4">
+                  Zur Ausübung Ihrer Rechte nutzen Sie bitte unser 
+                  <Link href="/privacy-dashboard">
+                    <span className="cyber-neon-orange font-semibold underline cursor-pointer hover:text-orange-300 transition-colors"> Privacy-Dashboard</span>
+                  </Link> oder kontaktieren Sie unseren Datenschutzbeauftragten.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 9 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                9. ÄNDERUNGEN DER AGB UND <span className="cyber-neon-green">KÜNDIGUNG</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4">Änderungen der AGB:</h3>
+                
+                <p>
+                  Flinkly behält sich das Recht vor, diese AGB jederzeit zu ändern. 
+                  Nutzer werden über Änderungen <span className="cyber-neon-orange font-semibold">mindestens 30 Tage im Voraus</span> per 
+                  E-Mail informiert. Widerspricht der Nutzer den Änderungen nicht innerhalb dieser Frist, gelten die neuen AGB als akzeptiert.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Kündigung des Nutzerkontos:</h3>
+                
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <p className="mb-3">
+                    Nutzer können ihr Konto jederzeit <span className="cyber-neon-green font-semibold">ohne Angabe von Gründen</span> kündigen. 
+                    Die Kündigung erfolgt über die Account-Einstellungen oder per E-Mail an support@mimitechai.com.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Hinweis: Bei Kündigung werden Ihre Daten nach einer 30-tägigen Wartezeit gelöscht. 
+                    Laufende Aufträge müssen vor der Kündigung abgeschlossen werden.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Sperrung durch Flinkly:</h3>
+                
+                <p>
+                  Flinkly kann Nutzerkonten bei Verstoß gegen diese AGB <span className="cyber-neon-orange font-semibold">sperren oder löschen</span>. 
+                  Gründe für eine Sperrung sind u.a.:
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-red-500/30 rounded-xl p-6">
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">•</span>
+                      <span>Wiederholte Verstöße gegen die Qualitätsstandards</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">•</span>
+                      <span>Betrügerische Aktivitäten oder Manipulation von Bewertungen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">•</span>
+                      <span>Belästigung oder Diskriminierung anderer Nutzer</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="text-red-400 font-bold">•</span>
+                      <span>Verstoß gegen gesetzliche Vorschriften</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+
+            {/* Section 9.5: Plattformhaftung (DSA) */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                9.5. PLATTFORMHAFTUNG UND <span className="cyber-neon-orange">NOTICE-AND-TAKEDOWN</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Flinkly ist ein <span className="cyber-neon-green font-semibold">Vermittler</span> zwischen Käufern und Verkäufern und 
+                  <span className="cyber-neon-orange font-semibold"> nicht Vertragspartner</span> der zwischen Nutzern geschlossenen Verträge.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h4 className="font-bold text-white mb-3">Haftungsbeschränkung (DSA Art. 6):</h4>
+                  <p className="mb-3">
+                    Flinkly haftet <span className="cyber-neon-orange font-semibold">nicht</span> für die von Verkäufern angebotenen Dienstleistungen, 
+                    deren Qualität, Rechtmäßigkeit oder Vollständigkeit. Die Verantwortung liegt ausschließlich beim jeweiligen Verkäufer.
+                  </p>
+                  <p className="text-sm text-slate-400">
+                    Flinkly übernimmt keine Prüfpflicht für Nutzerinhalte (Gig-Beschreibungen, Bewertungen, Nachrichten), 
+                    es sei denn, wir erlangen Kenntnis von rechtswidrigen Inhalten.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Notice-and-Takedown-Verfahren:</h3>
+                
+                <p>
+                  Wenn Sie der Meinung sind, dass ein Gig-Angebot oder Nutzerinhalt gegen geltendes Recht verstößt, 
+                  können Sie uns dies über unser <span className="cyber-neon-green font-semibold">Meldeformular</span> mitteilen:
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6 mt-4">
+                  <h4 className="font-bold text-white mb-3">Meldung rechtswidriger Inhalte:</h4>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">E-Mail:</span> meldung@mimitechai.com</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Betreff:</span> "Notice-and-Takedown: [Gig-ID oder Nutzer-ID]"</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Inhalt:</span> Detaillierte Beschreibung des Verstoßes + Rechtsgrundlage</span>
+                    </li>
+                  </ul>
+                  <p className="mt-4 text-sm text-slate-400">
+                    Wir prüfen Ihre Meldung <span className="cyber-neon-orange font-semibold">innerhalb von 48 Stunden</span> und 
+                    entfernen rechtswidrige Inhalte unverzüglich.
+                  </p>
+                </div>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Haftung für eigene Inhalte:</h3>
+                
+                <p>
+                  Flinkly haftet für eigene Inhalte (z.B. Plattform-Texte, Hilfe-Artikel) nach den allgemeinen Gesetzen. 
+                  Für Nutzerinhalte haften wir nur, wenn wir von der Rechtswidrigkeit Kenntnis erlangen und nicht unverzüglich handeln.
+                </p>
+              </div>
+            </Card>
+
+            {/* Section 10 */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                10. SCHLUSSBESTIMMUNGEN UND <span className="cyber-neon-orange">ANWENDBARES RECHT</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <h3 className="text-xl font-bold text-white mb-4">Anwendbares Recht:</h3>
+                
+                <p>
+                  Es gilt das Recht der <span className="cyber-neon-green font-semibold">Bundesrepublik Deutschland</span> unter 
+                  Ausschluss des UN-Kaufrechts (CISG). Für Verbraucher gilt diese Rechtswahl nur insoweit, als dadurch keine 
+                  zwingenden gesetzlichen Bestimmungen des Staates, in dem der Verbraucher seinen gewöhnlichen Aufenthalt hat, 
+                  eingeschränkt werden.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Gerichtsstand:</h3>
+                
+                <p>
+                  Gerichtsstand für alle Streitigkeiten aus und im Zusammenhang mit diesen AGB ist 
+                  <span className="cyber-neon-orange font-semibold"> [ORT DES FIRMENSITZES]</span>, 
+                  sofern der Nutzer Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen ist.
+                </p>
+
+                <h3 className="text-xl font-bold text-white mt-6 mb-4">Salvatorische Klausel:</h3>
+                
+                <p>
+                  Sollten einzelne Bestimmungen dieser AGB unwirksam oder undurchführbar sein oder werden, 
+                  bleibt die Wirksamkeit der übrigen Bestimmungen hiervon unberührt. 
+                  Anstelle der unwirksamen oder undurchführbaren Bestimmung tritt eine Regelung, 
+                  die dem wirtschaftlichen Zweck der unwirksamen Bestimmung am nächsten kommt.
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6 mt-6">
+                  <h4 className="font-bold text-white mb-3">Online-Streitbeilegung (OS-Plattform):</h4>
+                  <p className="mb-2">
+                    Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit:
+                  </p>
+                  <a 
+                    href="https://ec.europa.eu/consumers/odr" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="cyber-neon-green font-semibold underline hover:text-emerald-300 transition-colors"
+                  >
+                    https://ec.europa.eu/consumers/odr
+                  </a>
+                  <p className="mt-3 text-sm text-slate-400">
+                    Flinkly ist bereit, an einem Streitbeilegungsverfahren vor der Allgemeinen Verbraucherschlichtungsstelle 
+                    des Zentrums für Schlichtung e.V. teilzunehmen.
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* DSA Section - Digital Services Act */}
+            <Card className="cyber-glass-card border-2 border-orange-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                DSA - <span className="cyber-neon-orange">DIGITAL SERVICES ACT</span>
+              </h2>
+              <p className="text-slate-400 mb-6">Gemäß Verordnung (EU) 2022/2065</p>
+              
+              <div className="space-y-6 text-slate-300 leading-relaxed">
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Transparenzpflichten (Art. 14 DSA)</h3>
+                  <p className="mb-3">
+                    Flinkly ist ein <span className="cyber-neon-orange font-semibold">Vermittlungsdienst</span> im Sinne des DSA und unterliegt den 
+                    Transparenzpflichten für Online-Plattformen.
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Durchschnittliche monatliche Nutzer in der EU:</span> [ANZAHL EINTRAGEN]</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Zuständige Aufsichtsbehörde:</span> Bundesnetzagentur (Koordinator für digitale Dienste in Deutschland)</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Meldung illegaler Inhalte (Art. 16 DSA)</h3>
+                  <p className="mb-3">
+                    Nutzer können mutmaßlich rechtswidrige Inhalte über folgende Kanäle melden:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">E-Mail:</span> meldung@mimitechai.com</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Online-Formular:</span> /report</span>
+                    </li>
+                  </ul>
+                  <p className="mt-3 text-sm text-slate-400">
+                    Wir bearbeiten alle Meldungen unverzüglich und informieren den Meldenden über getroffene Maßnahmen.
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Inhaltsmoderation (Art. 14 Abs. 1 DSA)</h3>
+                  <p className="mb-3">
+                    Flinkly moderiert Inhalte nach folgenden Grundsätzen:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Automatisierte Moderation:</span> Spam-Filter, Keyword-Erkennung für verbotene Inhalte</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Manuelle Prüfung:</span> Alle Gigs werden vor Veröffentlichung geprüft</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Nutzer-Meldungen:</span> Gemeldete Inhalte werden innerhalb von 24 Stunden geprüft</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Internes Beschwerdemanagement (Art. 20 DSA)</h3>
+                  <p className="mb-3">
+                    Nutzer können gegen Moderationsentscheidungen Beschwerde einlegen:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Beschwerdefrist:</span> 6 Monate nach der Entscheidung</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Bearbeitungszeit:</span> Innerhalb von 14 Tagen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Kontakt:</span> beschwerde@mimitechai.com</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </Card>
+
+            {/* P2B Section - Platform-to-Business Regulation */}
+            <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                P2B - <span className="cyber-neon-green">PLATFORM-TO-BUSINESS</span>
+              </h2>
+              <p className="text-slate-400 mb-4">Gemäß Verordnung (EU) 2019/1150</p>
+              <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                <p className="text-sm text-slate-300">
+                  <span className="font-semibold text-emerald-400">Für gewerbliche Nutzer:</span>{" "}
+                  Detaillierte Informationen zu Ihren Rechten finden Sie auf unserer{" "}
+                  <Link href="/p2b-transparency" className="text-emerald-400 hover:underline font-semibold">
+                    P2B-Transparenzseite
+                  </Link>
+                  . Dort erfahren Sie alles über Ranking-Algorithmen, Änderungsfristen, 
+                  Kündigungsfristen und das Beschwerdesystem.
+                </p>
+              </div>
+              
+              <div className="space-y-6 text-slate-300 leading-relaxed">
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Ranking-Transparenz (Art. 5 P2B)</h3>
+                  <p className="mb-3">
+                    Die Reihenfolge der Gigs in Suchergebnissen und Kategorien wird durch folgende Hauptparameter bestimmt:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">1.</span>
+                      <span><span className="font-semibold">Relevanz:</span> Übereinstimmung mit Suchbegriffen (40%)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">2.</span>
+                      <span><span className="font-semibold">Bewertungen:</span> Durchschnittliche Sternebewertung und Anzahl (25%)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">3.</span>
+                      <span><span className="font-semibold">Verkäufer-Performance:</span> Lieferzeit, Antwortrate, Abschlussquote (20%)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">4.</span>
+                      <span><span className="font-semibold">Aktualität:</span> Letzte Aktualisierung des Gigs (15%)</span>
+                    </li>
+                  </ul>
+                  <p className="mt-3 text-sm text-slate-400">
+                    <span className="font-semibold">Bezahlte Platzierungen:</span> Aktuell bieten wir keine bezahlten Ranking-Vorteile an.
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-orange-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Differenzierte Behandlung (Art. 7 P2B)</h3>
+                  <p className="mb-3">
+                    Flinkly behandelt alle gewerblichen Nutzer gleich. Es gibt keine Vorzugsbehandlung für:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>Eigene Dienstleistungen des Plattformbetreibers</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>Verbundene Unternehmen</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span>Bestimmte Verkäufergruppen</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Datenzugang (Art. 9 P2B)</h3>
+                  <p className="mb-3">
+                    Gewerbliche Nutzer haben Zugang zu folgenden Daten:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Eigene Daten:</span> Vollständiger Export aller Gig-, Bestell- und Bewertungsdaten</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Aggregierte Daten:</span> Anonymisierte Marktstatistiken und Trends</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-green font-bold">•</span>
+                      <span><span className="font-semibold">Käuferdaten:</span> Nur für die Vertragserfüllung notwendige Daten</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-emerald-500/30 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Einschränkung, Aussetzung, Kündigung (Art. 4 P2B)</h3>
+                  <p className="mb-3">
+                    Bei Verstößen gegen diese AGB kann Flinkly folgende Maßnahmen ergreifen:
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Einschränkung:</span> Einzelne Gigs können deaktiviert werden</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Aussetzung:</span> Temporäre Sperrung des Accounts (mit Begründung)</span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <span className="cyber-neon-orange font-bold">•</span>
+                      <span><span className="font-semibold">Kündigung:</span> Dauerhafte Sperrung bei schweren Verstößen (mit 30 Tagen Vorankündigung, außer bei Rechtsverstößen)</span>
+                    </li>
+                  </ul>
+                  <p className="mt-3 text-sm text-slate-400">
+                    <span className="font-semibold">Begründungspflicht:</span> Alle Maßnahmen werden schriftlich begründet. 
+                    Nutzer haben das Recht, gegen Entscheidungen Beschwerde einzulegen.
+                  </p>
+                </div>
+
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <h3 className="text-xl font-bold text-white mb-4">Mediation (Art. 12 P2B)</h3>
+                  <p className="mb-3">
+                    Für Streitigkeiten zwischen Flinkly und gewerblichen Nutzern steht folgende Mediationsstelle zur Verfügung:
+                  </p>
+                  <p>
+                    <span className="cyber-neon-green font-semibold">Schlichtungsstelle der Rechtsanwaltschaft</span><br />
+                    Neue Grünstraße 17<br />
+                    10179 Berlin<br />
+                    <a href="https://www.s-d-r.org" target="_blank" rel="noopener noreferrer" className="cyber-neon-orange hover:text-orange-400">www.s-d-r.org</a>
+                  </p>
+                </div>
+              </div>
+            </Card>
+
+            {/* Contact Section */}
+            <Card className="cyber-glass-card border-2 border-orange-500/30 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text">
+                KONTAKT UND <span className="cyber-neon-orange">SUPPORT</span>
+              </h2>
+              
+              <div className="space-y-4 text-slate-300 leading-relaxed">
+                <p>
+                  Bei Fragen zu diesen AGB oder zur Plattform kontaktieren Sie uns bitte:
+                </p>
+
+                <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
+                  <p className="font-semibold text-white mb-3">Flinkly Support:</p>
+                  <p>
+                    E-Mail: <span className="cyber-neon-green font-semibold">support@mimitechai.com</span><br />
+                    Telefon: <span className="cyber-neon-green font-semibold">+49 1575 8805737</span><br />
+                    Geschäftszeiten: Mo-Fr 9:00-18:00 Uhr
+                  </p>
+                </div>
+
+                <p className="text-sm text-slate-400 mt-6">
+                  Stand dieser AGB: Dezember 2024 | Version 2.0 (DSA/P2B-konform)
+                </p>
+              </div>
+            </Card>
+
+            {/* Back to Top */}
+            <div className="mt-12 text-center">
+              <Link href="/">
+                <Button 
+                  className="cyber-neon-button px-12 py-6 text-lg"
+                >
+                  ← Zurück zur Startseite
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
+  );
+}

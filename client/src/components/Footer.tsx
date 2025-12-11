@@ -6,12 +6,12 @@ export default function Footer() {
   return (
     <footer className="bg-slate-900 text-slate-300 mt-auto">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           {/* Über Flinkly */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Über Flinkly</h3>
+            <h3 className="text-white font-semibold mb-4">Über <span translate="no" className="notranslate">Flinkly</span></h3>
             <p className="text-sm text-slate-400">
-              Dein Marktplatz für schnelle, kreative & digitale Mikrodienstleistungen in der DACH-Region.
+              Dein Marktplatz für Freelancer-Dienstleistungen in der EU.
             </p>
           </div>
 
@@ -54,13 +54,70 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Datenschutz-Tools */}
+          {/* Datenschutz & Compliance */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Datenschutz-Tools</h3>
+            <h3 className="text-white font-semibold mb-4">Datenschutz & Compliance</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/privacy-dashboard" className="hover:text-white transition-colors">
-                  Live Privacy Dashboard
+                  Privacy Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/data-subject-rights" className="hover:text-white transition-colors">
+                  Betroffenenrechte (DSGVO)
+                </Link>
+              </li>
+              <li>
+                <Link href="/report" className="hover:text-white transition-colors">
+                  Inhalt melden (DSA)
+                </Link>
+              </li>
+              <li>
+                <Link href="/transparency-report" className="hover:text-white transition-colors">
+                  Transparenzbericht
+                </Link>
+              </li>
+              <li>
+                <Link href="/security" className="hover:text-white transition-colors">
+                  Sicherheitsrichtlinien
+                </Link>
+              </li>
+              <li>
+                <Link href="/payment-compliance" className="hover:text-white transition-colors">
+                  Zahlungsabwicklung (ZAG)
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Für Verkäufer */}
+          <div>
+            <h3 className="text-white font-semibold mb-4">Für Verkäufer</h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link href="/p2b-transparency" className="hover:text-white transition-colors">
+                  P2B-Transparenz
+                </Link>
+              </li>
+              <li>
+                <Link href="/seller-complaint" className="hover:text-white transition-colors">
+                  Beschwerde einreichen
+                </Link>
+              </li>
+              <li>
+                <Link href="/widerruf" className="hover:text-white transition-colors">
+                  Widerrufsbelehrung
+                </Link>
+              </li>
+              <li>
+                <Link href="/processing-register" className="hover:text-white transition-colors">
+                  Verarbeitungsverzeichnis
+                </Link>
+              </li>
+              <li>
+                <Link href="/data-processing-agreements" className="hover:text-white transition-colors">
+                  AVV-Übersicht
                 </Link>
               </li>
             </ul>

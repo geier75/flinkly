@@ -21,6 +21,7 @@ import { createClient } from "redis";
 
 // Redis client instance (singleton)
 let redisClient: ReturnType<typeof createClient> | null = null;
+let redisDisabled = false;
 
 /**
  * Get or create Redis client
@@ -33,20 +34,36 @@ let redisClient: ReturnType<typeof createClient> | null = null;
  * - Logs warnings but doesn't crash
  */
 export async function getRedisClient() {
+  // Skip if already disabled
+  if (redisDisabled) {
+    return null;
+  }
+
   if (redisClient) {
     return redisClient;
   }
 
+  // Skip Redis if no REDIS_URL is set (development mode)
+  if (!process.env.REDIS_URL) {
+    console.log("[Redis] No REDIS_URL set, caching disabled");
+    redisDisabled = true;
+    return null;
+  }
+
   try {
-    const redisUrl = process.env.REDIS_URL || "redis://localhost:6379";
+    const redisUrl = process.env.REDIS_URL;
 
     redisClient = createClient({
       url: redisUrl,
       socket: {
+        connectTimeout: 2000, // 2 second timeout
         reconnectStrategy: (retries) => {
-          // Exponential backoff: 100ms, 200ms, 400ms, ...
-          // Max 10 seconds between retries
-          const delay = Math.min(100 * Math.pow(2, retries), 10000);
+          if (retries > 3) {
+            console.log("[Redis] Max retries reached, disabling cache");
+            redisDisabled = true;
+            return false; // Stop reconnecting
+          }
+          const delay = Math.min(100 * Math.pow(2, retries), 2000);
           console.log(`[Redis] Reconnecting in ${delay}ms (attempt ${retries + 1})`);
           return delay;
         },
@@ -55,27 +72,25 @@ export async function getRedisClient() {
 
     // Error handling
     redisClient.on("error", (err) => {
-      console.error("[Redis] Client error:", err);
+      // Don't spam logs
     });
 
     redisClient.on("connect", () => {
       console.log("[Redis] Connected successfully");
     });
 
-    redisClient.on("reconnecting", () => {
-      console.log("[Redis] Reconnecting...");
-    });
-
-    redisClient.on("ready", () => {
-      console.log("[Redis] Client ready");
-    });
-
-    // Connect
-    await redisClient.connect();
+    // Connect with timeout
+    const connectPromise = redisClient.connect();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Connection timeout')), 2000)
+    );
+    
+    await Promise.race([connectPromise, timeoutPromise]);
 
     return redisClient;
   } catch (error) {
-    console.warn("[Redis] Failed to connect, caching disabled:", error);
+    console.log("[Redis] Not available, caching disabled");
+    redisDisabled = true;
     redisClient = null;
     return null;
   }

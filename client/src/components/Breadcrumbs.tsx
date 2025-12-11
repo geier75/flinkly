@@ -29,14 +29,13 @@ export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
       className={cn('flex items-center gap-2 text-sm text-slate-600', className)}
     >
       {/* Home Link */}
-      <Link href="/">
-        <a
-          className="flex items-center gap-1 hover:text-blue-600 transition-colors"
-          aria-label="Zur Startseite"
-        >
-          <Home className="h-4 w-4" />
-          <span className="hidden sm:inline">Start</span>
-        </a>
+      <Link
+        href="/"
+        className="flex items-center gap-1 hover:text-blue-600 transition-colors"
+        aria-label="Zur Startseite"
+      >
+        <Home className="h-4 w-4" />
+        <span className="hidden sm:inline">Start</span>
       </Link>
 
       {/* Breadcrumb Items */}
@@ -55,10 +54,8 @@ export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 {item.label}
               </span>
             ) : (
-              <Link href={item.href}>
-                <a className="hover:text-blue-600 transition-colors">
-                  {item.label}
-                </a>
+              <Link href={item.href} className="hover:text-blue-600 transition-colors">
+                {item.label}
               </Link>
             )}
           </div>
@@ -84,13 +81,12 @@ export function CompactBreadcrumbs({ items, className }: BreadcrumbsProps) {
       className={cn('flex items-center gap-2 text-sm text-slate-600', className)}
     >
       {/* Home Link */}
-      <Link href="/">
-        <a
-          className="flex items-center hover:text-blue-600 transition-colors"
-          aria-label="Zur Startseite"
-        >
-          <Home className="h-4 w-4" />
-        </a>
+      <Link
+        href="/"
+        className="flex items-center hover:text-blue-600 transition-colors"
+        aria-label="Zur Startseite"
+      >
+        <Home className="h-4 w-4" />
       </Link>
 
       {hasMultipleSteps && (

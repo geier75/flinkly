@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import * as stripeConnect from "../stripeConnect";
-import * as db from "../db";
+import * as db from "../adapters";
 import { ENV } from "../_core/env";
 
 /**
@@ -30,9 +30,14 @@ export const stripeConnectRouter = router({
         };
       }
 
+      // Validate email before creating account
+      if (!user.email) {
+        throw new Error("E-Mail-Adresse erforderlich. Bitte aktualisiere dein Profil.");
+      }
+
       // Create Connect account
       const { accountId } = await stripeConnect.createConnectAccount({
-        email: user.email || "",
+        email: user.email,
         country: input.country,
       });
 

@@ -38,6 +38,7 @@ export default function Widerruf() {
               <p className="text-slate-300 text-xl font-light">
                 Ihr Recht auf Widerruf gemäß <span className="cyber-neon-orange font-semibold">§ 312g BGB</span> | EU-konform
               </p>
+              <p className="text-emerald-400 text-sm mt-2 font-medium">Gültig für: flinkly.eu – Marktplatz für digitale Dienstleistungen</p>
             </motion.div>
           </div>
         </div>
@@ -103,13 +104,13 @@ export default function Widerruf() {
                   <p className="font-semibold text-white mb-3">Kontaktdaten für Widerruf:</p>
                   <p>
                     <span className="cyber-neon-green font-semibold">Flinkly</span><br />
-                    [FIRMENNAME EINTRAGEN]<br />
-                    [STRASSE UND HAUSNUMMER]<br />
-                    [PLZ UND ORT]<br />
-                    [LAND]<br />
+                    MiMi Tech Ai UG (haftungsbeschränkt)<br />
+                    Lindenplatz 23<br />
+                    75378 Bad Liebenzell<br />
+                    Deutschland<br />
                     <br />
-                    E-Mail: <span className="cyber-neon-orange font-semibold">widerruf@flinkly.de</span><br />
-                    Telefon: <span className="cyber-neon-orange font-semibold">[TELEFONNUMMER EINTRAGEN]</span>
+                    E-Mail: <span className="cyber-neon-orange font-semibold">widerruf@mimitechai.com</span><br />
+                    Telefon: <span className="cyber-neon-orange font-semibold">+49 1575 8805737</span>
                   </p>
                 </div>
 
@@ -257,11 +258,11 @@ export default function Widerruf() {
                     <p>
                       An:<br />
                       <span className="cyber-neon-green font-semibold">Flinkly</span><br />
-                      [FIRMENNAME EINTRAGEN]<br />
-                      [STRASSE UND HAUSNUMMER]<br />
-                      [PLZ UND ORT]<br />
-                      [LAND]<br />
-                      E-Mail: <span className="cyber-neon-orange font-semibold">widerruf@flinkly.de</span>
+                      MiMi Tech Ai UG (haftungsbeschränkt)<br />
+                      Lindenplatz 23<br />
+                      75378 Bad Liebenzell<br />
+                      Deutschland<br />
+                      E-Mail: <span className="cyber-neon-orange font-semibold">widerruf@mimitechai.com</span>
                     </p>
 
                     <p className="pt-6">
@@ -307,7 +308,7 @@ export default function Widerruf() {
                   <ul className="space-y-2">
                     <li className="flex items-start gap-3">
                       <span className="cyber-neon-orange font-bold">•</span>
-                      <span><span className="font-semibold">Per E-Mail:</span> Formular ausfüllen und an widerruf@flinkly.de senden</span>
+                      <span><span className="font-semibold">Per E-Mail:</span> Formular ausfüllen und an widerruf@mimitechai.com senden</span>
                     </li>
                     <li className="flex items-start gap-3">
                       <span className="cyber-neon-orange font-bold">•</span>
@@ -336,14 +337,14 @@ export default function Widerruf() {
                 <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
                   <p className="font-semibold text-white mb-3">Flinkly Widerrufs-Support:</p>
                   <p>
-                    E-Mail: <span className="cyber-neon-green font-semibold">widerruf@flinkly.de</span><br />
-                    Telefon: <span className="cyber-neon-green font-semibold">[TELEFONNUMMER EINTRAGEN]</span><br />
+                    E-Mail: <span className="cyber-neon-green font-semibold">widerruf@mimitechai.com</span><br />
+                    Telefon: <span className="cyber-neon-green font-semibold">+49 1575 8805737</span><br />
                     Geschäftszeiten: Mo-Fr 9:00-18:00 Uhr
                   </p>
                 </div>
 
                 <p className="text-sm text-slate-400 mt-6">
-                  Stand dieser Widerrufsbelehrung: November 2025 | Version 1.0
+                  Stand dieser Widerrufsbelehrung: Dezember 2024 | Version 2.0
                 </p>
               </div>
             </Card>

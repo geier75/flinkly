@@ -77,7 +77,7 @@ export function initSentry() {
       }
       
       // Add user context if available
-      const user = (window as any).__FLINKLY_USER__;
+      const user = (window as any).__Flinkly_USER__;
       if (user) {
         event.user = {
           id: user.id,
@@ -133,7 +133,7 @@ export function setUser(user: { id: number; email?: string; name?: string }) {
   });
   
   // Store user in window for beforeSend
-  (window as any).__FLINKLY_USER__ = user;
+  (window as any).__Flinkly_USER__ = user;
 }
 
 /**
@@ -141,7 +141,7 @@ export function setUser(user: { id: number; email?: string; name?: string }) {
  */
 export function clearUser() {
   Sentry.setUser(null);
-  delete (window as any).__FLINKLY_USER__;
+  delete (window as any).__Flinkly_USER__;
 }
 
 /**

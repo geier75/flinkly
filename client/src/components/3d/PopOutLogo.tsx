@@ -78,7 +78,7 @@ export function PopOutLogo({
       >
         <img
           src={APP_LOGO}
-          alt="FLINKLY"
+          alt="Flinkly"
           className="w-full h-full object-contain"
           style={{
             filter: "drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5))",

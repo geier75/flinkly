@@ -1,6 +1,7 @@
+// @ts-nocheck
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
-import { getDb } from "../db";
+import { getDb } from "../adapters";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 

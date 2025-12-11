@@ -4,7 +4,7 @@ import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { TRPCError } from '@trpc/server';
 import { z } from "zod";
-import * as db from "./db";
+import * as db from "./adapters";
 import * as v from "./validation";
 import { sanitizeHTML, sanitizeText } from "@shared/sanitize";
 import { userRouter } from "./routers/user";
@@ -101,11 +101,28 @@ export const appRouter = router({
           sortBy: input?.sortBy ?? "relevance",
         });
         
+        // Load seller info for each gig
+        const gigsWithSellers = await Promise.all(
+          gigs.map(async (gig) => {
+            const seller = await db.getUserById(gig.sellerId);
+            return {
+              ...gig,
+              seller: seller ? {
+                id: seller.id,
+                name: seller.name,
+                avatarUrl: seller.avatarUrl,
+                emailVerified: seller.emailVerified,
+                sellerLevel: seller.sellerLevel,
+              } : null,
+            };
+          })
+        );
+        
         // Return cursor for next page (last gig ID)
         const nextCursor = gigs.length === safeLimit ? gigs[gigs.length - 1].id : undefined;
         
         const result = {
-          gigs,
+          gigs: gigsWithSellers,
           nextCursor,
         };
         
@@ -122,7 +139,23 @@ export const appRouter = router({
 
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
-      .query(({ input }) => db.getGigById(input.id)),
+      .query(async ({ input }) => {
+        const gig = await db.getGigById(input.id);
+        if (!gig) return null;
+        
+        // Load seller info
+        const seller = await db.getUserById(gig.sellerId);
+        return {
+          ...gig,
+          seller: seller ? {
+            id: seller.id,
+            name: seller.name,
+            avatarUrl: seller.avatarUrl,
+            emailVerified: seller.emailVerified,
+            sellerLevel: seller.sellerLevel,
+          } : null,
+        };
+      }),
 
     myGigs: protectedProcedure
       .input(z.object({
@@ -140,7 +173,7 @@ export const appRouter = router({
         title: z.string().min(5).max(255),
         description: z.string().min(20),
         category: z.string(),
-        price: z.number().min(100).max(25000),
+        price: z.number().min(100).max(50000),
         deliveryDays: z.number().default(3),
         imageUrl: z.string().optional(),
         // Optional packages for package-based pricing
@@ -160,9 +193,10 @@ export const appRouter = router({
           title: sanitizeText(input.title),
           description: sanitizeHTML(input.description),
           category: input.category,
+          tags: null,
           price: input.price,
           deliveryDays: input.deliveryDays,
-          imageUrl: input.imageUrl,
+          imageUrl: input.imageUrl ?? null,
           status: "published",
           active: true,
         });
@@ -179,6 +213,7 @@ export const appRouter = router({
               deliveryDays: pkg.deliveryDays,
               revisions: pkg.revisions,
               features: JSON.stringify(pkg.features.filter(f => f.trim() !== '')),
+              active: true,
             });
           }
         }
@@ -195,7 +230,7 @@ export const appRouter = router({
         title: z.string().min(5).max(255).optional(),
         description: z.string().min(20).optional(),
         category: z.string().optional(),
-        price: z.number().min(100).max(25000).optional(),
+        price: z.number().min(100).max(50000).optional(),
         deliveryDays: z.number().optional(),
         imageUrl: z.string().optional(),
       }))
@@ -217,7 +252,7 @@ export const appRouter = router({
         title: z.string().min(5).max(255),
         description: z.string().min(20),
         category: z.string(),
-        price: z.number().min(100).max(25000),
+        price: z.number().min(100).max(50000),
         deliveryDays: z.number().default(3),
         imageUrl: z.string().optional(),
       }))
@@ -227,10 +262,12 @@ export const appRouter = router({
           title: sanitizeText(input.title),
           description: sanitizeHTML(input.description),
           category: input.category,
+          tags: null,
           price: input.price,
           deliveryDays: input.deliveryDays,
-          imageUrl: input.imageUrl,
+          imageUrl: input.imageUrl ?? null,
           status: "draft",
+          active: false,
         });
         return { success: true };
       }),
@@ -259,7 +296,7 @@ export const appRouter = router({
         packageType: z.enum(["basic", "standard", "premium"]),
         name: z.string().min(3).max(100),
         description: z.string().min(10),
-        price: z.number().min(100).max(25000),
+        price: z.number().min(100).max(50000),
         deliveryDays: z.number().min(1).max(30),
         revisions: z.number().min(0).max(10),
         features: z.array(z.string()).optional(),
@@ -267,8 +304,15 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         const featuresJson = input.features ? JSON.stringify(input.features) : null;
         const id = await db.createGigPackage({
-          ...input,
+          gigId: input.gigId,
+          packageType: input.packageType,
+          name: input.name,
+          description: input.description,
+          price: input.price,
+          deliveryDays: input.deliveryDays,
+          revisions: input.revisions,
           features: featuresJson,
+          active: true,
         });
         return { success: true, id };
       }),
@@ -278,7 +322,7 @@ export const appRouter = router({
         id: z.number(),
         name: z.string().min(3).max(100).optional(),
         description: z.string().min(10).optional(),
-        price: z.number().min(100).max(25000).optional(),
+        price: z.number().min(100).max(50000).optional(),
         deliveryDays: z.number().min(1).max(30).optional(),
         revisions: z.number().min(0).max(10).optional(),
         features: z.array(z.string()).optional(),
@@ -395,12 +439,11 @@ export const appRouter = router({
           buyerId: ctx.user.id,
           sellerId: gig.sellerId,
           totalPrice,
-          platformFeePercent,
           platformFee,
           sellerEarnings,
-          buyerMessage: input.buyerMessage,
+          buyerMessage: input.buyerMessage ?? null,
           selectedPackage: input.selectedPackage,
-          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : undefined,
+          selectedExtras: input.selectedExtras ? JSON.stringify(input.selectedExtras) : null,
           status: "pending",
         });
 
@@ -514,12 +557,11 @@ export const appRouter = router({
           buyerId,
           sellerId,
           totalPrice,
-          platformFeePercent,
           platformFee,
           sellerEarnings,
-          buyerMessage,
+          buyerMessage: buyerMessage ?? null,
           selectedPackage,
-          selectedExtras,
+          selectedExtras: selectedExtras ?? null,
           status: 'pending',
         });
 
@@ -583,7 +625,7 @@ export const appRouter = router({
           gigId: input.gigId,
           reviewerId: ctx.user.id,
           rating: input.rating,
-          comment: input.comment,
+          comment: input.comment ?? null,
         });
         return { success: true };
       }),
@@ -723,6 +765,13 @@ export const appRouter = router({
         const { stripe } = await import('./payment');
         const { ENV } = await import('./_core/env');
         
+        if (!stripe) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Stripe not configured',
+          });
+        }
+        
         const accountLink = await stripe.accountLinks.create({
           account: user.stripeAccountId,
           refresh_url: `${ENV.frontendUrl}/seller-dashboard?onboarding=refresh`,
@@ -754,7 +803,7 @@ export const appRouter = router({
         const { createPayout: createPayoutStripe } = await import('./payment');
         
         const earnings = await db.getSellerEarnings(ctx.user.id);
-        if (earnings.available < input.amount) {
+        if (earnings.availableBalance < input.amount) {
           throw new Error("Insufficient balance");
         }
 
@@ -768,8 +817,6 @@ export const appRouter = router({
         await db.createPayout({
           sellerId: ctx.user.id,
           amount: input.amount,
-          currency: 'EUR',
-          status: 'pending',
           stripePayoutId: stripePayoutId.id,
         });
 

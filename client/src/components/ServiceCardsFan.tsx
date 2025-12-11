@@ -1,127 +1,197 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Check } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, X, Check, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { trpc } from "@/lib/trpc";
+import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 
-const services = [
-  {
-    image: "/images/service-design.jpg",
-    title: "Design & Kreation",
-    description: "Logo-Design, Branding, UI/UX, Illustration, Video-Editing",
-    category: "design",
-    backInfo: {
-      features: ["Professionelle Logos", "Corporate Design", "UI/UX Prototypen", "Illustrationen"],
-      priceRange: "ab 50€",
-      deliveryTime: "2-5 Tage",
-      experts: "500+ Designer"
-    }
-  },
-  {
-    image: "/images/service-development.jpg",
-    title: "Development",
-    description: "Web-Development, App-Development, WordPress, Shopify",
-    category: "development",
-    backInfo: {
-      features: ["Responsive Websites", "Mobile Apps", "E-Commerce", "Custom Solutions"],
-      priceRange: "ab 200€",
-      deliveryTime: "5-14 Tage",
-      experts: "800+ Entwickler"
-    }
-  },
-  {
-    image: "/images/service-marketing.jpg",
-    title: "Marketing",
-    description: "Social Media, SEO, Content-Marketing, Google Ads",
-    category: "marketing",
-    backInfo: {
-      features: ["Social Media Kampagnen", "SEO-Optimierung", "Google Ads", "Analytics"],
-      priceRange: "ab 100€",
-      deliveryTime: "3-7 Tage",
-      experts: "600+ Marketer"
-    }
-  },
-  {
-    image: "/images/service-content.jpg",
-    title: "Content & Text",
-    description: "Copywriting, Blog-Artikel, Übersetzungen, Lektorat",
-    category: "content",
-    backInfo: {
-      features: ["SEO-Texte", "Blog-Artikel", "Übersetzungen", "Lektorat"],
-      priceRange: "ab 30€",
-      deliveryTime: "1-3 Tage",
-      experts: "400+ Texter"
-    }
-  },
-  {
-    image: "/images/service-business.jpg",
-    title: "Business",
-    description: "Virtuelle Assistenz, Buchhaltung, Projektmanagement",
-    category: "business",
-    backInfo: {
-      features: ["Virtuelle Assistenz", "Buchhaltung", "Projektmanagement", "Admin-Support"],
-      priceRange: "ab 25€/h",
-      deliveryTime: "Sofort verfügbar",
-      experts: "300+ Assistenten"
-    }
-  },
-  {
-    image: "/images/service-technology.jpg",
-    title: "Technologie",
-    description: "Data Science, AI/ML, Blockchain, Cloud-Services",
-    category: "technology",
-    backInfo: {
-      features: ["AI/ML Modelle", "Data Analysis", "Blockchain", "Cloud Migration"],
-      priceRange: "ab 300€",
-      deliveryTime: "7-21 Tage",
-      experts: "200+ Spezialisten"
-    }
+// Category display names and icons (fallback for unknown categories)
+const categoryMeta: Record<string, { title: string; icon: string; image: string }> = {
+  design: { title: "Design & Kreation", icon: "🎨", image: "/images/service-design.jpg" },
+  development: { title: "Development", icon: "💻", image: "/images/service-development.jpg" },
+  marketing: { title: "Marketing", icon: "📱", image: "/images/service-marketing.jpg" },
+  content: { title: "Content & Text", icon: "✍️", image: "/images/service-content.jpg" },
+  business: { title: "Business", icon: "💼", image: "/images/service-business.jpg" },
+  technology: { title: "Technologie", icon: "🤖", image: "/images/service-technology.jpg" },
+};
+
+// Generate a consistent color for a category
+const getCategoryColor = (category: string): string => {
+  const colors = [
+    "from-pink-500 to-rose-500",
+    "from-blue-500 to-cyan-500",
+    "from-orange-500 to-amber-500",
+    "from-emerald-500 to-teal-500",
+    "from-violet-500 to-purple-500",
+    "from-indigo-500 to-blue-500",
+    "from-red-500 to-orange-500",
+    "from-green-500 to-emerald-500",
+  ];
+  // Simple hash to get consistent color
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
   }
-];
+  return colors[Math.abs(hash) % colors.length];
+};
+
+// Get icon for category
+const getCategoryIcon = (category: string): string => {
+  if (categoryMeta[category]) return categoryMeta[category].icon;
+  // Generate icon based on first letter
+  const icons = ["📌", "⭐", "💡", "🚀", "🎯", "🔥", "🌟", "💠"];
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return icons[Math.abs(hash) % icons.length];
+};
+
+// Format category name for display
+const formatCategoryName = (category: string): string => {
+  if (categoryMeta[category]) return categoryMeta[category].title;
+  // Capitalize first letter and replace underscores/hyphens
+  return category
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (l) => l.toUpperCase());
+};
+
+interface GigData {
+  id: number;
+  title: string;
+  description: string | null;
+  imageUrl: string | null;
+  price: string;
+  category: string | null;
+}
+
+interface CategoryData {
+  category: string;
+  title: string;
+  icon: string;
+  color: string;
+  gigCount: number;
+  sampleGigs: Array<{ title: string; imageUrl: string | null; id: number; description: string | null; price: string }>;
+}
 
 export default function ServiceCardsFan() {
-  const [rotation, setRotation] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [manualControl, setManualControl] = useState(false);
-  const [flippedCards, setFlippedCards] = useState<Set<string>>(new Set());
+  const [selectedGig, setSelectedGig] = useState<GigData | null>(null);
+  const [, setLocation] = useLocation();
+  const { isAuthenticated } = useAuth();
 
+  // Fetch all gigs from database
+  const { data: gigsData, isLoading } = trpc.gigs.list.useQuery({ limit: 100 });
+
+  // Extract unique categories from gigs and build category data
+  const categories: CategoryData[] = useMemo(() => {
+    if (!gigsData?.gigs || gigsData.gigs.length === 0) return [];
+
+    const categoryMap = new Map<string, { gigs: typeof gigsData.gigs }>(); 
+
+    // Group gigs by category
+    gigsData.gigs.forEach((gig) => {
+      const cat = gig.category || "other";
+      if (!categoryMap.has(cat)) {
+        categoryMap.set(cat, { gigs: [] });
+      }
+      categoryMap.get(cat)!.gigs.push(gig);
+    });
+
+    // Convert to array and sort by gig count
+    return Array.from(categoryMap.entries())
+      .map(([category, data]) => ({
+        category,
+        title: formatCategoryName(category),
+        icon: getCategoryIcon(category),
+        color: getCategoryColor(category),
+        gigCount: data.gigs.length,
+        sampleGigs: data.gigs.slice(0, 4).map((g) => ({
+          title: g.title,
+          imageUrl: g.imageUrl,
+          id: g.id,
+          description: g.description,
+          price: g.price,
+        })),
+      }))
+      .sort((a, b) => b.gigCount - a.gigCount); // Most popular first
+  }, [gigsData]);
+
+  const goLeft = useCallback(() => {
+    if (categories.length === 0) return;
+    setCurrentIndex((prev) => (prev - 1 + categories.length) % categories.length);
+    setManualControl(true);
+    setTimeout(() => setManualControl(false), 5000);
+  }, [categories.length]);
+  
+  const goRight = useCallback(() => {
+    if (categories.length === 0) return;
+    setCurrentIndex((prev) => (prev + 1) % categories.length);
+    setManualControl(true);
+    setTimeout(() => setManualControl(false), 5000);
+  }, [categories.length]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") rotateLeft();
-      else if (e.key === "ArrowRight") rotateRight();
+      if (e.key === "ArrowLeft") goLeft();
+      else if (e.key === "ArrowRight") goRight();
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
-
-  const rotateLeft = () => {
-    setRotation((prev) => prev - (360 / services.length));
-    setManualControl(true);
-    setTimeout(() => setManualControl(false), 5000);
-  };
+  }, [goLeft, goRight]);
   
-  const rotateRight = () => {
-    setRotation((prev) => prev + (360 / services.length));
-    setManualControl(true);
-    setTimeout(() => setManualControl(false), 5000);
-  };
-
-  const toggleFlip = (category: string) => {
-    setFlippedCards(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(category)) newSet.delete(category);
-      else newSet.add(category);
-      return newSet;
-    });
-  };
-  
+  // Auto-advance every 4 seconds
   useEffect(() => {
-    if (isPaused || manualControl) return;
+    if (isPaused || manualControl || categories.length === 0) return;
     const interval = setInterval(() => {
-      setRotation((prev) => prev + (360 / services.length));
-    }, 3000);
+      setCurrentIndex((prev) => (prev + 1) % categories.length);
+    }, 4000);
     return () => clearInterval(interval);
-  }, [isPaused, manualControl]);
+  }, [isPaused, manualControl, categories.length]);
+
+  // Calculate card position relative to current index
+  const getCardOffset = (index: number) => {
+    if (categories.length === 0) return 0;
+    let offset = index - currentIndex;
+    // Handle wrap-around for smooth infinite scroll
+    if (offset > categories.length / 2) offset -= categories.length;
+    if (offset < -categories.length / 2) offset += categories.length;
+    return offset;
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="relative w-full max-w-7xl mx-auto px-4 py-24">
+        <div className="flex items-center justify-center h-[400px]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+            <p className="text-slate-400">Kategorien werden geladen...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // No categories found
+  if (categories.length === 0) {
+    return (
+      <div className="relative w-full max-w-7xl mx-auto px-4 py-24">
+        <div className="flex items-center justify-center h-[400px]">
+          <div className="flex flex-col items-center gap-4 text-center">
+            <Sparkles className="w-12 h-12 text-primary/50" />
+            <p className="text-slate-400">Noch keine Gigs verfügbar</p>
+            <p className="text-sm text-slate-500">Sobald Gigs erstellt werden, erscheinen hier die Kategorien</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full max-w-7xl mx-auto px-4 py-24">
@@ -133,7 +203,7 @@ export default function ServiceCardsFan() {
       >
         <motion.img
           src="/images/flinkly-graffiti-v2.png"
-          alt="FLINKLY"
+          alt="Flinkly" translate="no"
           className="w-[4000000px] h-auto opacity-60"
           animate={{
             scale: [1, 1.05, 1],
@@ -148,124 +218,165 @@ export default function ServiceCardsFan() {
       </motion.div>
 
       <div 
-        className="relative h-[550px] flex items-center justify-center z-10"
+        className="relative h-[450px] flex items-center justify-center z-10 overflow-hidden"
       >
-        <motion.div
-          className="relative w-full h-full"
-          style={{ transformStyle: "preserve-3d" }}
-          animate={{ rotateY: rotation }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-        >
-          {services.map((service, index) => {
-            const anglePerCard = 360 / services.length;
-            const angle = index * anglePerCard;
-            const angleRad = (angle * Math.PI) / 180;
-            const radius = 500;
-            const x = Math.sin(angleRad) * radius;
-            const z = Math.cos(angleRad) * radius;
-            const isFlipped = flippedCards.has(service.category);
+        <div className="relative w-full h-full flex items-center justify-center">
+          {categories.map((cat, index) => {
+            const offset = getCardOffset(index);
+            const isCenter = offset === 0;
+            const isVisible = Math.abs(offset) <= 2;
+            
+            // Horizontal position: 280px per card
+            const xPosition = offset * 280;
+            // Scale: center = 1, sides = smaller
+            const scale = isCenter ? 1 : 0.85 - Math.abs(offset) * 0.05;
+            // Opacity: center = 1, fade out on sides
+            const opacity = isCenter ? 1 : Math.max(0.4, 1 - Math.abs(offset) * 0.3);
+            // Z-index: center on top
+            const zIndex = 10 - Math.abs(offset);
+            
+            if (!isVisible) return null;
+
+            // Get first gig image or fallback
+            const coverImage = cat.sampleGigs[0]?.imageUrl || 
+              categoryMeta[cat.category]?.image || 
+              "/images/service-design.jpg";
             
             return (
               <motion.div
-                key={service.category}
-                className="absolute left-1/2 top-1/2"
-                style={{
-                  transform: `translate(-50%, -50%) translateX(${x}px) translateZ(${z}px) rotateY(${-angle}deg)`,
-                  transformStyle: "preserve-3d",
+                key={cat.category}
+                className="absolute"
+                initial={false}
+                animate={{
+                  x: xPosition,
+                  scale,
+                  opacity,
+                  zIndex,
                 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
                 onMouseEnter={() => setIsPaused(true)}
                 onMouseLeave={() => setIsPaused(false)}
               >
-                <motion.div
-                  className="w-[240px] h-[340px] cursor-pointer"
-                  style={{ transformStyle: "preserve-3d" }}
-                  animate={{ rotateY: isFlipped ? 180 : 0 }}
-                  transition={{ duration: 0.6, ease: "easeInOut" }}
-                  onClick={() => toggleFlip(service.category)}
+                <Card 
+                  onClick={() => {
+                    if (isAuthenticated) {
+                      // Angemeldete User -> direkt zum Marketplace
+                      setLocation(`/marketplace?category=${cat.category}`);
+                    } else {
+                      // Nicht angemeldete User -> zeige ersten Gig als Detail-Modal
+                      const firstGig = cat.sampleGigs[0];
+                      if (firstGig) {
+                        setSelectedGig({
+                          id: firstGig.id,
+                          title: firstGig.title,
+                          description: firstGig.description,
+                          imageUrl: firstGig.imageUrl,
+                          price: firstGig.price,
+                          category: cat.category,
+                        });
+                      }
+                    }
+                  }}
+                  className={`w-[260px] h-[360px] overflow-hidden cursor-pointer transition-all duration-500 group shadow-2xl ${
+                    isCenter 
+                      ? "border-2 border-primary/50 hover:shadow-[0_0_40px_rgba(139,92,246,0.6)]" 
+                      : "border border-white/10 hover:border-primary/30"
+                  } backdrop-blur-xl bg-slate-900/40`}
                 >
-                  <Card 
-                    className="absolute inset-0 overflow-hidden backdrop-blur-xl bg-slate-900/40 border-2 border-white/10 hover:border-primary/50 transition-all duration-500 group shadow-2xl hover:shadow-[0_0_40px_rgba(139,92,246,0.6)]"
-                    style={{ backfaceVisibility: "hidden", WebkitBackfaceVisibility: "hidden" }}
-                  >
-                    <div className="relative w-full h-[180px] overflow-hidden">
-                      <img
-                        src={service.image}
-                        alt={service.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent" />
-                    </div>
-                    <CardContent className="p-6 space-y-3">
-                      <h3 
-                        className="text-xl font-black uppercase tracking-tight group-hover:scale-105 transition-transform duration-300"
-                        style={{
-                          fontFamily: "'Impact', 'Arial Black', sans-serif",
-                          background: "linear-gradient(135deg, #FF6B35 0%, #4ECDC4 50%, #8B5CF6 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          backgroundClip: "text",
-                          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))"
-                        }}
-                      >
-                        {service.title}
-                      </h3>
-                      <p className="text-sm text-slate-300 leading-relaxed">{service.description}</p>
-                      <p className="text-xs text-primary/70 italic">Klick für Details →</p>
-                    </CardContent>
-                  </Card>
-
-                  <Card 
-                    className="absolute inset-0 overflow-hidden backdrop-blur-xl bg-gradient-to-br from-primary/20 to-slate-900/60 border-2 border-primary/50 shadow-2xl shadow-primary/30"
-                    style={{
-                      backfaceVisibility: "hidden",
-                      WebkitBackfaceVisibility: "hidden",
-                      transform: "rotateY(180deg)"
-                    }}
-                  >
-                    <CardContent className="p-6 space-y-4 h-full flex flex-col justify-between">
-                      <h3 
-                        className="text-lg font-black uppercase tracking-tight"
-                        style={{
-                          fontFamily: "'Impact', 'Arial Black', sans-serif",
-                          background: "linear-gradient(135deg, #FF6B35 0%, #4ECDC4 50%, #8B5CF6 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          backgroundClip: "text"
-                        }}
-                      >
-                        {service.title}
-                      </h3>
-                      <div className="space-y-2">
-                        {service.backInfo.features.map((feature, idx) => (
-                          <div key={idx} className="flex items-start gap-2">
-                            <Check className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                            <span className="text-xs text-slate-200">{feature}</span>
+                  {/* Image Grid - 2x2 of sample gigs */}
+                  <div className="relative w-full h-[160px] overflow-hidden">
+                    {cat.sampleGigs.length >= 4 ? (
+                      <div className="grid grid-cols-2 grid-rows-2 w-full h-full">
+                        {cat.sampleGigs.slice(0, 4).map((gig, i) => (
+                          <div key={i} className="overflow-hidden">
+                            <img
+                              src={gig.imageUrl || "/images/service-design.jpg"}
+                              alt={gig.title}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                              loading="lazy"
+                            />
                           </div>
                         ))}
                       </div>
-                      <div className="grid grid-cols-2 gap-3 pt-3 border-t border-white/10">
-                        <div>
-                          <p className="text-xs text-slate-400">Preis</p>
-                          <p className="text-sm font-bold text-primary">{service.backInfo.priceRange}</p>
+                    ) : (
+                      <img
+                        src={coverImage}
+                        alt={cat.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/50 to-transparent" />
+                    
+                    
+                    {/* Gig Count Badge */}
+                    <div className="absolute top-3 right-3 px-2 py-1 rounded-full bg-slate-900/80 backdrop-blur-sm border border-white/20">
+                      <span className="text-xs font-bold text-white">{cat.gigCount} Gigs</span>
+                    </div>
+                  </div>
+                  
+                  <CardContent className="p-5 space-y-3">
+                    <h3 
+                      className="text-xl font-black uppercase tracking-tight group-hover:scale-105 transition-transform duration-300"
+                      style={{
+                        fontFamily: "'Impact', 'Arial Black', sans-serif",
+                        background: "linear-gradient(135deg, #FF6B35 0%, #4ECDC4 50%, #8B5CF6 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                        filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))"
+                      }}
+                    >
+                      {cat.title}
+                    </h3>
+                    
+                    {/* Sample Gig Titles with Prices */}
+                    <div className="space-y-1.5">
+                      {cat.sampleGigs.slice(0, 3).map((gig, i) => (
+                        <div key={i} className="flex items-center justify-between gap-2">
+                          <p className="text-xs text-slate-400 truncate flex items-center gap-1.5 flex-1">
+                            <span className="w-1 h-1 rounded-full bg-primary/60 flex-shrink-0" />
+                            {gig.title}
+                          </p>
+                          <span className="text-xs font-semibold text-primary whitespace-nowrap">
+                            {(() => {
+                              const price = gig.price;
+                              // Parse price - handle string or number
+                              let numPrice: number;
+                              if (typeof price === 'string') {
+                                const cleaned = price.replace(/[€\s]/g, '').replace(',', '.');
+                                numPrice = parseFloat(cleaned);
+                              } else {
+                                numPrice = price;
+                              }
+                              if (isNaN(numPrice)) return price;
+                              // Price is stored in cents, convert to euros
+                              const euros = numPrice / 100;
+                              return `${Math.round(euros).toLocaleString('de-DE')} €`;
+                            })()}
+                          </span>
                         </div>
-                        <div>
-                          <p className="text-xs text-slate-400">Lieferzeit</p>
-                          <p className="text-sm font-bold text-white">{service.backInfo.deliveryTime}</p>
-                        </div>
-                        <div className="col-span-2">
-                          <p className="text-xs text-slate-400">Verfügbar</p>
-                          <p className="text-sm font-bold text-primary">{service.backInfo.experts}</p>
-                        </div>
-                      </div>
-                      <p className="text-xs text-primary/70 italic text-center">Klick zum Zurückdrehen</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      ))}
+                      {cat.gigCount > 3 && (
+                        <p className="text-xs text-primary/70 font-medium">
+                          +{cat.gigCount - 3} weitere Gigs
+                        </p>
+                      )}
+                    </div>
+                    
+                    {/* CTA */}
+                    <div className="pt-3 border-t border-white/10">
+                      <p className="text-xs text-primary group-hover:text-primary/80 transition-colors flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" />
+                        {isAuthenticated ? "Kategorie entdecken →" : "Details ansehen →"}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               </motion.div>
             );
           })}
-        </motion.div>
+        </div>
       </div>
 
       <div className="absolute left-0 right-0 top-1/2 -translate-y-1/2 flex justify-between px-4 pointer-events-none z-20">
@@ -273,7 +384,7 @@ export default function ServiceCardsFan() {
           variant="outline"
           size="icon"
           className="pointer-events-auto w-14 h-14 rounded-full backdrop-blur-xl bg-slate-900/60 border-2 border-white/10 hover:border-primary/50 hover:bg-slate-900/80 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)]"
-          onClick={rotateLeft}
+          onClick={goLeft}
         >
           <ChevronLeft className="w-6 h-6" />
         </Button>
@@ -281,30 +392,27 @@ export default function ServiceCardsFan() {
           variant="outline"
           size="icon"
           className="pointer-events-auto w-14 h-14 rounded-full backdrop-blur-xl bg-slate-900/60 border-2 border-white/10 hover:border-primary/50 hover:bg-slate-900/80 transition-all duration-300 hover:shadow-[0_0_30px_rgba(139,92,246,0.6)]"
-          onClick={rotateRight}
+          onClick={goRight}
         >
           <ChevronRight className="w-6 h-6" />
         </Button>
       </div>
 
-      <div className="flex justify-center gap-3 mt-12 z-20 relative">
-        {services.map((service, index) => {
-          const normalizedRotation = ((rotation % 360) + 360) % 360;
-          const targetRotation = (index * (360 / services.length)) % 360;
-          const isActive = Math.abs(normalizedRotation - targetRotation) < 10 || 
-                          Math.abs(normalizedRotation - targetRotation) > 350;
+      {/* Dots Indicator */}
+      <div className="flex justify-center gap-2 mt-8 z-20 relative">
+        {categories.map((cat, index) => {
+          const isActive = index === currentIndex;
           
           return (
             <motion.button
-              key={service.category}
+              key={cat.category}
               className={`h-2 rounded-full transition-all duration-300 ${
                 isActive 
-                  ? 'w-12 bg-gradient-to-r from-primary via-secondary to-accent' 
+                  ? 'w-8 bg-gradient-to-r from-primary via-secondary to-accent' 
                   : 'w-2 bg-white/30 hover:bg-white/50'
               }`}
               onClick={() => {
-                const targetAngle = index * (360 / services.length);
-                setRotation(targetAngle);
+                setCurrentIndex(index);
                 setManualControl(true);
                 setTimeout(() => setManualControl(false), 5000);
               }}
@@ -316,20 +424,130 @@ export default function ServiceCardsFan() {
                 ]
               } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
+              title={cat.title}
             />
           );
         })}
       </div>
 
-      {isPaused && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-full backdrop-blur-xl bg-slate-900/80 border border-white/20 text-sm text-white z-20"
-        >
-          ⏸️ Pausiert
-        </motion.div>
-      )}
+      {/* Category Count Info */}
+      <div className="text-center mt-4 z-20 relative">
+        <p className="text-xs text-slate-500">
+          {categories.length} Kategorien • {gigsData?.gigs?.length || 0} Gigs verfügbar
+        </p>
+      </div>
+
+      {/* Gig Detail Modal für nicht angemeldete User */}
+      <AnimatePresence>
+        {selectedGig && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => setSelectedGig(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl bg-slate-900 border border-slate-700/50 shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setSelectedGig(null)}
+                className="absolute top-4 right-4 z-10 p-2 rounded-full bg-slate-800/80 hover:bg-slate-700 transition-colors"
+              >
+                <X className="w-5 h-5 text-slate-300" />
+              </button>
+
+              {/* Gig Image */}
+              {selectedGig.imageUrl && (
+                <div className="relative w-full h-64 overflow-hidden rounded-t-2xl">
+                  <img
+                    src={selectedGig.imageUrl}
+                    alt={selectedGig.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
+                </div>
+              )}
+
+              {/* Content */}
+              <div className="p-6 space-y-6">
+                {/* Title & Price */}
+                <div className="flex items-start justify-between gap-4">
+                  <h2 className="text-2xl font-bold text-white">{selectedGig.title}</h2>
+                  <div className="px-4 py-2 rounded-xl bg-primary/20 border border-primary/30">
+                    <span className="text-lg font-bold text-primary">
+                      {(() => {
+                        const price = selectedGig.price;
+                        let numPrice: number;
+                        if (typeof price === 'string') {
+                          const cleaned = price.replace(/[€\s]/g, '').replace(',', '.');
+                          numPrice = parseFloat(cleaned);
+                        } else {
+                          numPrice = price;
+                        }
+                        if (isNaN(numPrice)) return price;
+                        // Price is stored in cents, convert to euros
+                        const euros = numPrice / 100;
+                        return `${Math.round(euros).toLocaleString('de-DE')} €`;
+                      })()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Description */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white">Über dieses Gig</h3>
+                  <p className="text-slate-300 leading-relaxed">
+                    {selectedGig.description || "Keine Beschreibung verfügbar."}
+                  </p>
+                </div>
+
+                {/* Features */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-white">Was du erhältst:</h3>
+                  <div className="space-y-2">
+                    {["Professionelle Qualität", "Alle Quelldateien", "Kommerzielle Nutzungsrechte", "Schnelle Kommunikation & Support"].map((feature, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <Check className="w-4 h-4 text-primary" />
+                        <span className="text-slate-300">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Login CTA */}
+                <div className="pt-4 border-t border-slate-700/50 space-y-3">
+                  <p className="text-sm text-slate-400 text-center">
+                    Melde dich an, um diesen Gig zu kaufen oder den Verkäufer zu kontaktieren.
+                  </p>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => setLocation(`/login?redirect=/gig/${selectedGig.id}`)}
+                      className="flex-1 bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90"
+                    >
+                      <LogIn className="w-4 h-4 mr-2" />
+                      Anmelden
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setLocation(`/register?redirect=/gig/${selectedGig.id}`)}
+                      className="flex-1 border-slate-600 hover:bg-slate-800"
+                    >
+                      Registrieren
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

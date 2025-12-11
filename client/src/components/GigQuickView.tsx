@@ -91,7 +91,7 @@ export default function GigQuickView({ gig, open, onClose }: GigQuickViewProps) 
             </div>
             <div>
               <span className="text-3xl font-black text-white">
-                {gig.price}€
+                {(gig.price / 100).toFixed(0)}€
               </span>
             </div>
           </div>

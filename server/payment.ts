@@ -16,11 +16,20 @@
 import Stripe from 'stripe';
 import { ENV } from './_core/env';
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(ENV.stripeSecretKey, {
-  apiVersion: "2025-11-17.clover",
-  typescript: true,
-});
+// Lazy initialization to prevent startup crash when STRIPE_SECRET_KEY is not set
+let stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!stripe) {
+    if (!ENV.stripeSecretKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    stripe = new Stripe(ENV.stripeSecretKey, {
+      apiVersion: "2025-11-17.clover",
+      typescript: true,
+    });
+  }
+  return stripe;
+}
 
 export interface CreateCheckoutParams {
   gigId: number;
@@ -64,9 +73,11 @@ export async function createCheckoutSession(
     const platformFeeCents = Math.round(totalAmountCents * 0.15); // 15% platform fee
     
     // Base session config
+    // Note: Only 'card' supports manual capture (escrow)
+    // SEPA Debit and Klarna don't support manual capture
     const sessionConfig: Stripe.Checkout.SessionCreateParams = {
       mode: 'payment',
-      payment_method_types: ['card', 'sepa_debit', 'klarna'],
+      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {
@@ -117,7 +128,7 @@ export async function createCheckoutSession(
       console.log(`[Stripe] Platform Charge: ${params.gigPrice}€ to platform (seller has no Connect account)`);
     }
     
-    const session = await stripe.checkout.sessions.create(sessionConfig);
+    const session = await getStripe().checkout.sessions.create(sessionConfig);
 
     return {
       id: session.id,
@@ -138,7 +149,7 @@ export async function createCheckoutSession(
  */
 export async function capturePayment(paymentIntentId: string): Promise<void> {
   try {
-    await stripe.paymentIntents.capture(paymentIntentId);
+    await getStripe().paymentIntents.capture(paymentIntentId);
     console.log(`[Stripe] Payment captured: ${paymentIntentId}`);
   } catch (error) {
     console.error('[Stripe] Failed to capture payment:', error);
@@ -159,7 +170,7 @@ export async function refundPayment(
   amount?: number // Optional: partial refund in cents
 ): Promise<void> {
   try {
-    const refund = await stripe.refunds.create({
+    const refund = await getStripe().refunds.create({
       payment_intent: paymentIntentId,
       amount: amount, // Undefined = full refund
     });
@@ -187,7 +198,7 @@ export async function transferToSeller(
 ): Promise<void> {
   try {
     // Get payment intent to get amount
-    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+    const paymentIntent = await getStripe().paymentIntents.retrieve(paymentIntentId);
     const totalAmount = paymentIntent.amount; // in cents
     
     // Calculate platform fee (15%)
@@ -195,7 +206,7 @@ export async function transferToSeller(
     const sellerAmount = totalAmount - platformFee;
 
     // Create transfer to seller
-    const transfer = await stripe.transfers.create({
+    const transfer = await getStripe().transfers.create({
       amount: sellerAmount,
       currency: 'eur',
       destination: sellerStripeAccountId,
@@ -234,7 +245,7 @@ export async function createConnectAccount(
 ): Promise<{ accountId: string; onboardingUrl: string }> {
   try {
     // Create Connect account
-    const account = await stripe.accounts.create({
+    const account = await getStripe().accounts.create({
       type: 'express', // Express = Stripe handles KYC UI
       country: country,
       email: email,
@@ -249,7 +260,7 @@ export async function createConnectAccount(
     });
 
     // Create onboarding link
-    const accountLink = await stripe.accountLinks.create({
+    const accountLink = await getStripe().accountLinks.create({
       account: account.id,
       refresh_url: `${ENV.frontendUrl}/seller-dashboard?onboarding=refresh`,
       return_url: `${ENV.frontendUrl}/seller-dashboard?onboarding=complete`,
@@ -277,7 +288,7 @@ export async function getSellerBalance(
   stripeAccountId: string
 ): Promise<{ available: number; pending: number }> {
   try {
-    const balance = await stripe.balance.retrieve({
+    const balance = await getStripe().balance.retrieve({
       stripeAccount: stripeAccountId,
     });
 
@@ -305,7 +316,7 @@ export async function createPayout(
   amount: number // in EUR
 ): Promise<{ id: string }> {
   try {
-    const payout = await stripe.payouts.create(
+    const payout = await getStripe().payouts.create(
       {
         amount: Math.round(amount * 100), // Convert to cents
         currency: 'eur',
@@ -333,7 +344,7 @@ export function constructWebhookEvent(
   signature: string
 ): Stripe.Event {
   try {
-    return stripe.webhooks.constructEvent(
+    return getStripe().webhooks.constructEvent(
       payload,
       signature,
       ENV.stripeWebhookSecret

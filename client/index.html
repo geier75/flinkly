@@ -1,14 +1,16 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <link rel="icon" type="image/png" href="%VITE_APP_LOGO%" />
-    <link rel="apple-touch-icon" href="%VITE_APP_LOGO%" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
     <title>%VITE_APP_TITLE%</title>
+    <!-- Prevent Google Translate from translating brand name -->
+    <meta name="google" content="notranslate" />
     <!-- Google Fonts with Performance Optimization -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,11 +19,31 @@
 
   <body>
     <div id="root"></div>
+    <script>
+      // Fix for React DOM errors caused by browser extensions modifying the DOM
+      // This prevents "removeChild" and "insertBefore" errors
+      if (typeof Node !== 'undefined') {
+        const originalRemoveChild = Node.prototype.removeChild;
+        Node.prototype.removeChild = function(child) {
+          if (child.parentNode !== this) {
+            console.warn('Cannot remove child: not a child of this node', child);
+            return child;
+          }
+          return originalRemoveChild.apply(this, arguments);
+        };
+        
+        const originalInsertBefore = Node.prototype.insertBefore;
+        Node.prototype.insertBefore = function(newNode, referenceNode) {
+          if (referenceNode && referenceNode.parentNode !== this) {
+            console.warn('Cannot insert before: reference node is not a child of this node');
+            return newNode;
+          }
+          return originalInsertBefore.apply(this, arguments);
+        };
+      }
+    </script>
     <script type="module" src="/src/main.tsx"></script>
-    <script
-      defer
-      src="%VITE_ANALYTICS_ENDPOINT%/umami"
-      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+    <!-- Umami Analytics (optional - configure VITE_ANALYTICS_ENDPOINT in .env) -->
   </body>
 
 </html>

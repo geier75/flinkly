@@ -4,7 +4,7 @@
 
 import { router, protectedProcedure, publicProcedure } from "../_core/trpc";
 import { z } from "zod";
-import * as db from "../db";
+import * as db from "../adapters";
 import { getCached, setCached, CacheKeys, CacheTTL } from "../_core/redis";
 
 export const userRouter = router({
@@ -200,6 +200,7 @@ export const userRouter = router({
     .input(
       z.object({
         name: z.string().optional(),
+        email: z.string().email().optional(),
         bio: z.string().optional(),
         country: z.string().optional(),
         // Commercial seller fields (§ 5 TMG)

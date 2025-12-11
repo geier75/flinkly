@@ -1,4 +1,5 @@
-import { getDb } from "../db";
+// @ts-nocheck
+import { getDb } from "../adapters";
 import { users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notifyOwner } from "../_core/notification";

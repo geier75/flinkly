@@ -35,6 +35,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const SellerDashboard = lazy(() => import("./pages/SellerDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const Messages = lazy(() => import("./pages/Messages"));
+const DataExport = lazy(() => import("./pages/DataExport"));
 const DataExportDashboard = lazy(() => import("./pages/DataExportDashboard"));
 const PrivacyDashboard = lazy(() => import("./pages/PrivacyDashboard"));
 const SellerVerification = lazy(() => import("./pages/SellerVerification"));
@@ -42,6 +43,18 @@ const Favorites = lazy(() => import("./pages/Favorites"));
 const OrderConfirmation = lazy(() => import("./pages/OrderConfirmation"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 const PlatformAnalytics = lazy(() => import("./pages/PlatformAnalytics"));
+const Login = lazy(() => import("./pages/Login"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const ProcessingRegister = lazy(() => import("./pages/ProcessingRegister"));
+const DataProcessingAgreements = lazy(() => import("./pages/DataProcessingAgreements"));
+const Report = lazy(() => import("./pages/Report"));
+const P2BTransparency = lazy(() => import("./pages/P2BTransparency"));
+const SellerComplaint = lazy(() => import("./pages/SellerComplaint"));
+const TransparencyReport = lazy(() => import("./pages/TransparencyReport"));
+const DataSubjectRights = lazy(() => import("./pages/DataSubjectRights"));
+const SecurityPolicy = lazy(() => import("./pages/SecurityPolicy"));
+const DarkPatternsCompliance = lazy(() => import("./pages/DarkPatternsCompliance"));
+const PaymentCompliance = lazy(() => import("./pages/PaymentCompliance"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -53,6 +66,8 @@ function Router() {
     }>
       <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/login"} component={Login} />
+      <Route path={"/auth/callback"} component={AuthCallback} />
       <Route path={"/marketplace"} component={Marketplace} />
       <Route path={"/marketplace-simple"} component={MarketplaceSimple} />
       <Route path={"/gig/:id"} component={GigDetail} />
@@ -70,7 +85,8 @@ function Router() {
       <Route path={"/order/confirmation/:orderId"} component={OrderConfirmation} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/messages"} component={Messages} />
-      <Route path={"data-export-dashboard"} component={DataExportDashboard} />
+      <Route path={"/data-export"} component={DataExport} />
+      <Route path={"/data-export-dashboard"} component={DataExportDashboard} />
       <Route path={"/privacy-dashboard"} component={PrivacyDashboard} />
       <Route path={"/seller-verification"} component={SellerVerification} />
       <Route path={"/about"} component={About} />
@@ -81,6 +97,16 @@ function Router() {
       <Route path={"/privacy"} component={Privacy} />
       <Route path={"/impressum"} component={Impressum} />
       <Route path={"/widerruf"} component={Widerruf} />
+      <Route path={"/processing-register"} component={ProcessingRegister} />
+      <Route path={"/data-processing-agreements"} component={DataProcessingAgreements} />
+      <Route path={"/report"} component={Report} />
+      <Route path={"/p2b-transparency"} component={P2BTransparency} />
+      <Route path={"/seller-complaint"} component={SellerComplaint} />
+      <Route path={"/transparency-report"} component={TransparencyReport} />
+      <Route path={"/data-subject-rights"} component={DataSubjectRights} />
+      <Route path={"/security"} component={SecurityPolicy} />
+      <Route path={"/dark-patterns-compliance"} component={DarkPatternsCompliance} />
+      <Route path={"/payment-compliance"} component={PaymentCompliance} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

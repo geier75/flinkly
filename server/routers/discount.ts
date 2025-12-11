@@ -2,9 +2,19 @@ import { z } from "zod";
 import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2025-11-17.clover" as any,
-});
+// Lazy initialization to prevent startup crash when STRIPE_SECRET_KEY is not set
+let stripe: Stripe | null = null;
+function getStripe(): Stripe {
+  if (!stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+    stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-11-17.clover" as any,
+    });
+  }
+  return stripe;
+}
 
 /**
  * Discount Router
@@ -31,7 +41,7 @@ export const discountRouter = router({
     .mutation(async ({ input }) => {
       try {
         // Create Coupon (5€ fixed discount)
-        const coupon = await stripe.coupons.create({
+        const coupon = await getStripe().coupons.create({
           amount_off: 500, // 5€ in cents
           currency: "eur",
           duration: "once",
@@ -47,7 +57,7 @@ export const discountRouter = router({
         const randomSuffix = Math.random().toString(36).substring(2, 8).toUpperCase();
         const code = `EXIT5-${randomSuffix}`;
 
-        const promotionCode = await stripe.promotionCodes.create({
+        const promotionCode = await getStripe().promotionCodes.create({
           coupon: coupon.id,
           code,
           max_redemptions: 1, // Single-use
@@ -82,7 +92,7 @@ export const discountRouter = router({
     )
     .query(async ({ input }) => {
       try {
-        const promotionCodes = await stripe.promotionCodes.list({
+        const promotionCodes = await getStripe().promotionCodes.list({
           code: input.code,
           limit: 1,
         });
@@ -124,7 +134,7 @@ export const discountRouter = router({
         }
 
         // Get coupon details
-        const coupon = await stripe.coupons.retrieve((promotionCode as any).coupon as string);
+        const coupon = await getStripe().coupons.retrieve((promotionCode as any).coupon as string);
 
         return {
           valid: true,

@@ -1,7 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { PremiumPageLayout, PremiumCard } from "@/components/PremiumPageLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -193,15 +191,15 @@ export default function Checkout() {
 
   if (!isAuthenticated) {
     return (
-    <PremiumPageLayout>
-        <PremiumCard className="max-w-md">
+    <div className="min-h-screen bg-slate-950 text-white">
+        <Card className="max-w-md">
           <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
             <p className="text-slate-600 mb-4">Bitte melde dich an, um fortzufahren</p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
           </CardContent>
-        </PremiumCard>
-      </PremiumPageLayout>
+        </Card>
+      </div>
     );
   }
 
@@ -211,16 +209,16 @@ export default function Checkout() {
 
   if (!gig) {
     return (
-    <PremiumPageLayout>
-        <PremiumCard className="max-w-md">
+    <div className="min-h-screen bg-slate-950 text-white">
+        <Card className="max-w-md">
           <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <p className="text-slate-600 mb-4">Gig nicht gefunden</p>
             <Button onClick={() => setLocation("/marketplace")}>
               Zurück zum Marktplatz
             </Button>
           </CardContent>
-        </PremiumCard>
-      </PremiumPageLayout>
+        </Card>
+      </div>
     );
   }
 
@@ -247,8 +245,8 @@ export default function Checkout() {
   };
 
   return (
-    <PremiumPageLayout>
-      <div className="container mx-auto px-4 py-6">
+    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+      <div className="container mx-auto px-4 py-6 text-white">
         {/* Breadcrumbs (H3: User-Kontrolle & Freiheit) */}
         <Breadcrumbs
           items={[
@@ -260,7 +258,7 @@ export default function Checkout() {
         />
 
         {/* Progress Indicator (H1: System-Status sichtbar machen) */}
-        <PremiumCard className="mb-6">
+        <Card className="mb-6">
           <CardContent className="pt-6 p-6 md:p-8 p-6 md:p-8">
             <ProgressIndicator
               steps={steps}
@@ -269,16 +267,16 @@ export default function Checkout() {
               allowClickPrevious={true}
             />
           </CardContent>
-        </PremiumCard>
+        </Card>
 
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Step 1: Briefing */}
             {currentStep === 1 && (
-              <PremiumCard>
+              <Card className="bg-white border-slate-200 shadow-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
                     <FileText className="h-5 w-5 text-primary" />
                     Projekt-Briefing
                   </CardTitle>
@@ -296,7 +294,7 @@ export default function Checkout() {
                   </div>
 
                   <div>
-                    <Label htmlFor="projectName">
+                    <Label className="text-slate-700" htmlFor="projectName">
                       Projektname <span className="text-red-500">*</span>
                     </Label>
                     <Input
@@ -317,7 +315,7 @@ export default function Checkout() {
                   </div>
 
                   <div>
-                    <Label htmlFor="description">
+                    <Label className="text-slate-700" htmlFor="description">
                       Detaillierte Beschreibung <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
@@ -344,7 +342,7 @@ export default function Checkout() {
                   </div>
 
                   <div>
-                    <Label htmlFor="targetAudience">Zielgruppe (optional)</Label>
+                    <Label className="text-slate-700" htmlFor="targetAudience">Zielgruppe (optional)</Label>
                     <Input
                       id="targetAudience"
                       placeholder="z.B. Tech-Startups, B2B-Kunden"
@@ -356,7 +354,7 @@ export default function Checkout() {
                   </div>
 
                   <div>
-                    <Label htmlFor="colorPreferences">Farbpräferenzen (optional)</Label>
+                    <Label className="text-slate-700" htmlFor="colorPreferences">Farbpräferenzen (optional)</Label>
                     <Input
                       id="colorPreferences"
                       placeholder="z.B. Blau, Grün, modern"
@@ -369,7 +367,21 @@ export default function Checkout() {
 
                   <div>
                     <Label>Referenzen hochladen (optional)</Label>
-                    <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer">
+                    <label className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors cursor-pointer block">
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.doc,.docx"
+                        className="hidden"
+                        onChange={(e) => {
+                          const files = Array.from(e.target.files || []);
+                          const validFiles = files.filter(f => f.size <= 10 * 1024 * 1024); // Max 10MB
+                          if (validFiles.length < files.length) {
+                            toast.error("Einige Dateien sind zu groß (max. 10MB)");
+                          }
+                          setBriefing({ ...briefing, files: [...briefing.files, ...validFiles] });
+                        }}
+                      />
                       <Upload className="h-8 w-8 text-slate-400 mx-auto mb-2" />
                       <p className="text-sm text-slate-600">
                         Klicke oder ziehe Dateien hierher
@@ -377,7 +389,26 @@ export default function Checkout() {
                       <p className="text-xs text-slate-500 mt-1">
                         Max. 10MB pro Datei
                       </p>
-                    </div>
+                    </label>
+                    {briefing.files.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {briefing.files.map((file, index) => (
+                          <div key={index} className="flex items-center justify-between bg-slate-100 rounded-lg px-3 py-2">
+                            <span className="text-sm text-slate-700 truncate">{file.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const newFiles = briefing.files.filter((_, i) => i !== index);
+                                setBriefing({ ...briefing, files: newFiles });
+                              }}
+                              className="text-red-500 hover:text-red-700 text-sm font-medium"
+                            >
+                              Entfernen
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex gap-3 pt-4">
@@ -396,14 +427,14 @@ export default function Checkout() {
                     </Button>
                   </div>
                 </CardContent>
-              </PremiumCard>
+              </Card>
             )}
 
             {/* Step 2: Payment */}
             {currentStep === 2 && (
-              <PremiumCard>
+              <Card className="bg-white border-slate-200 shadow-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
                     <CreditCard className="h-5 w-5 text-primary" />
                     Zahlungsmethode
                   </CardTitle>
@@ -523,14 +554,14 @@ export default function Checkout() {
                     </Button>
                   </div>
                 </CardContent>
-              </PremiumCard>
+              </Card>
             )}
 
             {/* Step 3: Legal */}
             {currentStep === 3 && (
-              <PremiumCard>
+              <Card className="bg-white border-slate-200 shadow-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
                     <Shield className="h-5 w-5 text-primary" />
                     Rechtliche Hinweise
                   </CardTitle>
@@ -602,7 +633,7 @@ export default function Checkout() {
                   {legal.needsAVV && (
                     <>
                       <div>
-                        <Label htmlFor="companyName">Firmenname</Label>
+                        <Label className="text-slate-700" htmlFor="companyName">Firmenname</Label>
                         <Input
                           id="companyName"
                           placeholder="Deine Firma GmbH"
@@ -613,7 +644,7 @@ export default function Checkout() {
                         />
                       </div>
                       <div>
-                        <Label htmlFor="dataProcessing">Art der Datenverarbeitung</Label>
+                        <Label className="text-slate-700" htmlFor="dataProcessing">Art der Datenverarbeitung</Label>
                         <Textarea
                           id="dataProcessing"
                           placeholder="z.B. Verarbeitung von Kundennamen und E-Mail-Adressen"
@@ -638,7 +669,7 @@ export default function Checkout() {
                         setLegal({ ...legal, acceptTerms: checked as boolean })
                       }
                     />
-                    <Label htmlFor="acceptTerms" className="text-sm cursor-pointer">
+                    <Label className="text-slate-700 text-sm cursor-pointer" htmlFor="acceptTerms">
                       Ich akzeptiere die{" "}
                       <button
                         onClick={() => setLocation("/terms")}
@@ -676,14 +707,14 @@ export default function Checkout() {
                     </Button>
                   </div>
                 </CardContent>
-              </PremiumCard>
+              </Card>
             )}
 
             {/* Step 4: Review */}
             {currentStep === 4 && (
-              <PremiumCard>
+              <Card className="bg-white border-slate-200 shadow-xl">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-slate-900">
                     <CheckCircle className="h-5 w-5 text-primary" />
                     Bestellung überprüfen
                   </CardTitle>
@@ -798,24 +829,24 @@ export default function Checkout() {
                       Zurück
                     </Button>
                     <Button
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold text-base py-6"
                       onClick={handleSubmit}
                       disabled={!isStepComplete(4) || createCheckoutMutation.isPending}
                     >
                       {createCheckoutMutation.isPending
                         ? "Weiterleitung zu Stripe..."
-                        : "✓ Jetzt verbindlich bestellen"}
+                        : "💳 Zahlungspflichtig bestellen"}
                     </Button>
                   </div>
                 </CardContent>
-              </PremiumCard>
+              </Card>
             )}
           </div>
 
           {/* Sidebar */}
           <div className="lg:col-span-1">
             <div className="sticky top-20">
-              <PremiumCard>
+              <Card className="bg-white border-slate-200 shadow-xl">
                 <CardHeader>
                   <CardTitle className="text-base">Bestellübersicht</CardTitle>
                 </CardHeader>
@@ -879,10 +910,17 @@ export default function Checkout() {
                   <Separator />
 
                   <div className="flex justify-between">
-                    <span className="font-semibold text-slate-900">Gesamt</span>
+                    <span className="font-semibold text-slate-900">Gesamt (brutto)</span>
                     <span className="text-2xl font-bold text-primary">
                       {totalPrice.toFixed(2)}€
                     </span>
+                  </div>
+                  
+                  {/* Fernabsatzrecht §312d BGB: Vollständige Preisinformationen */}
+                  <div className="text-xs text-slate-500 space-y-1 border-t border-slate-200 pt-2">
+                    <p>inkl. 19% MwSt. ({(totalPrice * 0.19 / 1.19).toFixed(2)}€)</p>
+                    <p>Nettobetrag: {(totalPrice / 1.19).toFixed(2)}€</p>
+                    <p>Keine zusätzlichen Versandkosten (digitale Lieferung)</p>
                   </div>
 
                   <div className="bg-green-50 border border-green-200 rounded-lg p-3">
@@ -894,14 +932,14 @@ export default function Checkout() {
                     </div>
                   </div>
                 </CardContent>
-              </PremiumCard>
+              </Card>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Exit Intent Modal */}
-      <ExitIntentModal 
+      {/* Exit Intent Modal - temporarily disabled to fix DOM error */}
+      {/* <ExitIntentModal 
         inCheckout={showExitIntent}
         gigId={gig?.id}
         gigPrice={gig?.price}
@@ -909,8 +947,8 @@ export default function Checkout() {
           // Continue to payment
           setCurrentStep(3);
         }} 
-      />
-    </PremiumPageLayout>
+      /> */}
+    </div>
   );
 }
 
