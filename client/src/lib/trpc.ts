@@ -54,6 +54,7 @@ export const trpc = {
   gigs: {
     list: createStubQuery(),
     getById: createStubQuery(),
+    myGigs: createStubQuery(),
     create: createStubMutation(),
     update: createStubMutation(),
     delete: createStubMutation(),
@@ -61,6 +62,10 @@ export const trpc = {
   },
   
   // Auth / User
+  auth: {
+    me: createStubQuery(),
+    logout: createStubMutation(),
+  },
   user: {
     me: createStubQuery(),
     update: createStubMutation(),
@@ -81,6 +86,8 @@ export const trpc = {
   orders: {
     list: createStubQuery(),
     getById: createStubQuery(),
+    myPurchases: createStubQuery(),
+    mySales: createStubQuery(),
     create: createStubMutation(),
     updateStatus: createStubMutation(),
   },
