@@ -3,6 +3,8 @@
  * Ersetzt tRPC-Calls mit direkten fetch-Aufrufen
  */
 
+import { supabase } from './supabase';
+
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://fpiszghehrjmkbxhbwqr.supabase.co';
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwaXN6Z2hlaHJqbWtieGhid3FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2NzUwNDcsImV4cCI6MjA4MDI1MTA0N30.K7S7NtVrjOcW6vR_kmxG1KK2cpuYZDcGeuAremLJpSk';
 
@@ -10,10 +12,16 @@ interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
   body?: any;
   params?: Record<string, string | number | undefined>;
+  requireAuth?: boolean;
+}
+
+async function getAuthToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token || null;
 }
 
 async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
-  const { method = 'GET', body, params } = options;
+  const { method = 'GET', body, params, requireAuth = false } = options;
   
   let url = `${SUPABASE_URL}/functions/v1/${endpoint}`;
   
@@ -31,8 +39,17 @@ async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T
     }
   }
   
+  // Get auth token for authenticated requests
+  let authToken = SUPABASE_ANON_KEY;
+  if (requireAuth) {
+    const userToken = await getAuthToken();
+    if (userToken) {
+      authToken = userToken;
+    }
+  }
+  
   const headers: Record<string, string> = {
-    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    'Authorization': `Bearer ${authToken}`,
     'Content-Type': 'application/json',
   };
   
@@ -166,13 +183,13 @@ export const gigsApi = {
     apiCall(`gigs/${id}`),
   
   create: (input: GigCreateInput): Promise<Gig> =>
-    apiCall('gigs', { method: 'POST', body: input }),
+    apiCall('gigs', { method: 'POST', body: input, requireAuth: true }),
   
   update: (id: number, input: GigUpdateInput): Promise<Gig> =>
-    apiCall(`gigs/${id}`, { method: 'PUT', body: input }),
+    apiCall(`gigs/${id}`, { method: 'PUT', body: input, requireAuth: true }),
   
   delete: (id: number): Promise<{ success: boolean }> =>
-    apiCall(`gigs/${id}`, { method: 'DELETE' }),
+    apiCall(`gigs/${id}`, { method: 'DELETE', requireAuth: true }),
 };
 
 // ============ AUTH API ============
@@ -246,7 +263,7 @@ export interface CheckoutSession {
 
 export const checkoutApi = {
   createSession: (input: CheckoutInput): Promise<CheckoutSession> =>
-    apiCall('checkout', { method: 'POST', body: input }),
+    apiCall('checkout', { method: 'POST', body: input, requireAuth: true }),
 };
 
 // ============ USERS API ============
