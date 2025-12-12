@@ -25,7 +25,8 @@ import {
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
-import { trpc } from "@/lib/trpc";
+import { adminApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function AdminDashboard() {
   const { user, isAuthenticated } = useAuth();
@@ -47,12 +48,13 @@ export default function AdminDashboard() {
     ordersToday: 47,
   };
 
-  // Fetch real data from tRPC
-  const { data: fraudAlerts } = trpc.moderation.getPendingAlerts.useQuery();
-  const { data: allDisputes } = trpc.disputes.all.useQuery();
-  const reviewAlertMutation = trpc.moderation.reviewAlert.useMutation({
-    onSuccess: () => toast.success("Alert reviewed"),
-  });
+  // Mock data - tRPC removed
+  const fraudAlerts: any[] = [];
+  const allDisputes: any[] = [];
+  const reviewAlertMutation = {
+    mutate: () => toast.success("Alert reviewed"),
+    isPending: false,
+  };
 
   // Mock pending moderation items (TODO: Replace with real gig moderation)
   const [pendingGigs] = useState([

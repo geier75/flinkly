@@ -1,98 +1,65 @@
 /**
- * API Client für Supabase Edge Functions
- * Ersetzt tRPC-Calls mit direkten fetch-Aufrufen
+ * API Client - Direkte fetch-Calls zum tRPC-Backend
+ * Ersetzt die tRPC-React-Hooks mit einfachen fetch-Funktionen
  */
 
-import { supabase } from './supabase';
+// ============ CORE FETCH FUNCTIONS ============
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://fpiszghehrjmkbxhbwqr.supabase.co';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZwaXN6Z2hlaHJqbWtieGhid3FyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ2NzUwNDcsImV4cCI6MjA4MDI1MTA0N30.K7S7NtVrjOcW6vR_kmxG1KK2cpuYZDcGeuAremLJpSk';
-
-interface ApiOptions {
-  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
-  body?: any;
-  params?: Record<string, string | number | undefined>;
-  requireAuth?: boolean;
+interface TrpcInput {
+  [key: string]: any;
 }
 
-async function getAuthToken(): Promise<string | null> {
-  // First try to get existing session
-  const { data: { session }, error } = await supabase.auth.getSession();
-  if (error) {
-    console.error('[api.getAuthToken] Error getting session:', error);
-  }
-  if (session?.access_token) {
-    console.log('[api.getAuthToken] Got session, user:', session.user?.email);
-    return session.access_token;
-  }
-  
-  // If no session, try to refresh
-  console.log('[api.getAuthToken] No session, trying to refresh...');
-  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
-  if (refreshError) {
-    console.error('[api.getAuthToken] Refresh error:', refreshError);
-    return null;
-  }
-  if (refreshData.session?.access_token) {
-    console.log('[api.getAuthToken] Refreshed session, user:', refreshData.session.user?.email);
-    return refreshData.session.access_token;
-  }
-  
-  console.log('[api.getAuthToken] No session available');
-  return null;
-}
-
-async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
-  const { method = 'GET', body, params, requireAuth = false } = options;
-  
-  let url = `${SUPABASE_URL}/functions/v1/${endpoint}`;
-  
-  // Add query params
-  if (params) {
-    const searchParams = new URLSearchParams();
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
-        searchParams.append(key, String(value));
-      }
-    });
-    const queryString = searchParams.toString();
-    if (queryString) {
-      url += `?${queryString}`;
-    }
-  }
-  
-  // Get auth token for authenticated requests
-  let authToken = SUPABASE_ANON_KEY;
-  if (requireAuth) {
-    const userToken = await getAuthToken();
-    if (userToken) {
-      authToken = userToken;
-    } else {
-      console.error('[api] requireAuth=true but no user token available');
-      throw new Error('Bitte melde dich an um fortzufahren');
-    }
-  }
-  
-  const headers: Record<string, string> = {
-    'Authorization': `Bearer ${authToken}`,
-    'Content-Type': 'application/json',
-  };
+// tRPC Query Call (GET)
+async function trpcQuery<T>(procedure: string, input?: TrpcInput): Promise<T> {
+  const inputParam = input 
+    ? encodeURIComponent(JSON.stringify({ 0: { json: input } })) 
+    : encodeURIComponent(JSON.stringify({ 0: { json: {} } }));
+  const url = `/api/trpc/${procedure}?batch=1&input=${inputParam}`;
   
   const response = await fetch(url, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
   });
   
   if (!response.ok) {
     const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-    throw new Error(error.error || `API error: ${response.status}`);
+    const message = error[0]?.error?.json?.message || error[0]?.error?.message || error.error || `API error: ${response.status}`;
+    throw new Error(message);
   }
   
-  return response.json();
+  const result = await response.json();
+  if (result[0]?.error) {
+    throw new Error(result[0].error.json?.message || result[0].error.message || 'Unknown error');
+  }
+  return result[0]?.result?.data?.json ?? result[0]?.result?.data;
 }
 
-// ============ GIGS API ============
+// tRPC Mutation Call (POST)
+async function trpcMutation<T>(procedure: string, input?: TrpcInput): Promise<T> {
+  const url = `/api/trpc/${procedure}?batch=1`;
+  
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ 0: { json: input || {} } }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    const message = error[0]?.error?.json?.message || error[0]?.error?.message || error.error || `API error: ${response.status}`;
+    throw new Error(message);
+  }
+  
+  const result = await response.json();
+  if (result[0]?.error) {
+    throw new Error(result[0].error.json?.message || result[0].error.message || 'Unknown error');
+  }
+  return result[0]?.result?.data?.json ?? result[0]?.result?.data;
+}
+
+// ============ TYPES ============
 
 export interface Gig {
   id: number;
@@ -133,11 +100,7 @@ export interface GigReview {
   rating: number;
   comment: string | null;
   createdAt: string;
-  reviewer: {
-    id: number;
-    name: string | null;
-    avatarUrl: string | null;
-  } | null;
+  reviewer?: { id: number; name: string; avatarUrl: string | null };
 }
 
 export interface GigExtra {
@@ -150,18 +113,20 @@ export interface GigExtra {
   active: boolean;
 }
 
+export interface GigSeller {
+  id: number;
+  name: string | null;
+  avatarUrl: string | null;
+  verified: boolean;
+  sellerLevel: string | null;
+  completedOrders: number;
+  averageRating: number | null;
+  bio: string | null;
+}
+
 export interface GigWithDetails extends Gig {
+  seller: GigSeller | null;
   packages: GigPackage[];
-  seller: {
-    id: number;
-    name: string | null;
-    avatarUrl: string | null;
-    verified: boolean;
-    sellerLevel: string | null;
-    completedOrders: number;
-    averageRating: number | null;
-    bio?: string | null;
-  } | null;
   reviews: GigReview[];
   extras: GigExtra[];
 }
@@ -172,7 +137,7 @@ export interface GigListParams {
   category?: string;
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: 'relevance' | 'price' | 'delivery' | 'rating' | 'popularity';
+  sortBy?: 'newest' | 'popular' | 'price_low' | 'price_high' | 'rating';
 }
 
 export interface GigListResponse {
@@ -200,35 +165,6 @@ export interface GigUpdateInput {
   status?: string;
 }
 
-export const gigsApi = {
-  list: (params?: GigListParams): Promise<GigListResponse> => 
-    apiCall('gigs', { params: params as Record<string, string | number | undefined> }),
-  
-  get: (id: number): Promise<GigWithDetails> => 
-    apiCall(`gigs/${id}`),
-  
-  create: (input: GigCreateInput): Promise<Gig> =>
-    apiCall('gigs', { method: 'POST', body: input, requireAuth: true }),
-  
-  update: (id: number, input: GigUpdateInput): Promise<Gig> =>
-    apiCall(`gigs/${id}`, { method: 'PUT', body: input, requireAuth: true }),
-  
-  delete: (id: number): Promise<{ success: boolean }> =>
-    apiCall(`gigs/${id}`, { method: 'DELETE', requireAuth: true }),
-  
-  // Seller-specific endpoints
-  myGigs: (): Promise<Gig[]> =>
-    apiCall('gigs', { params: { mine: 'true', status: 'published' }, requireAuth: true }),
-  
-  getDrafts: (): Promise<Gig[]> =>
-    apiCall('gigs', { params: { mine: 'true', status: 'draft' }, requireAuth: true }),
-  
-  publish: (id: number): Promise<Gig> =>
-    apiCall(`gigs/${id}`, { method: 'PUT', body: { status: 'published' }, requireAuth: true }),
-};
-
-// ============ AUTH API ============
-
 export interface User {
   id: number;
   openId: string;
@@ -249,16 +185,6 @@ export interface User {
   companyName: string | null;
 }
 
-export const authApi = {
-  me: (): Promise<User | null> => 
-    apiCall('auth/me'),
-  
-  logout: (): Promise<{ success: boolean }> => 
-    apiCall('auth/logout', { method: 'POST' }),
-};
-
-// ============ ORDERS API ============
-
 export interface Order {
   id: number;
   gigId: number;
@@ -273,35 +199,6 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
 }
-
-export const ordersApi = {
-  list: (role: 'buyer' | 'seller' = 'buyer'): Promise<{ orders: Order[] }> => 
-    apiCall('orders', { params: { role }, requireAuth: true }),
-  
-  get: (id: number): Promise<Order> => 
-    apiCall(`orders/${id}`, { requireAuth: true }),
-};
-
-// ============ CHECKOUT API ============
-
-export interface CheckoutInput {
-  gigId: number;
-  selectedPackage: 'basic' | 'standard' | 'premium';
-  selectedExtras?: number[];
-  buyerMessage?: string;
-}
-
-export interface CheckoutSession {
-  url: string;
-  sessionId: string;
-}
-
-export const checkoutApi = {
-  createSession: (input: CheckoutInput): Promise<CheckoutSession> =>
-    apiCall('checkout', { method: 'POST', body: input, requireAuth: true }),
-};
-
-// ============ USERS API ============
 
 export interface PublicUser {
   id: number;
@@ -323,16 +220,270 @@ export interface ProfileUpdate {
   avatarUrl?: string;
 }
 
-export const usersApi = {
-  get: (id: number): Promise<PublicUser> => 
-    apiCall(`users/${id}`),
+export interface Favorite {
+  id: number;
+  gigId: number;
+  userId: number;
+  createdAt: string;
+  gig?: Gig;
+}
+
+export interface Message {
+  id: number;
+  senderId: number;
+  receiverId: number;
+  content: string;
+  read: boolean;
+  createdAt: string;
+  sender?: { id: number; name: string; avatarUrl: string | null };
+  receiver?: { id: number; name: string; avatarUrl: string | null };
+}
+
+export interface Conversation {
+  id: number;
+  participantId: number;
+  participant: { id: number; name: string; avatarUrl: string | null };
+  lastMessage: Message | null;
+  unreadCount: number;
+}
+
+export interface CheckoutInput {
+  gigId: number;
+  selectedPackage: 'basic' | 'standard' | 'premium';
+  selectedExtras?: number[];
+  buyerMessage?: string;
+}
+
+export interface CheckoutSession {
+  url: string;
+  sessionId: string;
+}
+
+// ============ API OBJECTS ============
+
+export const gigsApi = {
+  list: (params?: GigListParams): Promise<GigListResponse> => 
+    trpcQuery('gigs.list', params),
   
-  updateProfile: (updates: ProfileUpdate): Promise<{ success: boolean }> => 
-    apiCall('users/profile', { method: 'PUT', body: updates, requireAuth: true }),
+  get: (id: number): Promise<GigWithDetails> => 
+    trpcQuery('gigs.getById', { gigId: id }),
+  
+  create: (input: GigCreateInput): Promise<Gig> =>
+    trpcMutation('gigs.create', input),
+  
+  update: (id: number, input: GigUpdateInput): Promise<Gig> =>
+    trpcMutation('gigs.update', { gigId: id, ...input }),
+  
+  delete: (id: number): Promise<{ success: boolean }> =>
+    trpcMutation('gigs.delete', { gigId: id }),
+  
+  myGigs: (): Promise<Gig[]> =>
+    trpcQuery('gigs.myGigs'),
+  
+  getDrafts: (): Promise<Gig[]> =>
+    trpcQuery('gigs.getDrafts'),
+  
+  publish: (id: number): Promise<Gig> =>
+    trpcMutation('gigs.publish', { gigId: id }),
+  
+  getSimilar: (gigId: number, k: number = 8, excludeSameSeller: boolean = true): Promise<Gig[]> =>
+    trpcQuery('similarGigs.byGigId', { gigId, k, excludeSameSeller }),
+  
+  getExtras: (gigId: number): Promise<GigExtra[]> =>
+    trpcQuery('gigs.getExtras', { gigId }),
 };
 
-// ============ LEGACY TRPC COMPATIBILITY ============
-// Diese Funktionen ermöglichen eine schrittweise Migration
+export const authApi = {
+  me: (): Promise<User | null> => 
+    trpcQuery('auth.me'),
+  
+  logout: (): Promise<{ success: boolean }> => 
+    trpcMutation('auth.logout'),
+};
+
+export const ordersApi = {
+  list: (role: 'buyer' | 'seller' = 'buyer'): Promise<{ orders: Order[] }> => 
+    role === 'seller' ? trpcQuery('orders.mySales') : trpcQuery('orders.myPurchases'),
+  
+  get: (id: number): Promise<Order> => 
+    trpcQuery('orders.getById', { orderId: id }),
+  
+  acceptDelivery: (orderId: number): Promise<Order> =>
+    trpcMutation('orders.acceptDelivery', { orderId }),
+  
+  requestRevision: (orderId: number, message: string): Promise<Order> =>
+    trpcMutation('orders.requestRevision', { orderId, message }),
+  
+  openDispute: (orderId: number, reason: string): Promise<Order> =>
+    trpcMutation('orders.openDispute', { orderId, reason }),
+  
+  deliver: (orderId: number, deliveryMessage: string, files?: string[]): Promise<Order> =>
+    trpcMutation('orders.deliver', { orderId, deliveryMessage, files }),
+};
+
+export const checkoutApi = {
+  createSession: (input: CheckoutInput): Promise<CheckoutSession> =>
+    trpcMutation('checkout.createSession', input),
+  
+  confirmSession: (sessionId: string): Promise<{ success: boolean; orderId: number }> =>
+    trpcMutation('checkout.createFromStripeSession', { sessionId }),
+};
+
+export const usersApi = {
+  get: (id: number): Promise<PublicUser> => 
+    trpcQuery('user.getById', { userId: id }),
+  
+  updateProfile: (updates: ProfileUpdate): Promise<{ success: boolean }> => 
+    trpcMutation('user.updateProfile', updates),
+  
+  getAccountDeletionStatus: (): Promise<{ scheduled: boolean; scheduledDate?: string }> =>
+    trpcQuery('user.getAccountDeletionStatus'),
+  
+  requestAccountDeletion: (): Promise<{ success: boolean; scheduledDate: string }> =>
+    trpcMutation('user.requestAccountDeletion'),
+  
+  cancelAccountDeletion: (): Promise<{ success: boolean }> =>
+    trpcMutation('user.cancelAccountDeletion'),
+};
+
+export const favoritesApi = {
+  list: (): Promise<{ favorites: Favorite[] }> =>
+    trpcQuery('favorites.list'),
+  
+  add: (gigId: number): Promise<Favorite> =>
+    trpcMutation('favorites.add', { gigId }),
+  
+  remove: (gigId: number): Promise<{ success: boolean }> =>
+    trpcMutation('favorites.remove', { gigId }),
+  
+  check: (gigId: number): Promise<{ isFavorite: boolean }> =>
+    trpcQuery('favorites.check', { gigId }),
+};
+
+export const messagesApi = {
+  getConversations: (): Promise<{ conversations: Conversation[] }> =>
+    trpcQuery('messages.getConversations'),
+  
+  getMessages: (participantId: number): Promise<{ messages: Message[] }> =>
+    trpcQuery('messages.getMessages', { participantId }),
+  
+  send: (receiverId: number, content: string): Promise<Message> =>
+    trpcMutation('messages.send', { receiverId, content }),
+  
+  markAsRead: (messageId: number): Promise<{ success: boolean }> =>
+    trpcMutation('messages.markAsRead', { messageId }),
+};
+
+export const payoutApi = {
+  getEarnings: (): Promise<{ available: number; pending: number; total: number }> =>
+    trpcQuery('payout.getEarnings'),
+  
+  getPayouts: (): Promise<any[]> =>
+    trpcQuery('payout.getPayouts'),
+  
+  requestPayout: (amount: number): Promise<{ success: boolean }> =>
+    trpcMutation('payout.requestPayout', { amount }),
+};
+
+export const stripeConnectApi = {
+  getAccountStatus: (): Promise<{ hasAccount: boolean; chargesEnabled: boolean; payoutsEnabled: boolean; onboardingComplete: boolean }> =>
+    trpcQuery('stripeConnect.getAccountStatus'),
+  
+  createAccount: (country: string): Promise<{ accountId: string }> =>
+    trpcMutation('stripeConnect.createAccount', { country }),
+  
+  getOnboardingLink: (): Promise<{ url: string }> =>
+    trpcMutation('stripeConnect.getOnboardingLink'),
+  
+  getDashboardLink: (): Promise<{ url: string }> =>
+    trpcMutation('stripeConnect.getDashboardLink'),
+};
+
+export const paymentMethodsApi = {
+  list: (): Promise<any[]> =>
+    trpcQuery('paymentMethods.list'),
+  
+  save: (paymentMethodId: string): Promise<{ success: boolean }> =>
+    trpcMutation('paymentMethods.save', { paymentMethodId }),
+  
+  delete: (paymentMethodId: string): Promise<{ success: boolean }> =>
+    trpcMutation('paymentMethods.delete', { paymentMethodId }),
+  
+  setDefault: (paymentMethodId: string): Promise<{ success: boolean }> =>
+    trpcMutation('paymentMethods.setDefault', { paymentMethodId }),
+  
+  getSetupIntent: (): Promise<{ clientSecret: string }> =>
+    trpcMutation('paymentMethods.createSetupIntent'),
+};
+
+export const discountApi = {
+  createExitIntentDiscount: (): Promise<{ code: string; amount: number }> =>
+    trpcMutation('discount.createExitIntentDiscount'),
+  
+  validate: (code: string): Promise<{ valid: boolean; amount: number }> =>
+    trpcQuery('discount.validate', { code }),
+};
+
+export const dataExportApi = {
+  request: (): Promise<{ success: boolean; exportId: string }> =>
+    trpcMutation('dataExport.exportMyData'),
+  
+  getStatus: (exportId: string): Promise<{ status: string; downloadUrl?: string }> =>
+    trpcQuery('dataExport.getStatus', { exportId }),
+};
+
+export const consentApi = {
+  get: (): Promise<{ consents: Record<string, boolean> }> =>
+    trpcQuery('consent.get'),
+  
+  update: (consents: Record<string, boolean>): Promise<{ success: boolean }> =>
+    trpcMutation('consent.update', consents),
+};
+
+export const adminApi = {
+  getStats: (): Promise<any> =>
+    trpcQuery('analytics.getPlatformSummary'),
+  
+  getUsers: (params?: { search?: string; page?: number }): Promise<any> =>
+    trpcQuery('admin.getUsers', params),
+  
+  banUser: (userId: number): Promise<{ success: boolean }> =>
+    trpcMutation('admin.banUser', { userId }),
+  
+  unbanUser: (userId: number): Promise<{ success: boolean }> =>
+    trpcMutation('admin.unbanUser', { userId }),
+  
+  getGigs: (params?: { status?: string; page?: number }): Promise<any> =>
+    trpcQuery('admin.getGigs', params),
+  
+  approveGig: (gigId: number): Promise<{ success: boolean }> =>
+    trpcMutation('admin.approveGig', { gigId }),
+  
+  rejectGig: (gigId: number, reason: string): Promise<{ success: boolean }> =>
+    trpcMutation('admin.rejectGig', { gigId, reason }),
+};
+
+export const verificationApi = {
+  getStatus: (): Promise<any> =>
+    trpcQuery('verification.getVerificationStatus'),
+  
+  sendEmailVerification: (): Promise<{ success: boolean }> =>
+    trpcMutation('verification.sendEmailVerification'),
+  
+  verifyEmail: (token: string): Promise<{ success: boolean }> =>
+    trpcMutation('verification.verifyEmail', { token }),
+  
+  sendPhoneVerification: (phoneNumber: string): Promise<{ success: boolean }> =>
+    trpcMutation('verification.sendPhoneVerification', { phoneNumber }),
+  
+  verifyPhone: (code: string): Promise<{ success: boolean }> =>
+    trpcMutation('verification.verifyPhone', { code }),
+  
+  submitKybc: (data: any): Promise<{ success: boolean }> =>
+    trpcMutation('verification.submitKybc', data),
+};
+
+// ============ LEGACY COMPATIBILITY ============
 
 export const api = {
   gigs: gigsApi,

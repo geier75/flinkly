@@ -1,7 +1,8 @@
 import { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { gigsApi, ordersApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { CosmicBackground } from "@/components/immersive/CosmicBackground";
@@ -42,15 +43,24 @@ export default function DashboardNexus() {
   const { user, isAuthenticated, loading } = useAuth();
   const [, setLocation] = useLocation();
 
-  const { data: myGigs } = trpc.gigs.myGigs.useQuery(undefined, {
+  const { data: myGigs } = useQuery({
+    queryKey: ['myGigs'],
+    queryFn: () => gigsApi.myGigs(),
     enabled: isAuthenticated,
   });
-  const { data: myPurchases } = trpc.orders.myPurchases.useQuery(undefined, {
+  const { data: myPurchasesData } = useQuery({
+    queryKey: ['myPurchases'],
+    queryFn: () => ordersApi.list('buyer'),
     enabled: isAuthenticated,
   });
-  const { data: mySales } = trpc.orders.mySales.useQuery(undefined, {
+  const { data: mySalesData } = useQuery({
+    queryKey: ['mySales'],
+    queryFn: () => ordersApi.list('seller'),
     enabled: isAuthenticated,
   });
+  
+  const myPurchases = myPurchasesData?.orders || [];
+  const mySales = mySalesData?.orders || [];
 
   // Mock activity for Identity Theater
   const activityHistory = useMemo(() => [

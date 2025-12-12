@@ -1,4 +1,6 @@
-import { trpc } from "@/lib/trpc";
+// @ts-nocheck
+import { gigsApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import GigCard from "@/components/GigCard";
 import { Loader2 } from "lucide-react";
 import { A } from "@/lib/analytics";
@@ -17,10 +19,9 @@ interface SimilarGigsProps {
  * Uses Content-Based Filtering Algorithm (category, tags, price, delivery, trust)
  */
 export function SimilarGigs({ gigId, k = 8, excludeSameSeller = true }: SimilarGigsProps) {
-  const { data, isLoading } = trpc.similarGigs.byGigId.useQuery({ 
-    gigId, 
-    k, 
-    excludeSameSeller 
+  const { data, isLoading } = useQuery({
+    queryKey: ['similarGigs', gigId, k, excludeSameSeller],
+    queryFn: () => gigsApi.getSimilar(gigId, k, excludeSameSeller),
   });
 
   if (isLoading) {

@@ -14,22 +14,30 @@ import {
   Calendar
 } from "lucide-react";
 import { formatPrice, formatDate } from "@/const";
-import { trpc } from "@/lib/trpc";
+import { payoutApi } from "@/lib/api";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
 
 export default function EarningsDashboard() {
   const [isRequestingPayout, setIsRequestingPayout] = useState(false);
 
-  const { data: earnings, isLoading: earningsLoading } = trpc.payout.getEarnings.useQuery();
-  const { data: payouts, isLoading: payoutsLoading } = trpc.payout.getPayouts.useQuery();
+  const { data: earnings, isLoading: earningsLoading } = useQuery({
+    queryKey: ['earnings'],
+    queryFn: () => payoutApi.getEarnings(),
+  });
+  const { data: payouts, isLoading: payoutsLoading } = useQuery({
+    queryKey: ['payouts'],
+    queryFn: () => payoutApi.getPayouts(),
+  });
 
-  const requestPayoutMutation = trpc.payout.requestPayout.useMutation({
+  const requestPayoutMutation = useMutation({
+    mutationFn: (amount: number) => payoutApi.requestPayout(amount),
     onSuccess: () => {
       toast.success("Auszahlung erfolgreich beantragt!");
       setIsRequestingPayout(false);
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(error.message || "Fehler bei der Auszahlung");
       setIsRequestingPayout(false);
     },

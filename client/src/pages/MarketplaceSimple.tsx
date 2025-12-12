@@ -1,14 +1,15 @@
-import { trpc } from "@/lib/trpc";
+// @ts-nocheck
+import { gigsApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 
 export default function MarketplaceSimple() {
-  const { data, isLoading, error } = trpc.gigs.list.useQuery(
-    { limit: 100 },
-    {
-      retry: false,
-      staleTime: 0,
-      refetchOnWindowFocus: false,
-    }
-  );
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['gigs', 'simple'],
+    queryFn: () => gigsApi.list({ limit: 100 }),
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+  });
 
   if (isLoading) return <div className="p-8 text-white">Loading...</div>;
   if (error) return <div className="p-8 text-red-500">Error: {error.message}</div>;

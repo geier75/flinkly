@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { useState, useEffect } from "react";
-import { trpc } from "@/lib/trpc";
+import { gigsApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Zap, RefreshCw, FileText, FolderOpen } from "lucide-react";
@@ -19,7 +20,11 @@ const EXTRA_ICONS = {
 };
 
 export default function GigExtrasCard({ gigId, onExtrasChange }: GigExtrasCardProps) {
-  const { data: extras } = trpc.gigExtras.list.useQuery({ gigId }, { enabled: !!gigId });
+  const { data: extras } = useQuery({
+    queryKey: ['gigExtras', gigId],
+    queryFn: () => gigsApi.getExtras(gigId),
+    enabled: !!gigId,
+  });
   const [selectedExtras, setSelectedExtras] = useState<number[]>([]);
 
   useEffect(() => {

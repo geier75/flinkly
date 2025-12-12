@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { useEffect, useState } from "react";
 import { useRoute } from "wouter";
-import { trpc } from "@/lib/trpc";
+import { ordersApi, gigsApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,15 +26,17 @@ export default function OrderConfirmation() {
   const [, params] = useRoute("/order/confirmation/:orderId");
   const orderId = params?.orderId ? parseInt(params.orderId) : null;
 
-  const { data: order, isLoading, error } = trpc.orders.getById.useQuery(
-    { orderId: orderId! },
-    { enabled: !!orderId }
-  );
+  const { data: order, isLoading, error } = useQuery({
+    queryKey: ['order', orderId],
+    queryFn: () => ordersApi.get(orderId!),
+    enabled: !!orderId,
+  });
 
-  const { data: similarGigs } = trpc.similarGigs.byGigId.useQuery(
-    { gigId: order?.gigId || 0, k: 3 },
-    { enabled: !!order?.gigId }
-  );
+  const { data: similarGigs } = useQuery({
+    queryKey: ['similarGigs', order?.gigId],
+    queryFn: () => gigsApi.getSimilar(order?.gigId || 0, 3),
+    enabled: !!order?.gigId,
+  });
 
   useEffect(() => {
     if (order) {

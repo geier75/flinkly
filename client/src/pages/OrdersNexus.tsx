@@ -1,7 +1,8 @@
 import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/_core/hooks/useAuth";
-import { trpc } from "@/lib/trpc";
+import { ordersApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { CosmicBackground } from "@/components/immersive/CosmicBackground";
@@ -47,12 +48,19 @@ export default function OrdersNexus() {
   const [statusFilter, setStatusFilter] = useState<OrderStatus>("all");
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
 
-  const { data: myPurchases } = trpc.orders.myPurchases.useQuery(undefined, {
+  const { data: myPurchasesData } = useQuery({
+    queryKey: ['myPurchases'],
+    queryFn: () => ordersApi.list('buyer'),
     enabled: isAuthenticated,
   });
-  const { data: mySales } = trpc.orders.mySales.useQuery(undefined, {
+  const { data: mySalesData } = useQuery({
+    queryKey: ['mySales'],
+    queryFn: () => ordersApi.list('seller'),
     enabled: isAuthenticated,
   });
+  
+  const myPurchases = myPurchasesData?.orders || [];
+  const mySales = mySalesData?.orders || [];
 
   if (loading) {
     return (

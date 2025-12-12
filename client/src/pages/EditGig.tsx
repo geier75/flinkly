@@ -1,7 +1,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { trpc } from "@/lib/trpc";
+import { gigsApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,12 +18,13 @@ export default function EditGig() {
   const params = useParams<{ id: string }>();
   const gigId = params.id ? parseInt(params.id, 10) : null;
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: gig, isLoading } = trpc.gigs.getById.useQuery(
-    { id: gigId as number },
-    { enabled: !!gigId && !isNaN(gigId) }
-  );
-  const utils = trpc.useUtils();
+  const { data: gig, isLoading } = useQuery({
+    queryKey: ['gig', gigId],
+    queryFn: () => gigsApi.get(gigId as number),
+    enabled: !!gigId && !isNaN(gigId),
+  });
   
   const [formData, setFormData] = useState({
     title: "",
@@ -46,24 +48,27 @@ export default function EditGig() {
     }
   }, [gig]);
 
-  const updateGig = trpc.gigs.update.useMutation({
+  const updateGig = useMutation({
+    mutationFn: (data: { id: number; title: string; description: string; category: string; price: number; deliveryDays: number; imageUrl: string }) => 
+      gigsApi.update(data.id, { title: data.title, description: data.description, category: data.category, price: data.price, deliveryDays: data.deliveryDays, imageUrl: data.imageUrl }),
     onSuccess: () => {
       toast.success("Gig erfolgreich aktualisiert!");
-      utils.gigs.myGigs.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['myGigs'] });
       setLocation("/dashboard");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(`Fehler: ${error.message}`);
     },
   });
 
-  const deleteGig = trpc.gigs.delete.useMutation({
+  const deleteGig = useMutation({
+    mutationFn: (id: number) => gigsApi.delete(id),
     onSuccess: () => {
       toast.success("Gig erfolgreich gelöscht!");
-      utils.gigs.myGigs.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['myGigs'] });
       setLocation("/dashboard");
     },
-    onError: (error) => {
+    onError: (error: any) => {
       toast.error(`Fehler beim Löschen: ${error.message}`);
     },
   });
@@ -111,12 +116,12 @@ export default function EditGig() {
       category: formData.category,
       price: Math.round(formData.price * 100),
       deliveryDays: formData.deliveryDays,
-      imageUrl: formData.imageUrl || undefined,
+      imageUrl: formData.imageUrl || "",
     });
   };
 
   const handleDelete = () => {
-    deleteGig.mutate({ id: gigId });
+    if (gigId) deleteGig.mutate(gigId);
   };
 
   const categories = [

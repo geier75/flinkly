@@ -3,7 +3,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { trpc } from "@/lib/trpc";
+import { gigsApi, ordersApi } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import { Plus, Package, ShoppingCart, Star, TrendingUp, Zap, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useEffect } from "react";
@@ -13,15 +14,24 @@ export default function Dashboard() {
   const [, setLocation] = useLocation();
 
   // ALL hooks must be called before any conditional returns
-  const { data: myGigs } = trpc.gigs.myGigs.useQuery(undefined, {
+  const { data: myGigs } = useQuery({
+    queryKey: ['myGigs'],
+    queryFn: () => gigsApi.myGigs(),
     enabled: isAuthenticated,
   });
-  const { data: myPurchases } = trpc.orders.myPurchases.useQuery(undefined, {
+  const { data: myPurchasesData } = useQuery({
+    queryKey: ['myPurchases'],
+    queryFn: () => ordersApi.list('buyer'),
     enabled: isAuthenticated,
   });
-  const { data: mySales } = trpc.orders.mySales.useQuery(undefined, {
+  const { data: mySalesData } = useQuery({
+    queryKey: ['mySales'],
+    queryFn: () => ordersApi.list('seller'),
     enabled: isAuthenticated,
   });
+  
+  const myPurchases = myPurchasesData?.orders || [];
+  const mySales = mySalesData?.orders || [];
 
   useEffect(() => {
     // Only redirect after loading is complete and user is not authenticated

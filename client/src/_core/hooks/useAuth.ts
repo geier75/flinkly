@@ -25,6 +25,12 @@ interface AuthUser {
   taxId?: string | null;
   tradeRegister?: string | null;
   phone?: string | null;
+  // Seller stats fields
+  sellerLevel?: 'new' | 'rising' | 'level_one' | 'top_rated' | null;
+  completedOrders?: number;
+  averageRating?: number | null;
+  responseTimeHours?: number;
+  onTimeDeliveryRate?: number;
 }
 
 export function useAuth(options?: UseAuthOptions) {
@@ -41,8 +47,26 @@ export function useAuth(options?: UseAuthOptions) {
     if (initializedRef.current) return;
     initializedRef.current = true;
 
+    // Sync session with backend to set session cookie
+    const syncSession = async (user: any) => {
+      try {
+        await fetch('/api/auth/sync', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            id: user.id,
+            email: user.email,
+            name: user.user_metadata?.name || user.email?.split("@")[0],
+          }),
+        });
+      } catch (e) {
+        console.error('[Auth] Session sync failed:', e);
+      }
+    };
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
         setSupabaseUser(session.user);
         setUser({
@@ -52,6 +76,8 @@ export function useAuth(options?: UseAuthOptions) {
           role: 'user',
           avatarUrl: session.user.user_metadata?.avatar_url || null,
         });
+        // Sync with backend to set session cookie
+        await syncSession(session.user);
       }
       setLoading(false);
     });
@@ -68,6 +94,8 @@ export function useAuth(options?: UseAuthOptions) {
             role: 'user',
             avatarUrl: session.user.user_metadata?.avatar_url || null,
           });
+          // Sync with backend on auth state change
+          await syncSession(session.user);
         } else {
           setSupabaseUser(null);
           setUser(null);
