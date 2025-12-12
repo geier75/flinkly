@@ -45,6 +45,9 @@ async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T
     const userToken = await getAuthToken();
     if (userToken) {
       authToken = userToken;
+    } else {
+      console.error('[api] requireAuth=true but no user token available');
+      throw new Error('Bitte melde dich an um fortzufahren');
     }
   }
   

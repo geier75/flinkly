@@ -12,13 +12,33 @@ import type { DbGig, GigListInput } from '../_shared/types.ts';
 // Get user from Supabase auth header
 async function getUser(req: Request) {
   const authHeader = req.headers.get('Authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) return null;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('[gigs.getUser] No auth header');
+    return null;
+  }
   
   const token = authHeader.replace('Bearer ', '');
+  
+  // Check if this is the anon key (not a user token)
+  const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
+  if (token === ANON_KEY) {
+    console.log('[gigs.getUser] Anon key used, no user');
+    return null;
+  }
+  
   const supabase = getServiceClient();
   
   const { data: { user }, error } = await supabase.auth.getUser(token);
-  if (error || !user) return null;
+  if (error) {
+    console.log('[gigs.getUser] Auth error:', error.message);
+    return null;
+  }
+  if (!user) {
+    console.log('[gigs.getUser] No user from token');
+    return null;
+  }
+  
+  console.log('[gigs.getUser] Found auth user:', user.id);
   
   // Get user from our users table
   let { data: dbUser } = await supabase
@@ -29,6 +49,7 @@ async function getUser(req: Request) {
   
   // If user doesn't exist in our table, create them
   if (!dbUser) {
+    console.log('[gigs.getUser] Creating new user in DB');
     const { data: newUser, error: insertError } = await supabase
       .from('users')
       .insert({
@@ -49,6 +70,7 @@ async function getUser(req: Request) {
     dbUser = newUser;
   }
   
+  console.log('[gigs.getUser] DB user:', dbUser?.id);
   return dbUser;
 }
 
