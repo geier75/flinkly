@@ -1,7 +1,15 @@
 /**
- * API Client - Direkte fetch-Calls zum tRPC-Backend
- * Ersetzt die tRPC-React-Hooks mit einfachen fetch-Funktionen
+ * API Client - Supabase Edge Functions + tRPC Fallback
+ * Nutzt Supabase Edge Functions in Production, tRPC lokal
  */
+
+import { supabase } from './supabase';
+
+// ============ CONFIGURATION ============
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://fpiszghehrjmkbxhbwqr.supabase.co';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const IS_PRODUCTION = import.meta.env.PROD || window.location.hostname !== 'localhost';
 
 // ============ CORE FETCH FUNCTIONS ============
 
@@ -9,7 +17,51 @@ interface TrpcInput {
   [key: string]: any;
 }
 
-// tRPC Query Call (GET)
+// Get auth token from Supabase session
+async function getAuthToken(): Promise<string | null> {
+  const { data: { session } } = await supabase.auth.getSession();
+  return session?.access_token || null;
+}
+
+// Supabase Edge Function Call
+async function edgeFunctionCall<T>(
+  functionName: string, 
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
+  path: string = '',
+  body?: any,
+  params?: Record<string, string>
+): Promise<T> {
+  const token = await getAuthToken();
+  const url = new URL(`${SUPABASE_URL}/functions/v1/${functionName}${path}`);
+  
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        url.searchParams.set(key, String(value));
+      }
+    });
+  }
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token || SUPABASE_ANON_KEY}`,
+  };
+  
+  const response = await fetch(url.toString(), {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(error.error || `API error: ${response.status}`);
+  }
+  
+  return response.json();
+}
+
+// tRPC Query Call (GET) - for local development
 async function trpcQuery<T>(procedure: string, input?: TrpcInput): Promise<T> {
   const inputParam = input 
     ? encodeURIComponent(JSON.stringify({ 0: { json: input } })) 
@@ -35,7 +87,7 @@ async function trpcQuery<T>(procedure: string, input?: TrpcInput): Promise<T> {
   return result[0]?.result?.data?.json ?? result[0]?.result?.data;
 }
 
-// tRPC Mutation Call (POST)
+// tRPC Mutation Call (POST) - for local development
 async function trpcMutation<T>(procedure: string, input?: TrpcInput): Promise<T> {
   const url = `/api/trpc/${procedure}?batch=1`;
   
@@ -262,29 +314,68 @@ export interface CheckoutSession {
 // ============ API OBJECTS ============
 
 export const gigsApi = {
-  list: (params?: GigListParams): Promise<GigListResponse> => 
-    trpcQuery('gigs.list', params),
+  list: (params?: GigListParams): Promise<GigListResponse> => {
+    if (IS_PRODUCTION) {
+      const queryParams: Record<string, string> = {};
+      if (params?.limit) queryParams.limit = String(params.limit);
+      if (params?.cursor) queryParams.cursor = String(params.cursor);
+      if (params?.category) queryParams.category = params.category;
+      if (params?.minPrice) queryParams.minPrice = String(params.minPrice);
+      if (params?.maxPrice) queryParams.maxPrice = String(params.maxPrice);
+      if (params?.sortBy) queryParams.sortBy = params.sortBy;
+      return edgeFunctionCall('gigs', 'GET', '', undefined, queryParams);
+    }
+    return trpcQuery('gigs.list', params);
+  },
   
-  get: (id: number): Promise<GigWithDetails> => 
-    trpcQuery('gigs.getById', { gigId: id }),
+  get: (id: number): Promise<GigWithDetails> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'GET', `/${id}`);
+    }
+    return trpcQuery('gigs.getById', { gigId: id });
+  },
   
-  create: (input: GigCreateInput): Promise<Gig> =>
-    trpcMutation('gigs.create', input),
+  create: (input: GigCreateInput): Promise<Gig> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'POST', '', input);
+    }
+    return trpcMutation('gigs.create', input);
+  },
   
-  update: (id: number, input: GigUpdateInput): Promise<Gig> =>
-    trpcMutation('gigs.update', { gigId: id, ...input }),
+  update: (id: number, input: GigUpdateInput): Promise<Gig> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'PUT', `/${id}`, input);
+    }
+    return trpcMutation('gigs.update', { gigId: id, ...input });
+  },
   
-  delete: (id: number): Promise<{ success: boolean }> =>
-    trpcMutation('gigs.delete', { gigId: id }),
+  delete: (id: number): Promise<{ success: boolean }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'DELETE', `/${id}`);
+    }
+    return trpcMutation('gigs.delete', { gigId: id });
+  },
   
-  myGigs: (): Promise<Gig[]> =>
-    trpcQuery('gigs.myGigs'),
+  myGigs: (): Promise<Gig[]> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'GET', '', undefined, { mine: 'true', status: 'published' });
+    }
+    return trpcQuery('gigs.myGigs');
+  },
   
-  getDrafts: (): Promise<Gig[]> =>
-    trpcQuery('gigs.getDrafts'),
+  getDrafts: (): Promise<Gig[]> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'GET', '', undefined, { mine: 'true', status: 'draft' });
+    }
+    return trpcQuery('gigs.getDrafts');
+  },
   
-  publish: (id: number): Promise<Gig> =>
-    trpcMutation('gigs.publish', { gigId: id }),
+  publish: (id: number): Promise<Gig> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('gigs', 'PUT', `/${id}`, { status: 'published' });
+    }
+    return trpcMutation('gigs.publish', { gigId: id });
+  },
   
   getSimilar: (gigId: number, k: number = 8, excludeSameSeller: boolean = true): Promise<Gig[]> =>
     trpcQuery('similarGigs.byGigId', { gigId, k, excludeSameSeller }),
@@ -294,19 +385,33 @@ export const gigsApi = {
 };
 
 export const authApi = {
-  me: (): Promise<User | null> => 
-    trpcQuery('auth.me'),
+  me: async (): Promise<User | null> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall<User | null>('users', 'GET', '/me');
+    }
+    return trpcQuery('auth.me');
+  },
   
-  logout: (): Promise<{ success: boolean }> => 
-    trpcMutation('auth.logout'),
+  logout: async (): Promise<{ success: boolean }> => {
+    await supabase.auth.signOut();
+    return { success: true };
+  },
 };
 
 export const ordersApi = {
-  list: (role: 'buyer' | 'seller' = 'buyer'): Promise<{ orders: Order[] }> => 
-    role === 'seller' ? trpcQuery('orders.mySales') : trpcQuery('orders.myPurchases'),
+  list: (role: 'buyer' | 'seller' = 'buyer'): Promise<{ orders: Order[] }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('orders', 'GET', '', undefined, { role });
+    }
+    return role === 'seller' ? trpcQuery('orders.mySales') : trpcQuery('orders.myPurchases');
+  },
   
-  get: (id: number): Promise<Order> => 
-    trpcQuery('orders.getById', { orderId: id }),
+  get: (id: number): Promise<Order> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('orders', 'GET', `/${id}`);
+    }
+    return trpcQuery('orders.getById', { orderId: id });
+  },
   
   acceptDelivery: (orderId: number): Promise<Order> =>
     trpcMutation('orders.acceptDelivery', { orderId }),
@@ -322,19 +427,31 @@ export const ordersApi = {
 };
 
 export const checkoutApi = {
-  createSession: (input: CheckoutInput): Promise<CheckoutSession> =>
-    trpcMutation('checkout.createSession', input),
+  createSession: (input: CheckoutInput): Promise<CheckoutSession> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('checkout', 'POST', '', input);
+    }
+    return trpcMutation('checkout.createSession', input);
+  },
   
   confirmSession: (sessionId: string): Promise<{ success: boolean; orderId: number }> =>
     trpcMutation('checkout.createFromStripeSession', { sessionId }),
 };
 
 export const usersApi = {
-  get: (id: number): Promise<PublicUser> => 
-    trpcQuery('user.getById', { userId: id }),
+  get: (id: number): Promise<PublicUser> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('users', 'GET', `/${id}`);
+    }
+    return trpcQuery('user.getById', { userId: id });
+  },
   
-  updateProfile: (updates: ProfileUpdate): Promise<{ success: boolean }> => 
-    trpcMutation('user.updateProfile', updates),
+  updateProfile: (updates: ProfileUpdate): Promise<{ success: boolean }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('users', 'PUT', '/me', updates);
+    }
+    return trpcMutation('user.updateProfile', updates);
+  },
   
   getAccountDeletionStatus: (): Promise<{ scheduled: boolean; scheduledDate?: string }> =>
     trpcQuery('user.getAccountDeletionStatus'),

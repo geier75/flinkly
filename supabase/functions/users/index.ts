@@ -142,6 +142,33 @@ serve(async (req: Request) => {
   const method = req.method;
   
   try {
+    // GET /users/me - Get current user (auth required)
+    if (method === 'GET' && pathParts[1] === 'me') {
+      const sessionUser = await getUser(req);
+      if (!sessionUser) return jsonResponse(null);
+      
+      // Return full user object for authenticated user
+      return jsonResponse({
+        id: sessionUser.id,
+        openId: sessionUser.open_id,
+        name: sessionUser.name,
+        email: sessionUser.email,
+        role: sessionUser.role,
+        avatarUrl: sessionUser.avatar_url,
+        verified: sessionUser.verified,
+        emailVerified: sessionUser.email_verified,
+        sellerLevel: sessionUser.seller_level,
+        completedOrders: sessionUser.completed_orders || 0,
+        averageRating: sessionUser.average_rating,
+        stripeAccountId: sessionUser.stripe_account_id,
+        stripeOnboardingComplete: sessionUser.stripe_onboarding_complete || false,
+        stripeChargesEnabled: sessionUser.stripe_charges_enabled || false,
+        stripePayoutsEnabled: sessionUser.stripe_payouts_enabled || false,
+        isCommercial: sessionUser.is_commercial || false,
+        companyName: sessionUser.company_name,
+      });
+    }
+    
     // GET /users/:id - Public profile (no auth required)
     if (method === 'GET' && pathParts.length === 2) {
       const id = parseInt(pathParts[1]);
@@ -153,7 +180,17 @@ serve(async (req: Request) => {
       return jsonResponse(user);
     }
     
-    // PUT /users/profile - Update own profile (auth required)
+    // PUT /users/me - Update own profile (auth required)
+    if (method === 'PUT' && pathParts[1] === 'me') {
+      const sessionUser = await getUser(req);
+      if (!sessionUser) return unauthorizedResponse();
+      
+      const body = await req.json();
+      const result = await updateProfile(sessionUser.id, body);
+      return jsonResponse(result);
+    }
+    
+    // PUT /users/profile - Update own profile (auth required) - legacy
     if (method === 'PUT' && pathParts[1] === 'profile') {
       const sessionUser = await getUser(req);
       if (!sessionUser) return unauthorizedResponse();
