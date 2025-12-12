@@ -137,6 +137,121 @@ async function getOrder(id: number, userId: number) {
   return toOrder(data);
 }
 
+// PUT /orders/:id/accept - Accept delivery (buyer only)
+async function acceptDelivery(orderId: number, userId: number) {
+  const supabase = getServiceClient();
+  
+  const { data: order } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .single();
+  
+  if (!order) throw new Error('Order not found');
+  if (order.buyer_id !== userId) throw new Error('Only buyer can accept delivery');
+  if (order.status !== 'delivered') throw new Error('Order is not in delivered status');
+  
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ status: 'completed', updated_at: new Date().toISOString() })
+    .eq('id', orderId)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return toOrder(data);
+}
+
+// PUT /orders/:id/revision - Request revision (buyer only)
+async function requestRevision(orderId: number, userId: number, message: string) {
+  const supabase = getServiceClient();
+  
+  const { data: order } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .single();
+  
+  if (!order) throw new Error('Order not found');
+  if (order.buyer_id !== userId) throw new Error('Only buyer can request revision');
+  if (order.status !== 'delivered') throw new Error('Order is not in delivered status');
+  
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ 
+      status: 'revision_requested', 
+      revision_message: message,
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', orderId)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return toOrder(data);
+}
+
+// PUT /orders/:id/deliver - Deliver order (seller only)
+async function deliverOrder(orderId: number, userId: number, deliveryMessage: string, files?: string[]) {
+  const supabase = getServiceClient();
+  
+  const { data: order } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .single();
+  
+  if (!order) throw new Error('Order not found');
+  if (order.seller_id !== userId) throw new Error('Only seller can deliver');
+  if (!['in_progress', 'revision_requested'].includes(order.status)) {
+    throw new Error('Order cannot be delivered in current status');
+  }
+  
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ 
+      status: 'delivered', 
+      delivery_message: deliveryMessage,
+      delivery_files: files || [],
+      delivered_at: new Date().toISOString(),
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', orderId)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return toOrder(data);
+}
+
+// PUT /orders/:id/dispute - Open dispute (buyer only)
+async function openDispute(orderId: number, userId: number, reason: string) {
+  const supabase = getServiceClient();
+  
+  const { data: order } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .single();
+  
+  if (!order) throw new Error('Order not found');
+  if (order.buyer_id !== userId) throw new Error('Only buyer can open dispute');
+  
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ 
+      status: 'disputed', 
+      dispute_reason: reason,
+      updated_at: new Date().toISOString() 
+    })
+    .eq('id', orderId)
+    .select()
+    .single();
+  
+  if (error) throw error;
+  return toOrder(data);
+}
+
 serve(async (req: Request) => {
   // Set request for dynamic CORS headers
   setCurrentRequest(req);
@@ -171,9 +286,54 @@ serve(async (req: Request) => {
       return jsonResponse(order);
     }
     
+    // PUT /orders/:id/accept - Accept delivery
+    if (method === 'PUT' && pathParts.length === 3 && pathParts[2] === 'accept') {
+      const id = parseInt(pathParts[1]);
+      if (isNaN(id)) return errorResponse('Invalid order ID');
+      
+      const order = await acceptDelivery(id, user.id);
+      return jsonResponse(order);
+    }
+    
+    // PUT /orders/:id/revision - Request revision
+    if (method === 'PUT' && pathParts.length === 3 && pathParts[2] === 'revision') {
+      const id = parseInt(pathParts[1]);
+      if (isNaN(id)) return errorResponse('Invalid order ID');
+      
+      const body = await req.json().catch(() => ({}));
+      if (!body.message) return errorResponse('Message is required');
+      
+      const order = await requestRevision(id, user.id, body.message);
+      return jsonResponse(order);
+    }
+    
+    // PUT /orders/:id/deliver - Deliver order
+    if (method === 'PUT' && pathParts.length === 3 && pathParts[2] === 'deliver') {
+      const id = parseInt(pathParts[1]);
+      if (isNaN(id)) return errorResponse('Invalid order ID');
+      
+      const body = await req.json().catch(() => ({}));
+      if (!body.deliveryMessage) return errorResponse('Delivery message is required');
+      
+      const order = await deliverOrder(id, user.id, body.deliveryMessage, body.files);
+      return jsonResponse(order);
+    }
+    
+    // PUT /orders/:id/dispute - Open dispute
+    if (method === 'PUT' && pathParts.length === 3 && pathParts[2] === 'dispute') {
+      const id = parseInt(pathParts[1]);
+      if (isNaN(id)) return errorResponse('Invalid order ID');
+      
+      const body = await req.json().catch(() => ({}));
+      if (!body.reason) return errorResponse('Reason is required');
+      
+      const order = await openDispute(id, user.id, body.reason);
+      return jsonResponse(order);
+    }
+    
     return errorResponse('Not found', 404);
-  } catch (error) {
+  } catch (error: any) {
     console.error('[orders] Error:', error);
-    return errorResponse('Internal server error', 500);
+    return errorResponse(error.message || 'Internal server error', 500);
   }
 });

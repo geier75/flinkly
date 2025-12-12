@@ -61,8 +61,14 @@ async function edgeFunctionCall<T>(
   return response.json();
 }
 
-// tRPC Query Call (GET) - for local development
+// tRPC Query Call (GET) - for local development only
 async function trpcQuery<T>(procedure: string, input?: TrpcInput): Promise<T> {
+  // In production, tRPC is not available - throw error to use Edge Functions instead
+  if (IS_PRODUCTION) {
+    console.warn(`[API] tRPC not available in production: ${procedure}`);
+    throw new Error(`Feature not available: ${procedure}`);
+  }
+  
   const inputParam = input 
     ? encodeURIComponent(JSON.stringify({ 0: { json: input } })) 
     : encodeURIComponent(JSON.stringify({ 0: { json: {} } }));
@@ -87,8 +93,14 @@ async function trpcQuery<T>(procedure: string, input?: TrpcInput): Promise<T> {
   return result[0]?.result?.data?.json ?? result[0]?.result?.data;
 }
 
-// tRPC Mutation Call (POST) - for local development
+// tRPC Mutation Call (POST) - for local development only
 async function trpcMutation<T>(procedure: string, input?: TrpcInput): Promise<T> {
+  // In production, tRPC is not available - throw error to use Edge Functions instead
+  if (IS_PRODUCTION) {
+    console.warn(`[API] tRPC not available in production: ${procedure}`);
+    throw new Error(`Feature not available: ${procedure}`);
+  }
+  
   const url = `/api/trpc/${procedure}?batch=1`;
   
   const response = await fetch(url, {
@@ -413,17 +425,33 @@ export const ordersApi = {
     return trpcQuery('orders.getById', { orderId: id });
   },
   
-  acceptDelivery: (orderId: number): Promise<Order> =>
-    trpcMutation('orders.acceptDelivery', { orderId }),
+  acceptDelivery: (orderId: number): Promise<Order> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('orders', 'PUT', `/${orderId}/accept`);
+    }
+    return trpcMutation('orders.acceptDelivery', { orderId });
+  },
   
-  requestRevision: (orderId: number, message: string): Promise<Order> =>
-    trpcMutation('orders.requestRevision', { orderId, message }),
+  requestRevision: (orderId: number, message: string): Promise<Order> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('orders', 'PUT', `/${orderId}/revision`, { message });
+    }
+    return trpcMutation('orders.requestRevision', { orderId, message });
+  },
   
-  openDispute: (orderId: number, reason: string): Promise<Order> =>
-    trpcMutation('orders.openDispute', { orderId, reason }),
+  openDispute: (orderId: number, reason: string): Promise<Order> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('orders', 'PUT', `/${orderId}/dispute`, { reason });
+    }
+    return trpcMutation('orders.openDispute', { orderId, reason });
+  },
   
-  deliver: (orderId: number, deliveryMessage: string, files?: string[]): Promise<Order> =>
-    trpcMutation('orders.deliver', { orderId, deliveryMessage, files }),
+  deliver: (orderId: number, deliveryMessage: string, files?: string[]): Promise<Order> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('orders', 'PUT', `/${orderId}/deliver`, { deliveryMessage, files });
+    }
+    return trpcMutation('orders.deliver', { orderId, deliveryMessage, files });
+  },
 };
 
 export const checkoutApi = {
@@ -503,17 +531,33 @@ export const payoutApi = {
 };
 
 export const stripeConnectApi = {
-  getAccountStatus: (): Promise<{ hasAccount: boolean; chargesEnabled: boolean; payoutsEnabled: boolean; onboardingComplete: boolean }> =>
-    trpcQuery('stripeConnect.getAccountStatus'),
+  getAccountStatus: (): Promise<{ hasAccount: boolean; chargesEnabled: boolean; payoutsEnabled: boolean; onboardingComplete: boolean }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('stripe-connect', 'GET', '/status');
+    }
+    return trpcQuery('stripeConnect.getAccountStatus');
+  },
   
-  createAccount: (country: string): Promise<{ accountId: string }> =>
-    trpcMutation('stripeConnect.createAccount', { country }),
+  createAccount: (country: string): Promise<{ accountId: string }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('stripe-connect', 'POST', '/account', { country });
+    }
+    return trpcMutation('stripeConnect.createAccount', { country });
+  },
   
-  getOnboardingLink: (): Promise<{ url: string }> =>
-    trpcMutation('stripeConnect.getOnboardingLink'),
+  getOnboardingLink: (): Promise<{ url: string }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('stripe-connect', 'GET', '/onboarding');
+    }
+    return trpcMutation('stripeConnect.getOnboardingLink');
+  },
   
-  getDashboardLink: (): Promise<{ url: string }> =>
-    trpcMutation('stripeConnect.getDashboardLink'),
+  getDashboardLink: (): Promise<{ url: string }> => {
+    if (IS_PRODUCTION) {
+      return edgeFunctionCall('stripe-connect', 'GET', '/dashboard');
+    }
+    return trpcMutation('stripeConnect.getDashboardLink');
+  },
 };
 
 export const paymentMethodsApi = {
