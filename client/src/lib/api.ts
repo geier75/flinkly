@@ -318,7 +318,7 @@ export const usersApi = {
     apiCall(`users/${id}`),
   
   updateProfile: (updates: ProfileUpdate): Promise<{ success: boolean }> => 
-    apiCall('users/profile', { method: 'PUT', body: updates }),
+    apiCall('users/profile', { method: 'PUT', body: updates, requireAuth: true }),
 };
 
 // ============ LEGACY TRPC COMPATIBILITY ============

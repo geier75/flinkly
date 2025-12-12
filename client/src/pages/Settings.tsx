@@ -11,7 +11,7 @@ import { Link, useLocation } from "wouter";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Trash2, ArrowLeft, Mail, Lock, AlertTriangle, Loader2 } from "lucide-react";
-import { trpc } from "@/lib/trpc";
+import { usersApi } from "@/lib/api";
 import { PaymentMethodsManager } from "@/components/PaymentMethodsManager";
 
 export default function Settings() {
@@ -19,6 +19,7 @@ export default function Settings() {
   const [, setLocation] = useLocation();
   const nameInputRef = useRef<HTMLInputElement>(null);
   const emailInputRef = useRef<HTMLInputElement>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const [settings, setSettings] = useState({
     emailNotifications: true,
@@ -27,24 +28,21 @@ export default function Settings() {
     twoFactorAuth: false,
   });
 
-  const updateProfileMutation = trpc.user.updateProfile.useMutation({
-    onSuccess: () => {
+  const handleSaveProfile = async () => {
+    const name = nameInputRef.current?.value;
+    
+    setIsUpdating(true);
+    try {
+      await usersApi.updateProfile({
+        ...(name && { name }),
+      });
       toast.success("Profil erfolgreich aktualisiert!");
       refresh?.();
-    },
-    onError: (error) => {
+    } catch (error: any) {
       toast.error(error.message || "Fehler beim Speichern");
-    },
-  });
-
-  const handleSaveProfile = () => {
-    const name = nameInputRef.current?.value;
-    const email = emailInputRef.current?.value;
-    
-    updateProfileMutation.mutate({
-      ...(name && { name }),
-      ...(email && { email }),
-    });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleSaveSettings = () => {
@@ -163,10 +161,10 @@ export default function Settings() {
                 </div>
                 <Button 
                   onClick={handleSaveProfile}
-                  disabled={updateProfileMutation.isPending}
+                  disabled={isUpdating}
                   className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-emerald-500/20"
                 >
-                  {updateProfileMutation.isPending ? (
+                  {isUpdating ? (
                     <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Speichern...</>
                   ) : (
                     "Änderungen speichern"

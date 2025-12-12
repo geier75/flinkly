@@ -14,6 +14,17 @@ interface AuthUser {
   name: string | null;
   role: 'user' | 'admin';
   avatarUrl: string | null;
+  // Extended profile fields (may be undefined until loaded from DB)
+  bio?: string | null;
+  country?: string | null;
+  createdAt?: string | null;
+  // Commercial seller fields
+  isCommercial?: boolean;
+  companyName?: string | null;
+  companyAddress?: string | null;
+  taxId?: string | null;
+  tradeRegister?: string | null;
+  phone?: string | null;
 }
 
 export function useAuth(options?: UseAuthOptions) {

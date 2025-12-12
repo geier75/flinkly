@@ -23,25 +23,69 @@ function toPublicUser(row: any) {
   };
 }
 
-// Get user from session
-async function getSessionUser(req: Request) {
-  const cookieHeader = req.headers.get('Cookie');
-  if (!cookieHeader) return null;
+// Get user from Supabase auth header
+async function getUser(req: Request) {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    console.log('[users.getUser] No auth header');
+    return null;
+  }
   
-  const cookies = cookieHeader.split(';').map(c => c.trim());
-  const sessionCookie = cookies.find(c => c.startsWith('flinkly_session='));
-  if (!sessionCookie) return null;
+  const token = authHeader.replace('Bearer ', '');
   
-  const openId = sessionCookie.split('=')[1];
+  // Check if this is the anon key (not a user token)
+  const ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') || '';
+  if (token === ANON_KEY) {
+    console.log('[users.getUser] Anon key used, no user');
+    return null;
+  }
+  
   const supabase = getServiceClient();
   
-  const { data: user } = await supabase
+  const { data: { user }, error } = await supabase.auth.getUser(token);
+  if (error) {
+    console.log('[users.getUser] Auth error:', error.message);
+    return null;
+  }
+  if (!user) {
+    console.log('[users.getUser] No user from token');
+    return null;
+  }
+  
+  console.log('[users.getUser] Found auth user:', user.id);
+  
+  // Get user from our users table
+  let { data: dbUser } = await supabase
     .from('users')
     .select('*')
-    .eq('open_id', openId)
+    .eq('open_id', user.id)
     .single();
   
-  return user;
+  // If user doesn't exist in our table, create them
+  if (!dbUser) {
+    console.log('[users.getUser] Creating new user in DB');
+    const { data: newUser, error: insertError } = await supabase
+      .from('users')
+      .insert({
+        open_id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        role: 'user',
+        verified: false,
+        email_verified: !!user.email_confirmed_at,
+      })
+      .select('*')
+      .single();
+    
+    if (insertError) {
+      console.error('[users.getUser] Error creating user:', insertError);
+      return null;
+    }
+    dbUser = newUser;
+  }
+  
+  console.log('[users.getUser] DB user:', dbUser?.id);
+  return dbUser;
 }
 
 // GET /users/:id - Public profile
@@ -111,7 +155,7 @@ serve(async (req: Request) => {
     
     // PUT /users/profile - Update own profile (auth required)
     if (method === 'PUT' && pathParts[1] === 'profile') {
-      const sessionUser = await getSessionUser(req);
+      const sessionUser = await getUser(req);
       if (!sessionUser) return unauthorizedResponse();
       
       const body = await req.json();
