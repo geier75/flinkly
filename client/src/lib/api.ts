@@ -16,8 +16,30 @@ interface ApiOptions {
 }
 
 async function getAuthToken(): Promise<string | null> {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token || null;
+  // First try to get existing session
+  const { data: { session }, error } = await supabase.auth.getSession();
+  if (error) {
+    console.error('[api.getAuthToken] Error getting session:', error);
+  }
+  if (session?.access_token) {
+    console.log('[api.getAuthToken] Got session, user:', session.user?.email);
+    return session.access_token;
+  }
+  
+  // If no session, try to refresh
+  console.log('[api.getAuthToken] No session, trying to refresh...');
+  const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+  if (refreshError) {
+    console.error('[api.getAuthToken] Refresh error:', refreshError);
+    return null;
+  }
+  if (refreshData.session?.access_token) {
+    console.log('[api.getAuthToken] Refreshed session, user:', refreshData.session.user?.email);
+    return refreshData.session.access_token;
+  }
+  
+  console.log('[api.getAuthToken] No session available');
+  return null;
 }
 
 async function apiCall<T>(endpoint: string, options: ApiOptions = {}): Promise<T> {
