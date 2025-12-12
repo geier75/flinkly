@@ -253,6 +253,30 @@ serve(async (req: Request) => {
     // GET /gigs - List
     if (method === 'GET' && pathParts.length === 1) {
       const params = Object.fromEntries(url.searchParams);
+      
+      // Check if this is a "my gigs" request
+      if (params.mine === 'true') {
+        const user = await getUser(req);
+        if (!user) return unauthorizedResponse();
+        
+        const supabase = getServiceClient();
+        const statusFilter = params.status || 'active';
+        
+        const { data: gigs, error } = await supabase
+          .from('gigs')
+          .select('*')
+          .eq('seller_id', user.id)
+          .eq('status', statusFilter)
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('[gigs.myGigs] Error:', error);
+          return errorResponse('Failed to fetch gigs', 500);
+        }
+        
+        return jsonResponse(gigs?.map(toDbGig) || []);
+      }
+      
       const input: GigListInput = {
         limit: params.limit ? parseInt(params.limit) : undefined,
         cursor: params.cursor ? parseInt(params.cursor) : undefined,

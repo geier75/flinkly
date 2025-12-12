@@ -2,7 +2,8 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { trpc } from "@/lib/trpc";
+import { gigsApi, ordersApi, type Gig, type Order } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
@@ -43,24 +44,26 @@ import {
 
 function DraftCard({ gig }: { gig: any }) {
   const [, setLocation] = useLocation();
-  const utils = trpc.useUtils();
+  const queryClient = useQueryClient();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   
-  const publishGig = trpc.gigs.publish.useMutation({
+  const publishGig = useMutation({
+    mutationFn: (id: number) => gigsApi.publish(id),
     onSuccess: () => {
       toast.success("Gig veröffentlicht!");
-      utils.gigs.myGigs.invalidate();
-      utils.gigs.getDrafts.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['myGigs'] });
+      queryClient.invalidateQueries({ queryKey: ['drafts'] });
     },
     onError: () => {
       toast.error("Fehler beim Veröffentlichen");
     },
   });
 
-  const deleteGig = trpc.gigs.delete.useMutation({
+  const deleteGig = useMutation({
+    mutationFn: (id: number) => gigsApi.delete(id),
     onSuccess: () => {
       toast.success("Entwurf gelöscht");
-      utils.gigs.getDrafts.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['drafts'] });
       setShowDeleteDialog(false);
     },
     onError: () => {
@@ -90,7 +93,7 @@ function DraftCard({ gig }: { gig: any }) {
           <Button
             size="sm"
             className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-slate-900 shadow-md"
-            onClick={() => publishGig.mutate({ id: gig.id })}
+            onClick={() => publishGig.mutate(gig.id)}
             disabled={publishGig.isPending}
           >
             Veröffentlichen
@@ -118,7 +121,7 @@ function DraftCard({ gig }: { gig: any }) {
                 Abbrechen
               </AlertDialogCancel>
               <AlertDialogAction
-                onClick={() => deleteGig.mutate({ id: gig.id })}
+                onClick={() => deleteGig.mutate(gig.id)}
                 className="bg-red-600 hover:bg-red-700 text-slate-900"
                 disabled={deleteGig.isPending}
               >
@@ -135,11 +138,12 @@ function DraftCard({ gig }: { gig: any }) {
 function GigCard({ gig }: { gig: any }) {
   const [, setLocation] = useLocation();
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const utils = trpc.useUtils();
-  const deleteGig = trpc.gigs.delete.useMutation({
+  const queryClient = useQueryClient();
+  const deleteGig = useMutation({
+    mutationFn: (id: number) => gigsApi.delete(id),
     onSuccess: () => {
       toast.success("Gig gelöscht");
-      utils.gigs.myGigs.invalidate();
+      queryClient.invalidateQueries({ queryKey: ['myGigs'] });
       setShowDeleteDialog(false);
     },
     onError: () => {
@@ -196,7 +200,7 @@ function GigCard({ gig }: { gig: any }) {
               Abbrechen
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => deleteGig.mutate({ id: gig.id })}
+              onClick={() => deleteGig.mutate(gig.id)}
               className="bg-red-600 hover:bg-red-700 text-slate-900"
               disabled={deleteGig.isPending}
             >
@@ -215,14 +219,37 @@ export default function SellerDashboard() {
   const [activeTab, setActiveTab] = useState("published");
   const [timeRange, setTimeRange] = useState<"7" | "30" | "90">("30");
 
-  // Analytics queries
-  const { data: revenueData } = trpc.analytics.getRevenue.useQuery({ timeRange });
-  const { data: performanceData } = trpc.analytics.getPerformance.useQuery();
-  const { data: topGigs } = trpc.analytics.getTopGigs.useQuery({ limit: 5 });
+  // Analytics - stub data for now (analytics Edge Function not yet implemented)
+  const revenueData = { total: 0, change: 0 };
+  const performanceData = { views: 0, orders: 0, conversion: 0 };
+  const topGigs: any[] = [];
 
-  const { data: orders = [], isLoading } = trpc.orders.mySales.useQuery();
-  const { data: gigs = [] } = trpc.gigs.myGigs.useQuery();
-  const { data: drafts = [] } = trpc.gigs.getDrafts.useQuery();
+  // Fetch seller's gigs and orders using React Query
+  const { data: ordersData, isLoading: ordersLoading } = useQuery({
+    queryKey: ['mySales'],
+    queryFn: async () => {
+      const result = await ordersApi.list('seller');
+      return result.orders || [];
+    },
+    enabled: isAuthenticated,
+  });
+  
+  const { data: gigsData, isLoading: gigsLoading } = useQuery({
+    queryKey: ['myGigs'],
+    queryFn: () => gigsApi.myGigs(),
+    enabled: isAuthenticated,
+  });
+  
+  const { data: draftsData, isLoading: draftsLoading } = useQuery({
+    queryKey: ['drafts'],
+    queryFn: () => gigsApi.getDrafts(),
+    enabled: isAuthenticated,
+  });
+  
+  const orders = ordersData || [];
+  const gigs = gigsData || [];
+  const drafts = draftsData || [];
+  const isLoading = ordersLoading || gigsLoading || draftsLoading;
 
   if (!isAuthenticated) {
     return (

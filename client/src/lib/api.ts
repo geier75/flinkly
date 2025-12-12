@@ -215,6 +215,16 @@ export const gigsApi = {
   
   delete: (id: number): Promise<{ success: boolean }> =>
     apiCall(`gigs/${id}`, { method: 'DELETE', requireAuth: true }),
+  
+  // Seller-specific endpoints
+  myGigs: (): Promise<Gig[]> =>
+    apiCall('gigs', { params: { mine: 'true', status: 'active' }, requireAuth: true }),
+  
+  getDrafts: (): Promise<Gig[]> =>
+    apiCall('gigs', { params: { mine: 'true', status: 'draft' }, requireAuth: true }),
+  
+  publish: (id: number): Promise<Gig> =>
+    apiCall(`gigs/${id}`, { method: 'PUT', body: { status: 'active' }, requireAuth: true }),
 };
 
 // ============ AUTH API ============
