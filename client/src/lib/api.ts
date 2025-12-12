@@ -218,13 +218,13 @@ export const gigsApi = {
   
   // Seller-specific endpoints
   myGigs: (): Promise<Gig[]> =>
-    apiCall('gigs', { params: { mine: 'true', status: 'active' }, requireAuth: true }),
+    apiCall('gigs', { params: { mine: 'true', status: 'published' }, requireAuth: true }),
   
   getDrafts: (): Promise<Gig[]> =>
     apiCall('gigs', { params: { mine: 'true', status: 'draft' }, requireAuth: true }),
   
   publish: (id: number): Promise<Gig> =>
-    apiCall(`gigs/${id}`, { method: 'PUT', body: { status: 'active' }, requireAuth: true }),
+    apiCall(`gigs/${id}`, { method: 'PUT', body: { status: 'published' }, requireAuth: true }),
 };
 
 // ============ AUTH API ============
@@ -276,10 +276,10 @@ export interface Order {
 
 export const ordersApi = {
   list: (role: 'buyer' | 'seller' = 'buyer'): Promise<{ orders: Order[] }> => 
-    apiCall('orders', { params: { role } }),
+    apiCall('orders', { params: { role }, requireAuth: true }),
   
   get: (id: number): Promise<Order> => 
-    apiCall(`orders/${id}`),
+    apiCall(`orders/${id}`, { requireAuth: true }),
 };
 
 // ============ CHECKOUT API ============
