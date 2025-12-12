@@ -21,11 +21,33 @@ async function getUser(req: Request) {
   if (error || !user) return null;
   
   // Get user from our users table
-  const { data: dbUser } = await supabase
+  let { data: dbUser } = await supabase
     .from('users')
     .select('id, email, name, role')
     .eq('open_id', user.id)
     .single();
+  
+  // If user doesn't exist in our table, create them
+  if (!dbUser) {
+    const { data: newUser, error: insertError } = await supabase
+      .from('users')
+      .insert({
+        open_id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+        role: 'user',
+        verified: false,
+        email_verified: !!user.email_confirmed_at,
+      })
+      .select('id, email, name, role')
+      .single();
+    
+    if (insertError) {
+      console.error('[gigs.getUser] Error creating user:', insertError);
+      return null;
+    }
+    dbUser = newUser;
+  }
   
   return dbUser;
 }
