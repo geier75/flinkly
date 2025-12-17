@@ -47,8 +47,12 @@ export function useAuth(options?: UseAuthOptions) {
     if (initializedRef.current) return;
     initializedRef.current = true;
 
-    // Sync session with backend to set session cookie
+    // Sync session with backend to set session cookie (optional, only works with Express backend)
     const syncSession = async (user: any) => {
+      // Skip sync in production without Express backend (Vercel deployment)
+      if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
+        return;
+      }
       try {
         await fetch('/api/auth/sync', {
           method: 'POST',
@@ -61,7 +65,7 @@ export function useAuth(options?: UseAuthOptions) {
           }),
         });
       } catch (e) {
-        console.error('[Auth] Session sync failed:', e);
+        // Silently ignore - sync is optional
       }
     };
 

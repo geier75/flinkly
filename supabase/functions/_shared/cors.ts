@@ -4,6 +4,8 @@
  */
 
 const ALLOWED_ORIGINS = [
+  'https://flinkly.eu',
+  'https://www.flinkly.eu',
   'https://flinkly.vercel.app',
   'https://flinkly-bemlerinhos-projects.vercel.app',
   'http://localhost:5173',
