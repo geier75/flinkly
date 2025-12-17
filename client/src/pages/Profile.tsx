@@ -19,19 +19,19 @@ const COUNTRIES = [
 ];
 
 export default function Profile() {
-  const { user, isAuthenticated, logout } = useAuth();
+  const { user, isAuthenticated, logout, loading } = useAuth();
   const [, setLocation] = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
-    name: user?.name || "",
-    bio: user?.bio || "",
-    country: user?.country || "DE",
+    name: "",
+    bio: "",
+    country: "DE",
     // Commercial seller fields (§ 5 TMG)
-    isCommercial: user?.isCommercial || false,
-    companyName: user?.companyName || "",
-    companyAddress: user?.companyAddress || "",
-    taxId: user?.taxId || "",
-    tradeRegister: user?.tradeRegister || "",
+    isCommercial: false,
+    companyName: "",
+    companyAddress: "",
+    taxId: "",
+    tradeRegister: "",
   });
 
   // Sync formData when user data changes
@@ -104,6 +104,15 @@ export default function Profile() {
   const handleCancelDeletion = () => {
     toast.success("Account-Löschung widerrufen");
   };
+
+  // Show loading state while auth is loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated || !user) {
     return (

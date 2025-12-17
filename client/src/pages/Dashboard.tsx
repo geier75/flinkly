@@ -200,8 +200,12 @@ export default function Dashboard() {
                     </div>
                   </CardHeader>
                   <CardContent className="relative z-10">
-                    <div className="text-5xl font-black text-amber-500 mb-2">4.8</div>
-                    <p className="text-sm text-slate-500 font-medium">basierend auf 12 Bewertungen</p>
+                    <div className="text-5xl font-black text-amber-500 mb-2">
+                      {user?.averageRating ? (user.averageRating / 100).toFixed(1) : "0.0"}
+                    </div>
+                    <p className="text-sm text-slate-500 font-medium">
+                      {user?.completedOrders || 0} abgeschlossene Aufträge
+                    </p>
                   </CardContent>
                 </Card>
               </motion.div>
