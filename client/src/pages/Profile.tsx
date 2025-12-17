@@ -105,7 +105,7 @@ export default function Profile() {
     toast.success("Account-Löschung widerrufen");
   };
 
-  // Show loading state while auth is loading
+  // Show loading state while auth is loading (v2)
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
