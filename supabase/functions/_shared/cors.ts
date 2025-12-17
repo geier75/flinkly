@@ -28,9 +28,11 @@ export function getCorsHeaders(req: Request): Record<string, string> {
   };
 }
 
-// Legacy export for backwards compatibility
+// DEPRECATED: Do not use corsHeaders directly - use getCorsHeaders(req) instead
+// This export is kept for backwards compatibility but will be removed in future versions
+/** @deprecated Use getCorsHeaders(req) for proper origin validation */
 export const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Origin': 'https://flinkly.eu',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
 };
