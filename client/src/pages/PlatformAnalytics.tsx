@@ -20,19 +20,19 @@ import { useLocation } from "wouter";
 
 export default function PlatformAnalytics() {
   const { user, loading: authLoading } = useAuth();
+  const [, setLocation] = useLocation();
   
   // Fetch platform analytics
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['platformAnalytics'],
     queryFn: () => adminApi.getStats(),
+    enabled: !!user && user.role === 'admin',
   });
 
   // Only admins can access this page
   if (authLoading) {
     return <AnalyticsSkeleton />;
   }
-
-  const [, setLocation] = useLocation();
 
   if (!user || user.role !== 'admin') {
     setLocation('/');

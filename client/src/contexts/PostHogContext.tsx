@@ -22,25 +22,50 @@ interface PostHogProviderProps {
 
 export function PostHogProvider({ children }: PostHogProviderProps) {
   useEffect(() => {
-    // Initialize PostHog (only if API key is set)
+    // SECURITY: Only initialize PostHog AFTER user consent (GDPR Art. 7)
     const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
     const host = import.meta.env.VITE_POSTHOG_HOST || 'https://app.posthog.com';
 
     if (apiKey) {
-      posthog.init(apiKey, {
-        api_host: host,
-        autocapture: false, // Disable automatic event capture (we'll track manually)
-        capture_pageview: false, // Disable automatic pageview tracking
-        disable_session_recording: true, // Disable session recording by default
-      });
+      // Check if user has given consent
+      const savedPrefs = localStorage.getItem("flinkly_cookie_preferences");
+      let hasConsent = false;
+      
+      if (savedPrefs) {
+        try {
+          const prefs = JSON.parse(savedPrefs);
+          hasConsent = prefs.analytics === true;
+        } catch (e) {
+          console.error('[PostHog] Failed to parse cookie preferences', e);
+        }
+      }
 
-      console.log('[PostHog] Initialized');
+      // Only initialize if consent is given
+      if (hasConsent) {
+        posthog.init(apiKey, {
+          api_host: host,
+          autocapture: false,
+          capture_pageview: false,
+          disable_session_recording: true,
+          opt_out_capturing_by_default: false, // User has opted in
+        });
+        console.log('[PostHog] Initialized with user consent');
+      } else {
+        // Initialize in opt-out mode (no tracking until consent)
+        posthog.init(apiKey, {
+          api_host: host,
+          autocapture: false,
+          capture_pageview: false,
+          disable_session_recording: true,
+          opt_out_capturing_by_default: true, // Wait for consent
+        });
+        console.log('[PostHog] Initialized in opt-out mode (waiting for consent)');
+      }
     } else {
       console.warn('[PostHog] Not configured - set VITE_POSTHOG_API_KEY in environment');
     }
 
     return () => {
-      // Cleanup on unmount
       if (apiKey) {
         posthog.reset();
       }

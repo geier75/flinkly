@@ -8,6 +8,8 @@ import { Mail, MessageSquare, HelpCircle, ArrowLeft, Send, Clock, Phone } from "
 import { Link } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { contactApi } from "@/lib/api";
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -17,11 +19,26 @@ export default function Contact() {
     message: ""
   });
 
+  const submitMutation = useMutation({
+    mutationFn: () => contactApi.submit(formData),
+    onSuccess: () => {
+      toast.success("Nachricht gesendet! Wir melden uns in Kürze bei dir.");
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    },
+    onError: (error: unknown) => {
+      const msg = error instanceof Error ? error.message : "Fehler beim Senden der Nachricht";
+      toast.error(msg);
+    },
+  });
+    },
+    onError: (error) => {
+      toast.error(error.message || "Fehler beim Senden der Nachricht");
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement actual form submission via tRPC
-    toast.success("Nachricht gesendet! Wir melden uns in Kürze bei dir.");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    submitMutation.mutate();
   };
 
   return (
@@ -188,7 +205,7 @@ export default function Contact() {
                   />
                 </div>
 
-                <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-emerald-500/20">
+                <Button type="submit" size="lg" className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-emerald-500/20" aria-label="Nachricht senden">
                   <Send className="h-5 w-5 mr-2" />
                   Nachricht senden
                 </Button>

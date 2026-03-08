@@ -18,7 +18,7 @@ import { ENV } from './_core/env';
 
 // Lazy initialization to prevent startup crash when STRIPE_SECRET_KEY is not set
 let stripe: Stripe | null = null;
-function getStripe(): Stripe {
+export function getStripe(): Stripe {
   if (!stripe) {
     if (!ENV.stripeSecretKey) {
       throw new Error("STRIPE_SECRET_KEY is not configured");

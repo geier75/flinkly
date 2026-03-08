@@ -241,6 +241,13 @@ export const trpc = {
     deleteData: createStubMutation(),
   },
   
+  // Account Deletion (GDPR Art. 17)
+  accountDeletion: {
+    getDeletionStatus: createStubQuery(),
+    requestDeletion: createStubMutation(),
+    cancelDeletion: createStubMutation(),
+  },
+  
   // Verification - ALL methods
   verification: {
     status: createStubQuery(),

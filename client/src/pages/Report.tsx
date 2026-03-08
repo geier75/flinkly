@@ -226,7 +226,7 @@ export default function Report() {
                   <Input
                     id="contentUrl"
                     type="url"
-                    placeholder="https://flinkly.de/gig/..."
+                    placeholder="https://flinkly.eu/gig/..."
                     value={formData.contentUrl}
                     onChange={(e) => handleChange("contentUrl", e.target.value)}
                     className="bg-slate-900/50 border-slate-700 text-white"
@@ -367,6 +367,7 @@ export default function Report() {
                   type="submit" 
                   className="cyber-neon-button w-full py-6 text-lg"
                   disabled={isSubmitting || !formData.agreeToProcess || !formData.category}
+                  aria-label="Meldung absenden"
                 >
                   {isSubmitting ? (
                     <span className="flex items-center gap-2">

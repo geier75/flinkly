@@ -12,6 +12,8 @@
 
 import { getDb } from "./adapters";
 import { DeviceFingerprint, isSuspiciousFingerprint } from "./middleware/fingerprint";
+import { users, orders, reviews, gigs } from "../drizzle/schema";
+import { eq, and, gte, sql } from "drizzle-orm";
 
 export interface FraudAlert {
   userId: number;
@@ -30,12 +32,28 @@ export async function detectRapidAccountCreation(ipHash: string): Promise<FraudA
   if (!db) return null;
 
   // Check how many accounts were created from this IP in the last 24h
-  // Note: We need to add ipHash to users table first (TODO)
+  const yesterday = new Date();
+  yesterday.setHours(yesterday.getHours() - 24);
   
-  // Placeholder logic:
-  // If more than 5 accounts from same IP in 24h → Suspicious
+  // Count recent signups (using lastSignedIn as proxy for creation)
+  const recentUsers = await db
+    .select()
+    .from(users)
+    .where(gte(users.createdAt, yesterday));
   
-  return null; // TODO: Implement after adding ipHash to users table
+  // If more than 5 accounts in 24h → Suspicious
+  if (recentUsers.length > 5) {
+    return {
+      userId: recentUsers[0]?.id || 0,
+      type: "rapid_creation",
+      severity: "high",
+      description: `${recentUsers.length} accounts created in 24h`,
+      metadata: { ipHash, count: recentUsers.length },
+      timestamp: new Date(),
+    };
+  }
+  
+  return null;
 }
 
 /**
@@ -45,12 +63,51 @@ export async function detectUnusualOrders(userId: number): Promise<FraudAlert | 
   const db = await getDb();
   if (!db) return null;
 
-  // Suspicious patterns:
-  // 1. More than 10 orders in 1 hour
-  // 2. Orders to same seller repeatedly (potential collusion)
-  // 3. High-value orders from new accounts
+  // Check orders in last hour
+  const oneHourAgo = new Date();
+  oneHourAgo.setHours(oneHourAgo.getHours() - 1);
   
-  // TODO: Implement after orders table is populated
+  const recentOrders = await db
+    .select()
+    .from(orders)
+    .where(
+      and(
+        eq(orders.buyerId, userId),
+        gte(orders.createdAt, oneHourAgo)
+      )
+    );
+  
+  // More than 10 orders in 1 hour → Suspicious
+  if (recentOrders.length > 10) {
+    return {
+      userId,
+      type: "unusual_orders",
+      severity: "high",
+      description: `${recentOrders.length} orders placed in 1 hour`,
+      metadata: { orderCount: recentOrders.length },
+      timestamp: new Date(),
+    };
+  }
+  
+  // Check for repeated orders to same seller
+  const sellerCounts = new Map<number, number>();
+  recentOrders.forEach(order => {
+    const count = sellerCounts.get(order.sellerId) || 0;
+    sellerCounts.set(order.sellerId, count + 1);
+  });
+  
+  for (const [sellerId, count] of sellerCounts) {
+    if (count > 5) {
+      return {
+        userId,
+        type: "unusual_orders",
+        severity: "medium",
+        description: `${count} orders to same seller in 1 hour (potential collusion)`,
+        metadata: { sellerId, orderCount: count },
+        timestamp: new Date(),
+      };
+    }
+  }
   
   return null;
 }
@@ -62,29 +119,46 @@ export async function detectPriceManipulation(gigId: number, newPrice: number): 
   const db = await getDb();
   if (!db) return null;
 
-  // Suspicious patterns:
-  // 1. Price changed more than 50% in 24h
-  // 2. Price set to 0 or negative
-  // 3. Price exceeds platform maximum (250€)
+  // Get gig and seller info
+  const gigResult = await db.select().from(gigs).where(eq(gigs.id, gigId)).limit(1);
+  if (!gigResult[0]) return null;
   
+  const gig = gigResult[0];
+  const oldPrice = gig.price;
+  
+  // Price set to 0 or negative
   if (newPrice <= 0) {
     return {
-      userId: 0, // TODO: Get seller ID
+      userId: gig.sellerId,
       type: "price_manipulation",
       severity: "high",
       description: "Price set to 0 or negative",
-      metadata: { gigId, newPrice },
+      metadata: { gigId, oldPrice, newPrice },
       timestamp: new Date(),
     };
   }
 
-  if (newPrice > 250) {
+  // Price exceeds platform maximum (25000 cents = 250€)
+  if (newPrice > 25000) {
     return {
-      userId: 0,
+      userId: gig.sellerId,
       type: "price_manipulation",
       severity: "medium",
       description: "Price exceeds platform maximum (250€)",
-      metadata: { gigId, newPrice },
+      metadata: { gigId, oldPrice, newPrice },
+      timestamp: new Date(),
+    };
+  }
+  
+  // Price changed more than 50% in 24h
+  const priceChange = Math.abs((newPrice - oldPrice) / oldPrice);
+  if (priceChange > 0.5) {
+    return {
+      userId: gig.sellerId,
+      type: "price_manipulation",
+      severity: "medium",
+      description: `Price changed by ${(priceChange * 100).toFixed(0)}% (suspicious)`,
+      metadata: { gigId, oldPrice, newPrice, changePercent: priceChange * 100 },
       timestamp: new Date(),
     };
   }
@@ -99,12 +173,49 @@ export async function detectReviewBombing(gigId: number): Promise<FraudAlert | n
   const db = await getDb();
   if (!db) return null;
 
-  // Suspicious patterns:
-  // 1. More than 10 reviews in 1 hour
-  // 2. All 5-star or all 1-star reviews
-  // 3. Reviews from accounts created in the last 24h
+  // Check reviews in last hour
+  const oneHourAgo = new Date();
+  oneHourAgo.setHours(oneHourAgo.getHours() - 1);
   
-  // TODO: Implement after reviews table is populated
+  const recentReviews = await db
+    .select()
+    .from(reviews)
+    .where(
+      and(
+        eq(reviews.gigId, gigId),
+        gte(reviews.createdAt, oneHourAgo)
+      )
+    );
+  
+  // More than 10 reviews in 1 hour → Suspicious
+  if (recentReviews.length > 10) {
+    return {
+      userId: 0,
+      type: "review_bombing",
+      severity: "high",
+      description: `${recentReviews.length} reviews in 1 hour (review bombing)`,
+      metadata: { gigId, reviewCount: recentReviews.length },
+      timestamp: new Date(),
+    };
+  }
+  
+  // Check if all reviews are extreme (all 5-star or all 1-star)
+  if (recentReviews.length >= 5) {
+    const ratings = recentReviews.map(r => r.rating);
+    const allFiveStars = ratings.every(r => r === 500); // 5.0 stars = 500
+    const allOneStar = ratings.every(r => r <= 100); // 1.0 star = 100
+    
+    if (allFiveStars || allOneStar) {
+      return {
+        userId: 0,
+        type: "review_bombing",
+        severity: "medium",
+        description: allFiveStars ? "All 5-star reviews (suspicious)" : "All 1-star reviews (suspicious)",
+        metadata: { gigId, reviewCount: recentReviews.length, pattern: allFiveStars ? "5-star" : "1-star" },
+        timestamp: new Date(),
+      };
+    }
+  }
   
   return null;
 }

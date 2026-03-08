@@ -69,7 +69,7 @@ export default function Onboarding({ onComplete, onSkip }: OnboardingProps) {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [hasScrolled]);
 

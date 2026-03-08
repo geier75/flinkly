@@ -64,13 +64,64 @@ export default function CookieConsent() {
     }
   }, []);
 
+  /**
+   * Initialize PostHog ONLY after user consent (GDPR Art. 7)
+   * Lazy-loads PostHog to avoid tracking before consent
+   */
+  const initAnalyticsAfterConsent = () => {
+    if (typeof window.posthog !== 'undefined') {
+      // Already initialized, just opt-in
+      window.posthog.opt_in_capturing();
+      return;
+    }
+
+    // Lazy-load PostHog only when consent is given
+    import('posthog-js').then(({ default: posthog }) => {
+      const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
+      const host = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.posthog.com';
+      
+      if (apiKey) {
+        posthog.init(apiKey, {
+          api_host: host,
+          person_profiles: 'identified_only',
+          capture_pageview: true,
+          capture_pageleave: true,
+          autocapture: false,
+          mask_all_text: true,
+          mask_all_element_attributes: true,
+          ip: false,
+          opt_out_capturing_by_default: false,
+          loaded: (ph) => {
+            ph.opt_in_capturing();
+          },
+        });
+      }
+    }).catch(() => {
+      // PostHog not available - graceful degradation
+    });
+  };
+
   const savePreferences = (prefs: CookiePreferences) => {
     localStorage.setItem("flinkly_cookie_preferences", JSON.stringify(prefs));
     setPreferences(prefs);
     
-    // Initialize analytics if accepted
-    if (prefs.analytics && window.posthog) {
-      window.posthog.opt_in_capturing();
+    // SECURITY: Set cookie with Secure + SameSite=Strict attributes
+    // Secure flag only works on HTTPS (production), ignored on localhost
+    const cookieValue = prefs.analytics ? 'true' : 'false';
+    const maxAge = 365 * 24 * 60 * 60; // 1 year in seconds
+    const cookieParts = [
+      `flinkly_cookie_consent=${cookieValue}`,
+      'Path=/',
+      `Max-Age=${maxAge}`,
+      'SameSite=Strict',
+      // Secure flag only on HTTPS
+      ...(window.location.protocol === 'https:' ? ['Secure'] : []),
+    ];
+    document.cookie = cookieParts.join('; ');
+    
+    // SECURITY: PostHog lazy-init ONLY after consent (GDPR Art. 7)
+    if (prefs.analytics) {
+      initAnalyticsAfterConsent();
     } else if (window.posthog) {
       window.posthog.opt_out_capturing();
     }
@@ -274,6 +325,52 @@ export default function CookieConsent() {
       </button>
     </>
   );
+}
+
+/**
+ * Initialize consent from cookie on app startup
+ * IMPORTANT: Call this in main.tsx before React renders
+ * 
+ * @returns {void}
+ */
+export function initConsentFromCookie(): void {
+  const hasConsent = document.cookie
+    .split(';')
+    .some(c => c.trim() === 'flinkly_cookie_consent=true');
+
+  if (hasConsent) {
+    // User has previously given consent - initialize analytics
+    const savedPrefs = localStorage.getItem("flinkly_cookie_preferences");
+    if (savedPrefs) {
+      try {
+        const prefs = JSON.parse(savedPrefs);
+        if (prefs.analytics) {
+          // Lazy-load PostHog
+          import('posthog-js').then(({ default: posthog }) => {
+            const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
+            const host = import.meta.env.VITE_POSTHOG_HOST || 'https://eu.posthog.com';
+            
+            if (apiKey) {
+              posthog.init(apiKey, {
+                api_host: host,
+                person_profiles: 'identified_only',
+                capture_pageview: true,
+                autocapture: false,
+                mask_all_text: true,
+                ip: false,
+                opt_out_capturing_by_default: false,
+              });
+            }
+          }).catch(() => {
+            // PostHog not available
+          });
+        }
+      } catch (e) {
+        console.error('[Flinkly] Failed to parse cookie preferences:', e);
+      }
+    }
+  }
+  // No consent = no tracking (Privacy by Default)
 }
 
 // Type declaration for PostHog (if not already declared)

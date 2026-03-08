@@ -37,6 +37,10 @@ export const users = mysqlTable("users", {
   stripeOnboardingComplete: boolean("stripeOnboardingComplete").default(false).notNull(), // KYC verification complete
   stripeChargesEnabled: boolean("stripeChargesEnabled").default(false).notNull(), // Can receive payments
   stripePayoutsEnabled: boolean("stripePayoutsEnabled").default(false).notNull(), // Can receive payouts
+  // GDPR Account Deletion (Art. 17)
+  deletionRequestedAt: timestamp("deletionRequestedAt"),
+  scheduledDeletionDate: timestamp("scheduledDeletionDate"),
+  deletionReason: text("deletionReason"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -480,3 +484,25 @@ export const paymentMethods = mysqlTable("paymentMethods", {
 
 export type PaymentMethod = typeof paymentMethods.$inferSelect;
 export type InsertPaymentMethod = typeof paymentMethods.$inferInsert;
+
+/**
+ * User Settings table
+ * Stores user preferences and notification settings
+ */
+export const userSettings = mysqlTable("userSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  emailNotifications: boolean("emailNotifications").default(true).notNull(),
+  pushNotifications: boolean("pushNotifications").default(true).notNull(),
+  marketingEmails: boolean("marketingEmails").default(false).notNull(),
+  orderUpdates: boolean("orderUpdates").default(true).notNull(),
+  messageNotifications: boolean("messageNotifications").default(true).notNull(),
+  reviewNotifications: boolean("reviewNotifications").default(true).notNull(),
+  language: varchar("language", { length: 10 }).default("de").notNull(),
+  timezone: varchar("timezone", { length: 50 }).default("Europe/Berlin").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserSettings = typeof userSettings.$inferSelect;
+export type InsertUserSettings = typeof userSettings.$inferInsert;

@@ -353,12 +353,12 @@ export default function DarkPatternsCompliance() {
 
           {/* Version Info */}
           <div className="text-center text-sm text-slate-500 pt-8 border-t border-slate-800">
-            <p>Stand: Dezember 2024 | Version 1.0</p>
+            <p>Stand: März 2026 | Version 1.0</p>
             <p className="mt-1">
               Rechtsgrundlage: DSA Art. 25 - Verbot von Dark Patterns
             </p>
             <p className="mt-2">
-              Letztes UI/UX-Audit: Dezember 2024
+              Letztes UI/UX-Audit: März 2026
             </p>
           </div>
         </div>

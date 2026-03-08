@@ -6,6 +6,11 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "http";
 import { sdk } from "./sdk";
+import { createClient } from '@supabase/supabase-js';
+const supabaseAdmin = createClient(
+  process.env.SUPABASE_URL || '',
+  process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+);
 import * as db from "../adapters";
 
 export function initializeSocketIO(httpServer: HTTPServer) {
@@ -28,22 +33,20 @@ export function initializeSocketIO(httpServer: HTTPServer) {
     }
 
     try {
-      // Create fake request object with cookie
-      const fakeReq = {
-        headers: {
-          cookie: `session=${token}`,
-        },
-      } as any;
-      
-      const user = await sdk.authenticateRequest(fakeReq);
-      if (!user) {
-        return next(new Error("Invalid token"));
+      // Validate Supabase JWT directly (HTTP-only cookie not available in WS handshake)
+      const { data, error } = await supabaseAdmin.auth.getUser(token);
+      if (error || !data.user) {
+        return next(new Error('Invalid token'));
       }
-      
+      // Look up DB user by Supabase ID
+      const user = await db.getUserByOpenId(data.user.id);
+      if (!user) {
+        return next(new Error('User not found'));
+      }
       socket.data.user = user;
       next();
     } catch (error) {
-      next(new Error("Authentication failed"));
+      next(new Error('Authentication failed'));
     }
   });
 

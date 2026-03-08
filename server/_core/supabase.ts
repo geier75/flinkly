@@ -13,3 +13,25 @@ export const supabase = createClient(
 );
 
 console.log('[Supabase] Client initialized:', supabaseUrl ? 'with env vars' : 'with fallback');
+
+// Service-Role-Client (bypasses RLS — only use server-side for mutations!)
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+export const supabaseAdmin = supabaseServiceKey
+  ? createClient(
+      supabaseUrl || 'https://fpiszghehrjmkbxhbwqr.supabase.co',
+      supabaseServiceKey,
+      { 
+        auth: { 
+          autoRefreshToken: false, 
+          persistSession: false 
+        } 
+      }
+    )
+  : supabase; // Fallback to anon client (with warning)
+
+if (!supabaseServiceKey) {
+  console.warn('[Supabase] ⚠️  SUPABASE_SERVICE_ROLE_KEY missing — Server mutations will be blocked by RLS!');
+} else {
+  console.log('[Supabase] Service-Role client initialized for server mutations');
+}

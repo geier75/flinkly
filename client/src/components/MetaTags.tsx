@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { APP_TITLE } from "@/const";
+import { SEO_CONFIG } from "@/config/seo";
 
 interface MetaTagsProps {
   title?: string;
@@ -29,18 +30,20 @@ interface MetaTagsProps {
 export default function MetaTags({
   title,
   description = "Der Marktplatz für schnelle, kreative & digitale Mikrodienstleistungen in der DACH-Region.",
-  image = "/og-image.jpg",
+  image = SEO_CONFIG.ogImage,
   url,
   type = "website",
   price,
   currency = "EUR",
 }: MetaTagsProps) {
   useEffect(() => {
-    // Full title with branding
-    const fullTitle = title ? `${title} | ${APP_TITLE}` : APP_TITLE;
+    // Full title with branding - avoid duplicate if already present
+    const fullTitle = title 
+      ? (title.includes(APP_TITLE) ? title : `${title} | ${APP_TITLE}`)
+      : APP_TITLE;
     
-    // Current URL
-    const currentUrl = url || window.location.href;
+    // Current URL - use canonical domain from SEO_CONFIG
+    const currentUrl = url || SEO_CONFIG.url(window.location.pathname);
     
     // Update document title
     document.title = fullTitle;

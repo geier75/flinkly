@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
 import { useCreateGig } from "@/hooks/useApi";
-import { gigsApi } from "@/lib/api";
+import { gigsApi, stripeConnectApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
+  ExternalLink,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { VideoScene } from "@/components/webgl/VideoScene";
@@ -38,9 +39,12 @@ import { useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function CreateGig() {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
-  const [currentStep, setCurrentStep] = useState(0); // Start at step 0 (Template selection)
+  const [currentStep, setCurrentStep] = useState(1); // Start at step 1 (Grundlagen) - Template selection disabled
+  const [isConnectingStripe, setIsConnectingStripe] = useState(false);
+  const [stripeStatus, setStripeStatus] = useState<{hasAccount: boolean} | null>(null);
+  const [stripeStatusLoading, setStripeStatusLoading] = useState(true);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [pricingMode, setPricingMode] = useState<'simple' | 'packages'>('simple');
@@ -94,6 +98,15 @@ export default function CreateGig() {
     return () => clearInterval(interval);
   }, [formData]);
 
+  // Load Stripe account status
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    stripeConnectApi.getAccountStatus()
+      .then(s => setStripeStatus(s))
+      .catch(() => setStripeStatus({ hasAccount: false }))
+      .finally(() => setStripeStatusLoading(false));
+  }, [isAuthenticated]);
+
   // Load draft on mount
   useEffect(() => {
     const draft = localStorage.getItem("gig-draft");
@@ -113,7 +126,30 @@ export default function CreateGig() {
   
   const [isCreating, setIsCreating] = useState(false);
   
-  const handleCreateGig = async () => {
+  const handleConnectStripe = async () => {
+    setIsConnectingStripe(true);
+    try {
+      // Create Stripe Connect account
+      await stripeConnectApi.createAccount('DE');
+      
+      // Get onboarding link and redirect to Stripe
+      const { url } = await stripeConnectApi.getOnboardingLink();
+      if (url) {
+        window.location.href = url;
+      } else {
+        toast.error("Fehler beim Generieren des Onboarding-Links");
+        setIsConnectingStripe(false);
+      }
+    } catch (error: any) {
+      const errMsg = error.message?.includes('signed up for Connect')
+        ? 'Stripe Connect ist nicht aktiviert. Bitte aktiviere Connect unter dashboard.stripe.com/connect.'
+        : (error.message || 'Fehler beim Verbinden mit Stripe');
+      toast.error(errMsg);
+      setIsConnectingStripe(false);
+    }
+  };
+
+  const handleCreateGig = async (packagesData?: any[]) => {
     setIsCreating(true);
     try {
       await gigsApi.create({
@@ -123,7 +159,8 @@ export default function CreateGig() {
         price: parseInt(formData.price) * 100, // Convert to cents
         deliveryDays: parseInt(formData.deliveryDays),
         imageUrl: formData.imageUrl,
-      });
+        ...(packagesData && { packages: packagesData }), // Include packages if provided
+      } as any);
       
       toast.success("✓ Gig erfolgreich erstellt!", {
         description: `Dein Gig "${formData.title}" wurde gespeichert.`,
@@ -156,6 +193,20 @@ export default function CreateGig() {
     }
   };
 
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Card className="max-w-md">
+          <CardContent className="pt-6 text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-primary" />
+            <p className="text-slate-600">Lade...</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+  
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -163,6 +214,66 @@ export default function CreateGig() {
           <CardContent className="pt-6 text-center">
             <p className="text-slate-600 mb-4">Bitte melde dich an</p>
             <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Check if user has connected Stripe account (required for receiving payments)
+  if (stripeStatusLoading && isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+      </div>
+    );
+  }
+  // DEV ONLY: bypass stripe check with ?bypass_stripe=1
+  const _devBypassStripe = import.meta.env.DEV && new URLSearchParams(window.location.search).get('bypass_stripe') === '1';
+  if (!stripeStatus?.hasAccount && !_devBypassStripe) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
+        <Card className="max-w-md bg-slate-800/50 border-slate-700">
+          <CardContent className="pt-6 text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto">
+              <DollarSign className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-white">Stripe-Konto erforderlich</h2>
+            <p className="text-slate-300">
+              Um Gigs zu erstellen und Zahlungen zu empfangen, musst du zuerst dein Stripe-Konto verbinden.
+            </p>
+            <div className="bg-slate-900/50 border border-slate-700 rounded-lg p-4 text-left">
+              <p className="text-sm text-slate-400 mb-2">Warum Stripe?</p>
+              <ul className="text-sm text-slate-300 space-y-1">
+                <li>✓ Sichere Zahlungsabwicklung</li>
+                <li>✓ Automatische Auszahlungen</li>
+                <li>✓ Käuferschutz inklusive</li>
+              </ul>
+            </div>
+            <Button 
+              onClick={handleConnectStripe}
+              disabled={isConnectingStripe}
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+            >
+              {isConnectingStripe ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Wird verbunden...
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="w-4 h-4 mr-2" />
+                  Stripe-Konto jetzt verbinden
+                </>
+              )}
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setLocation("/dashboard")}
+              className="w-full text-slate-400 hover:text-white"
+            >
+              Zurück zum Dashboard
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -242,7 +353,7 @@ export default function CreateGig() {
       },
     ].filter(pkg => pkg.price > 0) : undefined; // Only include packages with price > 0
 
-    await handleCreateGig();
+    await handleCreateGig(packagesData);
   };
 
   const nextStep = () => {
@@ -285,10 +396,10 @@ export default function CreateGig() {
       {/* Gradient Overlay */}
       <div className="fixed inset-0 bg-gradient-to-br from-violet-950/60 via-slate-900/80 to-slate-950/90 pointer-events-none" />
 
-      {/* 3D Pop-Out Logo */}
+      {/* 3D Pop-Out Logo - Decorative, non-obstructive */}
       <PopOutLogo 
-        className="top-32 left-24 z-20" 
-        size={140} 
+        className="top-32 left-24 z-20 opacity-30 pointer-events-none" 
+        size={80} 
         delay={0.8}
       />
 

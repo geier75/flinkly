@@ -28,7 +28,7 @@ export function PopOutLogo({
       animate={{
         scale: [0.3, 1.3, 1],
         z: [-300, 150, 0],
-        opacity: [0, 1, 1],
+        opacity: [0, 1, 0.3],
         rotateY: [-45, 15, 0],
       }}
       transition={{

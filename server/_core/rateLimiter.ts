@@ -96,8 +96,9 @@ export const strictRateLimiter = rateLimit({
 });
 
 /**
- * Rate limiter for login/signup endpoints
+ * Strict rate limiter for login/signup endpoints
  * 5 attempts per 15 minutes (50 in dev)
+ * Prevents brute-force attacks on authentication
  */
 export const authEndpointRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -108,6 +109,7 @@ export const authEndpointRateLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true, // Only count failed attempts
   keyGenerator: (req: Request) => {
     const forwarded = req.headers["x-forwarded-for"];
     const ip = typeof forwarded === "string" ? forwarded.split(",")[0] : req.socket.remoteAddress;

@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { favoritesApi } from "@/lib/api";
+import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { useGigsList } from "@/hooks/useApi";
 import { Button } from "@/components/ui/button";
@@ -23,6 +26,7 @@ import { MagneticButton } from "@/components/3d/MagneticButton";
 import { TiltCard } from "@/components/3d/TiltCard";
 import GigCardSkeleton from "@/components/GigCardSkeleton";
 import GigQuickView from "@/components/GigQuickView";
+import MarketplaceErrorState from "@/components/MarketplaceErrorState";
 import { useFilterTracking, useSearchTracking, useNavigationClick } from "@/hooks/useAnalytics";
 import { usePricingFormat } from "@/hooks/useFeatureFlags";
 
@@ -75,36 +79,46 @@ export default function Marketplace() {
     }
   }, [searchQuery, category, sortBy]);
 
-  const { data: gigs, isLoading, error } = useGigsList({ limit: 100 });
-  
-  // DEBUG: Log API response
-  useEffect(() => {
-    console.log('[Marketplace] Query State:', { 
-      isLoading, 
-      hasData: !!gigs, 
-      gigsCount: gigs?.gigs?.length || 0,
-      error: error?.message || null
-    });
-  }, [gigs, isLoading, error]);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const { data: gigs, isLoading, error, refetch } = useGigsList({ limit: 100 });
   
   // Use actual data
   const displayGigs = gigs || { gigs: [], nextCursor: undefined };
 
-  // Favorites - temporarily disabled until Edge Function is ready
-  const favoriteGigIds = new Set<number>();
+  // Favorites - fully implemented
+  const queryClient = useQueryClient();
+  const { data: favData } = useQuery({
+    queryKey: ['favorites'],
+    queryFn: () => favoritesApi.list(),
+    enabled: isAuthenticated,
+  });
+  const favoriteGigIds = new Set<number>(
+    (favData?.favorites || []).map((f: any) => f.gigId)
+  );
+
+  const addFavMutation = useMutation({
+    mutationFn: (gigId: number) => favoritesApi.add(gigId),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['favorites'] }); toast.success('Zu Favoriten hinzugefügt'); },
+    onError: () => toast.error('Fehler beim Favorisieren'),
+  });
+  const removeFavMutation = useMutation({
+    mutationFn: (gigId: number) => favoritesApi.remove(gigId),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['favorites'] }); toast.success('Aus Favoriten entfernt'); },
+    onError: () => toast.error('Fehler beim Entfernen'),
+  });
 
   const toggleFavorite = (e: React.MouseEvent, gigId: number) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Redirect to login if not authenticated
     if (!isAuthenticated) {
       setLocation('/login?redirect=' + encodeURIComponent(location));
       return;
     }
-    
-    // Favorites temporarily disabled - Edge Function needed
-    console.log('Toggle favorite:', gigId);
+    if (favoriteGigIds.has(gigId)) {
+      removeFavMutation.mutate(gigId);
+    } else {
+      addFavMutation.mutate(gigId);
+    }
   };
 
   // Dynamic category counts from database
@@ -144,23 +158,19 @@ export default function Marketplace() {
 
   // Filter gigs
   const allGigs = displayGigs?.gigs || [];
-  console.log('[Marketplace] All gigs count:', allGigs.length);
   const filteredGigs = allGigs.filter((gig: any) => {
     const matchesSearch = !searchQuery || 
-      gig.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      gig.description.toLowerCase().includes(searchQuery.toLowerCase());
+      gig.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      gig.description?.toLowerCase().includes(searchQuery.toLowerCase());
     
     // Map display category name to DB category
-    const dbCategory = category ? categoryMapping[category] || category.toLowerCase() : null;
+    const dbCategory = category && category !== 'all' ? categoryMapping[category] || category.toLowerCase() : null;
     const matchesCategory = !dbCategory || gig.category === dbCategory;
     
     const matchesPrice = gig.price <= maxPrice;
     return matchesSearch && matchesCategory && matchesPrice;
   }) || [];
 
-  console.log('[Marketplace] Filtered gigs count:', filteredGigs.length);
-  console.log('[Marketplace] Filters:', { searchQuery, category, maxPrice, sortBy });
-  
   // Sort gigs
   const sortedGigs = [...filteredGigs].sort((a, b) => {
     switch (sortBy) {
@@ -198,20 +208,52 @@ export default function Marketplace() {
     };
   }, [hasMoreGigs]);
 
-  // Scroll-to-Top visibility
+  // Scroll-to-Top visibility (throttled for performance)
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 1000);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setShowScrollTop(window.scrollY > 1000);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Handle retry
+  const handleRetry = () => {
+    setRefetchTrigger(prev => prev + 1);
+    if (refetch) {
+      refetch();
+    }
+  };
+
+  // Show error state if API fails
+  if (error && !isLoading) {
+    return (
+      <>
+        <MetaTags
+          title="Marketplace - Flinkly"
+          description="Entdecke digitale Dienstleistungen von verifizierten Experten"
+        />
+        <MarketplaceErrorState
+          error={error}
+          onRetry={handleRetry}
+          onGoHome={() => setLocation('/')}
+        />
+      </>
+    );
+  }
 
   return (
     <main id="main-content" className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
       <MetaTags 
-        title="Marketplace - 500+ digitale Dienstleistungen ab 10€ | Flinkly"
-        description="Durchsuche 500+ Gigs von verifizierten Experten. Webdesign, Logo-Design, Social Media Marketing, SEO, Content Creation. Filter nach Kategorie, Preis, Bewertung. DACH-Region. DSGVO-konform. Geld-zurück-Garantie."
+        title={`Marketplace - ${gigs?.gigs?.length || 0} Premium-Experten | Flinkly`}
+        description="Finde spezialisierte DACH-Experten für digitale Dienstleistungen. Webdesign, Logo-Design, Social Media Marketing, SEO, Content Creation. DSGVO-konform. Geld-zurück-Garantie."
         type="website"
       />
 
@@ -359,8 +401,8 @@ export default function Marketplace() {
                 </span>
               </div>
 
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                <SelectTrigger className="w-[200px] border-slate-700 bg-slate-900/40 backdrop-blur-sm text-white">
+              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)} name="sort-by">
+                <SelectTrigger id="sort-by-trigger" className="w-[200px] border-slate-700 bg-slate-900/40 backdrop-blur-sm text-white">
                   <SelectValue placeholder="Sortieren nach" />
                 </SelectTrigger>
                 <SelectContent>
@@ -385,12 +427,12 @@ export default function Marketplace() {
                   {/* Kategorie */}
                   <div>
                     <label className="block text-sm font-medium text-slate-300 mb-2">Kategorie</label>
-                    <Select value={category} onValueChange={setCategory}>
-                      <SelectTrigger className="border-slate-700 bg-slate-800/50 text-white">
+                    <Select value={category} onValueChange={setCategory} name="category">
+                      <SelectTrigger id="category-trigger" className="border-slate-700 bg-slate-800/50 text-white">
                         <SelectValue placeholder="Alle Kategorien" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="">Alle Kategorien</SelectItem>
+                        <SelectItem value="all">Alle Kategorien</SelectItem>
                         <SelectItem value="design">Design</SelectItem>
                         <SelectItem value="marketing">Marketing</SelectItem>
                         <SelectItem value="video">Video</SelectItem>
@@ -524,7 +566,7 @@ export default function Marketplace() {
                           </h3>
                           
                           <p className="text-slate-400 text-sm mb-4 line-clamp-2">
-                            {gig.description}
+                            {gig.description?.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\*(.*?)\*/g, '$1').replace(/#{1,6}\s/g, '').replace(/✅\s*/g, '• ')}
                           </p>
 
                           {/* Seller Info */}
@@ -533,7 +575,7 @@ export default function Marketplace() {
                               {gig.title?.charAt(0).toUpperCase() || "?"}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-white truncate">Seller #{gig.sellerId}</p>
+                              <p className="text-sm font-semibold text-white truncate">{(gig as any).seller?.name || (gig as any).sellerName || "Anbieter"}</p>
                               <p className="text-xs text-slate-400">
                                 {(gig.completedOrders || 0) > 10 ? "Top Seller" : (gig.completedOrders || 0) > 5 ? "Pro" : (gig.completedOrders || 0) > 0 ? "Rising" : "Neu"}
                               </p>
@@ -544,7 +586,7 @@ export default function Marketplace() {
                           <div className="flex items-center gap-4 mb-4 text-sm text-slate-400">
                             <div className="flex items-center gap-1">
                               <Star className="h-4 w-4 text-success fill-success" />
-                              <span className="text-white font-bold">{gig.averageRating ? (gig.averageRating / 100).toFixed(1) : "Neu"}</span>
+                              <span className="text-white font-bold">{gig.averageRating ? Number(gig.averageRating).toFixed(1) : "Neu"}</span>
                             </div>
                             <div className="flex items-center gap-1">
                               <Clock className="h-4 w-4" />

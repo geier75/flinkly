@@ -4,7 +4,7 @@ import { createServer } from "http";
 import net from "net";
 import helmet from "helmet";
 import cors from "cors";
-import { authRateLimiter, anonRateLimiter } from "./rateLimiter";
+import { authRateLimiter, anonRateLimiter, authEndpointRateLimiter } from "./rateLimiter";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
@@ -71,34 +71,49 @@ async function startServer() {
       contentSecurityPolicy: {
         directives: {
           defaultSrc: ["'self'"],
-          // Only allow unsafe-eval in development for Vite HMR
+          // SECURITY: No unsafe-inline in production (XSS protection)
+          // TODO: Implement nonce-based CSP for inline scripts
           scriptSrc: [
             "'self'",
-            "'unsafe-inline'",
-            ...(isDevelopment ? ["'unsafe-eval'"] : []),
-            "https://manus-analytics.com",
+            ...(isDevelopment ? ["'unsafe-inline'", "'unsafe-eval'"] : []),
+            "https://js.stripe.com",
             "https://*.supabase.co"
           ],
           styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
           fontSrc: ["'self'", "https://fonts.gstatic.com"],
           imgSrc: ["'self'", "data:", "https:", "blob:"],
           connectSrc: [
-            "'self'", 
-            "wss:", 
-            "ws:", 
-            "https://manus-analytics.com",
+            "'self'",
+            // SECURITY: Only encrypted WebSockets in production
+            ...(isDevelopment ? ["ws://localhost:*"] : []),
+            "wss://*.supabase.co",
             "https://*.supabase.co",
-            "https://fpiszghehrjmkbxhbwqr.supabase.co"
+            "https://api.stripe.com"
           ],
           frameSrc: ["'self'", "https://js.stripe.com"],
+          reportUri: ["/api/csp-report"],
         },
       },
       crossOriginEmbedderPolicy: false, // Disable for Stripe
     })
   );
 
+  // Permissions-Policy Header (separate from Helmet)
+  app.use((req, res, next) => {
+    res.setHeader('Permissions-Policy', 
+      'camera=(), microphone=(), geolocation=(), payment=(self "https://js.stripe.com"), usb=()'
+    );
+    next();
+  });
+
   // CORS
-  app.use(cors({ origin: true, credentials: true }));
+  app.use(cors({
+    origin: process.env.NODE_ENV === 'production'
+      ? ['https://flinkly.de', 'https://www.flinkly.de']
+      : 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  }));
 
   // Session refresh middleware (before rate limiting to ensure sessions are updated)
   app.use(sessionRefreshMiddleware);
@@ -108,18 +123,56 @@ async function startServer() {
   app.use("/api", anonRateLimiter);
 
   // Configure body parser with larger size limit for file uploads
-  app.use(express.json({ limit: "50mb" }));
-  app.use(express.urlencoded({ limit: "50mb", extended: true }));
+  app.use(express.json({ limit: "1mb" }));
+  app.use(express.urlencoded({ limit: "1mb", extended: true }));
   // OAuth callback under /api/oauth/callback
   registerOAuthRoutes(app);
 
-  // Auth sync endpoint for Supabase authentication
-  app.post("/api/auth/sync", async (req, res) => {
+  // CSP Violation Reporting Endpoint
+  app.post("/api/csp-report", express.json({ type: 'application/csp-report' }), async (req, res) => {
     try {
-      const { id, email, name } = req.body;
+      const report = req.body['csp-report'];
+      console.warn('[CSP VIOLATION]', {
+        blockedUri: report['blocked-uri'],
+        violatedDirective: report['violated-directive'],
+        documentUri: report['document-uri'],
+        userAgent: req.headers['user-agent'],
+      });
+      // TODO: Store in database for security monitoring
+      res.status(204).end();
+    } catch (e) {
+      res.status(204).end(); // Always return 204 for CSP reports
+    }
+  });
+
+  // Auth sync endpoint for Supabase authentication (with strict rate limiting)
+  app.post("/api/auth/sync", authEndpointRateLimiter, async (req, res) => {
+    try {
+      const { email, name } = req.body;
       
-      if (!id || !email) {
-        return res.status(400).json({ error: "Missing required fields: id, email" });
+      // SECURITY: Extract and verify Supabase JWT token from Authorization header
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: "Missing or invalid Authorization header" });
+      }
+      
+      const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+      
+      // Verify JWT token with Supabase
+      const { supabase } = await import("./supabase");
+      const { data: { user: supabaseUser }, error: authError } = await supabase.auth.getUser(token);
+      
+      if (authError || !supabaseUser) {
+        console.error("[Auth Sync] Invalid token:", authError?.message);
+        return res.status(401).json({ error: "Invalid or expired token" });
+      }
+      
+      // SECURITY: Use verified user ID from JWT token, not from request body
+      const verifiedUserId = supabaseUser.id;
+      const verifiedEmail = supabaseUser.email || email;
+      
+      if (!verifiedEmail) {
+        return res.status(400).json({ error: "Email is required" });
       }
       
       const adapters = await import("../adapters");
@@ -127,21 +180,21 @@ async function startServer() {
       const { getSessionCookieOptions } = await import("./cookies");
       const { COOKIE_NAME, ONE_YEAR_MS } = await import("@shared/const");
       
-      // Upsert user (create or update)
+      // Upsert user (create or update) with verified ID
       await adapters.upsertUser({
-        openId: id,
-        name: name || email.split("@")[0],
-        email,
+        openId: verifiedUserId,
+        name: name || verifiedEmail.split("@")[0],
+        email: verifiedEmail,
         loginMethod: "supabase",
         lastSignedIn: new Date(),
       });
       
       // Get the user to return the ID
-      const user = await adapters.getUserByOpenId(id);
+      const user = await adapters.getUserByOpenId(verifiedUserId);
       
-      // Create session token
-      const sessionToken = await sdk.createSessionToken(id, {
-        name: name || email.split("@")[0],
+      // Create session token with verified ID
+      const sessionToken = await sdk.createSessionToken(verifiedUserId, {
+        name: name || verifiedEmail.split("@")[0],
         expiresInMs: ONE_YEAR_MS,
       });
       
@@ -149,7 +202,7 @@ async function startServer() {
       const cookieOptions = getSessionCookieOptions(req);
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
       
-      console.log("[Auth Sync] User synced:", user?.id, email);
+      console.log("[Auth Sync] User synced (verified):", user?.id, verifiedEmail);
       return res.json({ success: true, userId: user?.id });
       
     } catch (error) {

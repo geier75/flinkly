@@ -179,7 +179,7 @@ export default function DataProcessingAgreements() {
                 AUFTRAGSVERARBEITUNGS<span className="cyber-neon-green">VERTRÄGE</span>
               </h1>
               <p className="text-slate-300 text-xl font-light">
-                AVV-Übersicht gemäß <span className="cyber-neon-orange font-semibold">Art. 28 DSGVO</span> | Stand: Dezember 2024
+                AVV-Übersicht gemäß <span className="cyber-neon-orange font-semibold">Art. 28 DSGVO</span> | Stand: März 2026
               </p>
             </motion.div>
           </div>

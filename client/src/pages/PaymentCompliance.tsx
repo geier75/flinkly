@@ -35,7 +35,7 @@ export default function PaymentCompliance() {
       <div className="bg-slate-900/50 border-b border-slate-800">
         <div className="container mx-auto px-4 py-8">
           <Link href="/terms">
-            <Button variant="ghost" className="mb-4 text-slate-400 hover:text-white">
+            <Button variant="ghost" className="mb-4 text-slate-400 hover:text-white" aria-label="Zurück zu den AGB">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Zurück zu den AGB
             </Button>
@@ -377,7 +377,7 @@ export default function PaymentCompliance() {
                       Bei Fragen zu Zahlungen, Auszahlungen oder Compliance kontaktieren Sie uns.
                     </p>
                     <a href="mailto:payment@mimitechai.com">
-                      <Button className="bg-primary hover:bg-primary/90">
+                      <Button className="bg-primary hover:bg-primary/90" aria-label="E-Mail an Payment-Team senden">
                         payment@mimitechai.com
                       </Button>
                     </a>
@@ -389,7 +389,7 @@ export default function PaymentCompliance() {
 
           {/* Version Info */}
           <div className="text-center text-sm text-slate-500 pt-8 border-t border-slate-800">
-            <p>Stand: Dezember 2024 | Version 1.0</p>
+            <p>Stand: März 2026 | Version 1.0</p>
             <p className="mt-1">
               Rechtsgrundlagen: ZAG, PSD2 (EU) 2015/2366, E-Geld-Richtlinie 2009/110/EG
             </p>

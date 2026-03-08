@@ -7,10 +7,22 @@ import { gigsApi, ordersApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Plus, Package, ShoppingCart, Star, TrendingUp, Zap, Sparkles } from "lucide-react";
 import { Link, useLocation } from "wouter";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import NoIndexMeta from "@/components/NoIndexMeta";
 
 export default function Dashboard() {
+  return (
+    <>
+      <NoIndexMeta />
+      <DashboardContent />
+    </>
+  );
+}
+
+function DashboardContent() {
   const { user, isAuthenticated, loading } = useAuth();
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  const effectiveLoading = loading && !loadingTimedOut;
   const [, setLocation] = useLocation();
 
   // ALL hooks must be called before any conditional returns
@@ -40,8 +52,14 @@ export default function Dashboard() {
     }
   }, [loading, isAuthenticated, setLocation]);
 
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoadingTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, [loading]);
+
   // Show loading spinner while loading
-  if (loading) {
+  if (effectiveLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
@@ -72,7 +90,7 @@ export default function Dashboard() {
       
       {/* Cyberpunk Neon Header */}
       <div className="relative z-10 cyber-neon-border bg-white/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 py-6">
           <motion.div 
             className="flex justify-between items-start"
             initial={{ opacity: 0, y: -20 }}
@@ -80,11 +98,11 @@ export default function Dashboard() {
             transition={{ duration: 0.6 }}
           >
             <div>
-              <h1 className="text-6xl font-extrabold mb-3 tracking-tight text-slate-900 font-bold flex items-center gap-4">
-                <Zap className="h-12 w-12 text-primary animate-pulse" />
+              <h1 className="text-3xl font-extrabold mb-2 tracking-tight text-slate-900 font-bold flex items-center gap-3">
+                <Zap className="h-7 w-7 text-primary animate-pulse" />
                 Willkommen bei <span className="text-emerald-600">Flinkly</span>
               </h1>
-              <p className="text-slate-700 text-xl font-light tracking-wide">
+              <p className="text-slate-700 text-base font-light tracking-wide">
                 Verwalte deine Gigs, Bestellungen und Verdienste
               </p>
             </div>
@@ -336,7 +354,7 @@ export default function Dashboard() {
                               variant="outline" 
                               size="sm" 
                               className="border-2 border-slate-600 text-slate-900 hover:border-accent hover:bg-accent/10 hover:shadow-md font-semibold px-6"
-                              onClick={() => setLocation(`/edit-gig/${gig.id}`)}
+                              onClick={() => setLocation(`/gig/${gig.id}/edit`)}
                             >
                               Bearbeiten
                             </Button>

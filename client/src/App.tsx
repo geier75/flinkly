@@ -55,6 +55,15 @@ const DataSubjectRights = lazy(() => import("./pages/DataSubjectRights"));
 const SecurityPolicy = lazy(() => import("./pages/SecurityPolicy"));
 const DarkPatternsCompliance = lazy(() => import("./pages/DarkPatternsCompliance"));
 const PaymentCompliance = lazy(() => import("./pages/PaymentCompliance"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const SellerTerms = lazy(() => import("./pages/SellerTerms"));
+const DMCAPolicy = lazy(() => import("./pages/DMCAPolicy"));
+const SanctionsPolicy = lazy(() => import("./pages/SanctionsPolicy"));
+const SellerDPA = lazy(() => import("./pages/SellerDPA"));
+const ProhibitedUse = lazy(() => import("./pages/ProhibitedUse"));
+const DisputeResolution = lazy(() => import("./pages/DisputeResolution"));
+const SLA = lazy(() => import("./pages/SLA"));
+const AccessibilityStatement = lazy(() => import("./pages/AccessibilityStatement"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -67,6 +76,18 @@ function Router() {
       <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/login"} component={Login} />
+      <Route path={"/register"}>
+        {() => {
+          window.location.replace("/login?tab=register");
+          return null;
+        }}
+      </Route>
+      <Route path={"/signup"}>
+        {() => {
+          window.location.replace("/login?tab=register");
+          return null;
+        }}
+      </Route>
       <Route path={"/auth/callback"} component={AuthCallback} />
       <Route path={"/marketplace"} component={Marketplace} />
       <Route path={"/marketplace-simple"} component={MarketplaceSimple} />
@@ -74,7 +95,7 @@ function Router() {
       <Route path={"/checkout/:id"} component={Checkout} />
       <Route path={"/checkout/success"} component={CheckoutSuccess} />
       <Route path="/create-gig" component={CreateGig} />
-      <Route path="/edit-gig/:id" component={EditGig} />
+      <Route path="/gig/:id/edit" component={EditGig} />
       <Route path={"/dashboard"} component={Dashboard} />
       <Route path={"/seller-dashboard"} component={SellerDashboard} />
       <Route path={"/admin"} component={AdminDashboard} />
@@ -94,7 +115,19 @@ function Router() {
       <Route path={"/faq"} component={FAQ} />
       <Route path={"/contact"} component={Contact} />
       <Route path={"/terms"} component={Terms} />
+      <Route path={"/agb"}>
+        {() => {
+          window.location.href = "/terms";
+          return null;
+        }}
+      </Route>
       <Route path={"/privacy"} component={Privacy} />
+      <Route path={"/datenschutz"}>
+        {() => {
+          window.location.href = "/privacy";
+          return null;
+        }}
+      </Route>
       <Route path={"/impressum"} component={Impressum} />
       <Route path={"/widerruf"} component={Widerruf} />
       <Route path={"/processing-register"} component={ProcessingRegister} />
@@ -106,8 +139,17 @@ function Router() {
       <Route path={"/data-subject-rights"} component={DataSubjectRights} />
       <Route path={"/security"} component={SecurityPolicy} />
       <Route path={"/dark-patterns-compliance"} component={DarkPatternsCompliance} />
-      <Route path={"/payment-compliance"} component={PaymentCompliance} />
-      <Route path={"/404"} component={NotFound} />
+      <Route path="/payment-compliance" component={PaymentCompliance} />
+      <Route path="/cookie-policy" component={CookiePolicy} />
+      <Route path="/seller-terms" component={SellerTerms} />
+      <Route path="/dmca-policy" component={DMCAPolicy} />
+      <Route path="/sanctions-policy" component={SanctionsPolicy} />
+      <Route path="/seller-dpa" component={SellerDPA} />
+      <Route path="/prohibited-use" component={ProhibitedUse} />
+      <Route path="/dispute-resolution" component={DisputeResolution} />
+      <Route path="/sla" component={SLA} />
+      <Route path="/accessibility" component={AccessibilityStatement} />
+      <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
@@ -127,7 +169,11 @@ function App() {
           <SkipLink />
           <GlobalHeader />
           <Onboarding />
-          <Router />
+          <main id="main-content">
+            <Router />
+          </main>
+          <Footer />
+          <MobileActionBar />
           <CookieConsent />
         </TooltipProvider>
       </ThemeProvider>

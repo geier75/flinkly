@@ -17,8 +17,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { dataExportApi } from "@/lib/api";
-import { useMutation } from "@tanstack/react-query";
-import { Download, FileJson, FileText, Shield } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Download, FileJson, FileText, Shield, Clock, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
 export default function DataExportDashboard() {
@@ -36,6 +36,7 @@ export default function DataExportDashboard() {
       // Download file
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
+      refetchHistory();
       const a = document.createElement("a");
       a.href = url;
       a.download = `flinkly-datenexport-${new Date().toISOString().split("T")[0]}.${format}`;
@@ -176,10 +177,33 @@ export default function DataExportDashboard() {
           <CardDescription>Ihre letzten Datenexporte (Audit Trail)</CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            Noch keine Exporte durchgeführt. Alle Exporte werden hier protokolliert.
-          </p>
-          {/* TODO: Implement export history from data_export_logs table */}
+          {exportHistory.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Noch keine Exporte durchgeführt. Alle Exporte werden hier protokolliert.
+            </p>
+          ) : (
+            <div className="space-y-3">
+              {exportHistory.map((entry: any) => (
+                <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg border border-slate-200 bg-slate-50">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-4 w-4 text-emerald-500 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium text-slate-800">
+                        {entry.export_type === 'full' ? 'Vollständiger Export' : entry.export_type} ({entry.file_format?.toUpperCase()})
+                      </p>
+                      <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                        <Clock className="h-3 w-3" />
+                        {new Date(entry.created_at).toLocaleString('de-DE')}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs text-slate-500">
+                    {entry.file_size_bytes ? `${(entry.file_size_bytes / 1024).toFixed(1)} KB` : ''}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </CardContent>
       </PremiumCard>
     </div>

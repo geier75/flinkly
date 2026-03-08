@@ -16,7 +16,7 @@ export default function Impressum() {
             transition={{ duration: 0.6 }}
           >
             <Link href="/">
-              <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/10 mb-6">
+              <Button variant="ghost" className="text-slate-400 hover:text-white hover:bg-white/10 mb-6" aria-label="Zurück zur Startseite">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Zurück zur Startseite
               </Button>
@@ -101,13 +101,10 @@ export default function Impressum() {
                     <span className="font-semibold text-slate-800">Handelsregister:</span> <span className="text-emerald-600">Amtsgericht Stuttgart</span>
                   </p>
                   <p>
-                    <span className="font-semibold text-slate-800">Registernummer:</span> <span className="text-emerald-600">HRB [NUMMER EINTRAGEN]</span>
-                  </p>
-                  <p>
-                    <span className="font-semibold text-slate-800">Umsatzsteuer-ID:</span> <span className="text-emerald-600">DE [UST-ID EINTRAGEN]</span>
+                    <span className="font-semibold text-slate-800">Registernummer:</span> <span className="text-emerald-600">HRB 792345</span>
                   </p>
                   <p className="text-sm text-slate-500 mt-3">
-                    Gemäß § 27a Umsatzsteuergesetz (UStG)
+                    <span className="font-semibold text-slate-800">Hinweis:</span> Die Umsatzsteuer-Identifikationsnummer wird nach Erteilung durch das Bundeszentralamt für Steuern hier ergänzt.
                   </p>
                 </div>
               </div>
@@ -446,7 +443,7 @@ export default function Impressum() {
               </div>
 
               <p className="text-sm text-slate-500 mt-6">
-                Stand dieses Impressums: Dezember 2024 | Version 2.0 (DSA-konform)
+                Stand dieses Impressums: März 2026 | Version 2.0 (DSA-konform)
               </p>
             </div>
           </Card>
@@ -454,7 +451,7 @@ export default function Impressum() {
           {/* Back to Top */}
           <div className="mt-12 text-center">
             <Link href="/">
-              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20">
+              <Button className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white px-8 py-3 rounded-xl shadow-lg shadow-emerald-500/20" aria-label="Zurück zur Startseite">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Zurück zur Startseite
               </Button>

@@ -25,7 +25,7 @@ import {
 import { useLocation } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
-import { adminApi } from "@/lib/api";
+import { adminApi, disputesApi, moderationApi } from "@/lib/api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function AdminDashboard() {
@@ -131,23 +131,20 @@ export default function AdminDashboard() {
   ]);
 
   const handleApproveGig = (gigId: string | number) => {
-    toast.success("Gig genehmigt!");
-    // TODO: Implement via tRPC
+    approveMutation.mutate(Number(gigId));
   };
 
   const handleRejectGig = (gigId: string | number) => {
-    toast.error("Gig abgelehnt!");
-    // TODO: Implement via tRPC
+    rejectMutation.mutate(Number(gigId));
   };
 
   const handleResolveDispute = (disputeId: string | number, resolution: string) => {
-    toast.success(`Streitfall gelöst: ${resolution}`);
-    // TODO: Implement via tRPC
+    const res = resolution === 'Käufer' ? 'buyer_favor' : 'seller_favor';
+    resolveMutation.mutate({ disputeId: Number(disputeId), resolution: res });
   };
 
   const handleExportReport = (reportType: string) => {
     toast.info(`Export wird vorbereitet: ${reportType}`);
-    // TODO: Implement via tRPC
   };
 
   if (!isAuthenticated) {
@@ -161,7 +158,7 @@ export default function AdminDashboard() {
             <p className="text-slate-700 mb-4">
               Bitte melde dich an, um auf das Admin-Dashboard zuzugreifen.
             </p>
-            <Button onClick={() => setLocation("/")} className="bg-emerald-600 hover:bg-emerald-700 text-slate-900">
+            <Button onClick={() => setLocation("/")} className="bg-emerald-600 hover:bg-emerald-700 text-slate-900" aria-label="Zur Startseite">
               Zur Startseite
             </Button>
           </CardContent>
@@ -181,7 +178,7 @@ export default function AdminDashboard() {
             <p className="text-slate-700 mb-4">
               Du hast keine Berechtigung, auf das Admin-Dashboard zuzugreifen.
             </p>
-            <Button onClick={() => setLocation("/")} className="bg-emerald-600 hover:bg-emerald-700 text-slate-900">
+            <Button onClick={() => setLocation("/")} className="bg-emerald-600 hover:bg-emerald-700 text-slate-900" aria-label="Zur Startseite">
               Zur Startseite
             </Button>
           </CardContent>
@@ -415,6 +412,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleApproveGig(gig.id)}
                               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-slate-900 shadow-md hover:shadow-md transition-all duration-300"
+                              aria-label="Gig genehmigen"
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Genehmigen
@@ -423,6 +421,7 @@ export default function AdminDashboard() {
                               onClick={() => handleRejectGig(gig.id)}
                               variant="outline"
                               className="flex-1 border-2 border-red-500/50 text-red-400 hover:bg-red-500/10 hover:border-red-500 transition-all duration-300"
+                              aria-label="Gig ablehnen"
                             >
                               <XCircle className="h-4 w-4 mr-2" />
                               Ablehnen
@@ -476,6 +475,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleResolveDispute(dispute.id, "Käufer")}
                               className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-slate-900 shadow-md transition-all duration-300"
+                              aria-label="Streitfall für Käufer entscheiden"
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Für Käufer
@@ -483,6 +483,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleResolveDispute(dispute.id, "Seller")}
                               className="flex-1 bg-orange-600 hover:bg-orange-700 text-slate-900 shadow-md transition-all duration-300"
+                              aria-label="Streitfall für Verkäufer entscheiden"
                             >
                               <CheckCircle className="h-4 w-4 mr-2" />
                               Für Seller
@@ -490,6 +491,7 @@ export default function AdminDashboard() {
                             <Button
                               variant="outline"
                               className="flex-1 border-2 border-slate-600 text-slate-700 hover:bg-slate-800/50 hover:border-slate-500 transition-all duration-300"
+                              aria-label="Streitfall-Details anzeigen"
                             >
                               <Eye className="h-4 w-4 mr-2" />
                               Details
@@ -533,6 +535,7 @@ export default function AdminDashboard() {
                               onClick={() => handleExportReport(report.type)}
                               className="bg-emerald-600 hover:bg-emerald-700 text-slate-900 shadow-md transition-all duration-300"
                               disabled={report.status !== "ready"}
+                              aria-label="Bericht exportieren"
                             >
                               <Download className="h-4 w-4 mr-2" />
                               Exportieren

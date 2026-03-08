@@ -9,9 +9,7 @@ export const favoritesRouter = router({
   add: protectedProcedure
     .input(z.object({ gigId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(`[Favorites] Adding gig ${input.gigId} to favorites for user ${ctx.user.id}`);
       await db.addFavorite(ctx.user.id, input.gigId);
-      console.log(`[Favorites] Successfully added gig ${input.gigId}`);
       return { success: true };
     }),
 
@@ -21,7 +19,6 @@ export const favoritesRouter = router({
   remove: protectedProcedure
     .input(z.object({ gigId: z.number() }))
     .mutation(async ({ ctx, input }) => {
-      console.log(`[Favorites] Removing gig ${input.gigId} from favorites for user ${ctx.user.id}`);
       await db.removeFavorite(ctx.user.id, input.gigId);
       return { success: true };
     }),
@@ -30,10 +27,8 @@ export const favoritesRouter = router({
    * Get all favorites for current user
    */
   list: protectedProcedure.query(async ({ ctx }) => {
-    console.log(`[Favorites] Getting favorites for user ${ctx.user.id}`);
     const favorites = await db.getFavoritesByUserId(ctx.user.id);
-    console.log(`[Favorites] Found ${favorites.length} favorites`);
-    return favorites;
+    return { favorites };
   }),
 
   /**

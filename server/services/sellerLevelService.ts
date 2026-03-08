@@ -131,9 +131,9 @@ export async function upgradeAllSellers(): Promise<number> {
           .set({ sellerLevel: nextLevel })
           .where(eq(users.id, seller.id));
         
-        console.log(
-          `[SellerLevelService] Upgraded seller ${seller.id} from ${currentLevel} to ${nextLevel}`
-        );
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[SellerLevelService] Seller upgraded: ${currentLevel} → ${nextLevel}`);
+        }
         
         // Send level-up notifications
         try {

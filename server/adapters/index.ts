@@ -6,7 +6,7 @@
 
 import { getSupabaseAdapter } from './supabase-adapter';
 import type { DbAdapter, DbGig, DbUser, DbGigPackage, DbOrder, DbReview, GigFilterOptions } from './db-adapter';
-import { supabase } from '../_core/supabase';
+import { supabase, supabaseAdmin } from '../_core/supabase';
 
 // Get the adapter instance
 const adapter = getSupabaseAdapter();
@@ -100,6 +100,9 @@ export async function publishGig(id: number) {
 
 export async function getGigPackages(gigId: number) {
   return adapter.getGigPackages(gigId);
+}
+export async function getGigPackageById(id: number) {
+  return adapter.getGigPackageById(id);
 }
 
 export async function createGigPackage(pkg: Parameters<DbAdapter['createGigPackage']>[0]) {
@@ -417,7 +420,7 @@ export async function updateUser(userId: number, updates: Partial<{
 
   console.log(`[DB] Updating user ${userId} with:`, updateData);
 
-  const { data, error } = await supabase
+  const { data, error } = await supabaseAdmin
     .from('users')
     .update(updateData)
     .eq('id', userId)

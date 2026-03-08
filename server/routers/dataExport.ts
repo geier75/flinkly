@@ -1,9 +1,8 @@
-// @ts-nocheck
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../adapters";
 import { users, gigs, orders, reviews, conversations, messages, transactions, payouts } from "../../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 /**
  * Data Export Router (DSGVO Art. 20)
@@ -24,6 +23,9 @@ export const dataExportRouter = router({
     }
 
     const userId = ctx.user.id;
+
+    // Log export request for GDPR audit (Art. 30)
+    const exportStartTime = Date.now();
 
     // 1. User Profile Data
     const userProfile = await db.select().from(users).where(eq(users.id, userId)).limit(1);
@@ -120,6 +122,39 @@ export const dataExportRouter = router({
       },
     };
 
+    // Calculate export size (approximate)
+    const exportJson = JSON.stringify(exportData);
+    const fileSizeBytes = Buffer.byteLength(exportJson, 'utf8');
+    const exportDuration = Date.now() - exportStartTime;
+
+    // Log successful export
+    await db.execute(sql`
+      INSERT INTO data_export_logs (user_id, export_type, file_format, file_size_bytes, ip_address, user_agent, status)
+      VALUES (${userId}, 'full', 'json', ${fileSizeBytes}, ${ctx.req.ip || null}, ${ctx.req.headers['user-agent'] || null}, 'completed')
+    `);
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Data Export] User ${userId} exported ${fileSizeBytes} bytes in ${exportDuration}ms`);
+    }
+
     return exportData;
+  }),
+
+  getHistory: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user.id;
+
+    const { data, error } = await supabase
+      .from('data_export_logs')
+      .select('id, export_type, file_format, file_size_bytes, status, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(20);
+
+    if (error) {
+      console.error('[Data Export] getHistory error:', error);
+      return [];
+    }
+
+    return data ?? [];
   }),
 });

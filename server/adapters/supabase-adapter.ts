@@ -5,6 +5,7 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { supabaseAdmin } from '../_core/supabase';
 import type { 
   DbAdapter, 
   DbUser, 
@@ -122,14 +123,15 @@ export class SupabaseAdapter implements DbAdapter {
   
   constructor(url?: string, key?: string) {
     const supabaseUrl = url || process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-    const supabaseKey = key || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
+    // Use SERVICE_ROLE_KEY for backend operations to bypass RLS
+    const supabaseKey = key || process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
     
     if (!supabaseUrl || !supabaseKey) {
-      throw new Error('[SupabaseAdapter] Missing SUPABASE_URL or SUPABASE_ANON_KEY');
+      throw new Error('[SupabaseAdapter] Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
     }
     
     this.client = createClient(supabaseUrl, supabaseKey);
-    console.log('[SupabaseAdapter] Initialized');
+    console.log('[SupabaseAdapter] Initialized with', key || process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SERVICE_ROLE' : 'ANON_KEY');
   }
   
   async isConnected(): Promise<boolean> {
@@ -280,7 +282,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async createGig(gig: Omit<DbGig, 'id' | 'createdAt' | 'updatedAt' | 'completedOrders' | 'averageRating' | 'popularityScore'>): Promise<{ id: number }> {
-    const { data, error } = await this.client
+    const { data, error } = await supabaseAdmin
       .from('gigs')
       .insert({
         seller_id: gig.sellerId,
@@ -317,7 +319,7 @@ export class SupabaseAdapter implements DbAdapter {
     if (updates.status !== undefined) updateData.status = updates.status;
     if (updates.active !== undefined) updateData.active = updates.active;
     
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('gigs')
       .update(updateData)
       .eq('id', id);
@@ -329,7 +331,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async deleteGig(id: number): Promise<void> {
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('gigs')
       .delete()
       .eq('id', id);
@@ -375,8 +377,34 @@ export class SupabaseAdapter implements DbAdapter {
     }));
   }
   
-  async createGigPackage(pkg: Omit<DbGigPackage, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ id: number }> {
+
+  async getGigPackageById(id: number): Promise<DbGigPackage | null> {
     const { data, error } = await this.client
+      .from('gig_packages')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) return null;
+
+    return {
+      id: data.id,
+      gigId: data.gig_id,
+      packageType: data.package_type,
+      name: data.name,
+      description: data.description,
+      price: data.price,
+      deliveryDays: data.delivery_days,
+      revisions: data.revisions,
+      features: data.features,
+      active: data.active,
+      createdAt: new Date(data.created_at),
+      updatedAt: new Date(data.updated_at),
+    };
+  }
+
+  async createGigPackage(pkg: Omit<DbGigPackage, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ id: number }> {
+    const { data, error } = await supabaseAdmin
       .from('gig_packages')
       .insert({
         gig_id: pkg.gigId,
@@ -410,7 +438,7 @@ export class SupabaseAdapter implements DbAdapter {
     if (updates.revisions !== undefined) updateData.revisions = updates.revisions;
     if (updates.features !== undefined) updateData.features = updates.features;
     
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('gig_packages')
       .update(updateData)
       .eq('id', id);
@@ -422,7 +450,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async deleteGigPackage(id: number): Promise<void> {
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('gig_packages')
       .delete()
       .eq('id', id);
@@ -447,7 +475,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async createGigExtra(extra: any): Promise<{ id: number }> {
-    const { data, error } = await this.client
+    const { data, error } = await supabaseAdmin
       .from('gig_extras')
       .insert({
         gig_id: extra.gigId,
@@ -466,7 +494,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async updateGigExtra(id: number, updates: any): Promise<void> {
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('gig_extras')
       .update({
         title: updates.name || updates.title,
@@ -480,7 +508,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async deleteGigExtra(id: number): Promise<void> {
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('gig_extras')
       .delete()
       .eq('id', id);
@@ -568,7 +596,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async createOrder(order: Omit<DbOrder, 'id' | 'createdAt' | 'updatedAt'>): Promise<{ id: number }> {
-    const { data, error } = await this.client
+    const { data, error } = await supabaseAdmin
       .from('orders')
       .insert({
         gig_id: order.gigId,
@@ -589,7 +617,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async updateOrderStatus(id: number, status: string): Promise<void> {
-    const { error } = await this.client
+    const { error } = await supabaseAdmin
       .from('orders')
       .update({ status, updated_at: new Date().toISOString() })
       .eq('id', id);
@@ -621,7 +649,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async createReview(review: Omit<DbReview, 'id' | 'createdAt'>): Promise<{ id: number }> {
-    const { data, error } = await this.client
+    const { data, error } = await supabaseAdmin
       .from('reviews')
       .insert({
         order_id: review.orderId,
@@ -654,7 +682,7 @@ export class SupabaseAdapter implements DbAdapter {
     
     if (existing) return { id: existing.id };
     
-    const { data, error } = await this.client
+    const { data, error } = await supabaseAdmin
       .from('conversations')
       .insert({
         gig_id: conv.gigId || null,
@@ -710,7 +738,7 @@ export class SupabaseAdapter implements DbAdapter {
   }
   
   async createPayout(payout: { sellerId: number; amount: number; stripePayoutId?: string }): Promise<{ id: number }> {
-    const { data, error } = await this.client
+    const { data, error } = await supabaseAdmin
       .from('payouts')
       .insert({
         seller_id: payout.sellerId,

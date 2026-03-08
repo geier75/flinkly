@@ -20,6 +20,8 @@ const COUNTRIES = [
 
 export default function Profile() {
   const { user, isAuthenticated, logout, loading } = useAuth();
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  const effectiveLoading = loading && !loadingTimedOut;
   const [, setLocation] = useLocation();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -54,6 +56,7 @@ export default function Profile() {
   const [isExporting, setIsExporting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
   const deletionStatus: { scheduledDeletionAt?: string } | null = null;
 
   const handleDataExport = async () => {
@@ -105,9 +108,15 @@ export default function Profile() {
     toast.success("Account-Löschung widerrufen");
   };
 
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoadingTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, [loading]);
+
   // Early return for loading and unauthenticated states
   // This must come after ALL hooks to follow React rules
-  if (loading) {
+  if (effectiveLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
@@ -151,8 +160,6 @@ export default function Profile() {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
-
-  const [isUpdating, setIsUpdating] = useState(false);
 
   // Update profile using API
 

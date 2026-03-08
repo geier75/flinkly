@@ -179,7 +179,7 @@ export default function ProcessingRegister() {
                 VERARBEITUNGS<span className="cyber-neon-green">VERZEICHNIS</span>
               </h1>
               <p className="text-slate-300 text-xl font-light">
-                Gemäß <span className="cyber-neon-orange font-semibold">Art. 30 DSGVO</span> | Stand: Dezember 2024
+                Gemäß <span className="cyber-neon-orange font-semibold">Art. 30 DSGVO</span> | Stand: März 2026
               </p>
             </motion.div>
           </div>
@@ -369,7 +369,7 @@ export default function ProcessingRegister() {
                     Aufsichtsbehörde vorzulegen.
                   </p>
                   <p className="text-sm text-slate-400">
-                    <span className="font-semibold">Letzte Aktualisierung:</span> Dezember 2024<br />
+                    <span className="font-semibold">Letzte Aktualisierung:</span> März 2026<br />
                     <span className="font-semibold">Nächste Überprüfung:</span> März 2025<br />
                     <span className="font-semibold">Verantwortlich:</span> Michael Bemler (Geschäftsführer)
                   </p>

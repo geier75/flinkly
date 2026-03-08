@@ -41,13 +41,15 @@ export default function MobileActionBar() {
                       : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                   }`}
                 >
-                  <Icon className={`h-6 w-6 ${active ? "stroke-[2.5]" : "stroke-[1.5]"}`} />
+                  <div className="relative">
+                    <Icon className={`h-6 w-6 ${active ? "stroke-[2.5]" : "stroke-[1.5]"}`} />
+                    {item.badge && (
+                      <Badge className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full h-5 w-5 flex items-center justify-center">
+                        1
+                      </Badge>
+                    )}
+                  </div>
                   <span className="text-xs mt-0.5 font-semibold">{item.label}</span>
-                  {item.badge && (
-                    <Badge className="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full h-5 w-5 flex items-center justify-center">
-                      1
-                    </Badge>
-                  )}
                 </button>
               </Link>
             );

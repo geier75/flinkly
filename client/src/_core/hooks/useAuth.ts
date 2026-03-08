@@ -47,21 +47,43 @@ export function useAuth(options?: UseAuthOptions) {
     if (initializedRef.current) return;
     initializedRef.current = true;
 
+    let lastSyncTime = 0;
+    const SYNC_DEBOUNCE_MS = 5000; // Only sync once per 5 seconds
+
     // Sync session with backend to set session cookie (optional, only works with Express backend)
-    const syncSession = async (user: any) => {
+    const syncSession = async (user: any, force = false) => {
       // Skip sync in production without Express backend (Vercel deployment)
       if (typeof window !== 'undefined' && !window.location.hostname.includes('localhost')) {
         return;
       }
+      
+      // Debounce: Skip if synced recently (unless forced)
+      const now = Date.now();
+      if (!force && now - lastSyncTime < SYNC_DEBOUNCE_MS) {
+        return;
+      }
+      lastSyncTime = now;
+      
       try {
+        // SECURITY: Get current session to extract JWT token
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session?.access_token) {
+          console.warn('[Auth Sync] No access token available');
+          return;
+        }
+        
         await fetch('/api/auth/sync', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`, // SECURITY: JWT for backend verification
+          },
           credentials: 'include',
           body: JSON.stringify({
-            id: user.id,
             email: user.email,
             name: user.user_metadata?.name || user.email?.split("@")[0],
+            // SECURITY: id is now extracted from JWT token on backend, not from request body
           }),
         });
       } catch (e) {
@@ -69,6 +91,7 @@ export function useAuth(options?: UseAuthOptions) {
       }
     };
 
+    const _authTimeout = setTimeout(() => { setLoading(false); }, 4000);
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user) {
@@ -80,11 +103,12 @@ export function useAuth(options?: UseAuthOptions) {
           role: 'user',
           avatarUrl: session.user.user_metadata?.avatar_url || null,
         });
-        // Sync with backend to set session cookie
-        await syncSession(session.user);
+        // Sync with backend (NON-BLOCKING - never delay loading state)
+        syncSession(session.user, true).catch(() => {});
       }
-      setLoading(false);
-    });
+      // CRITICAL: setLoading BEFORE syncSession - never block auth on network calls
+      clearTimeout(_authTimeout); setLoading(false);
+    }).catch(() => { clearTimeout(_authTimeout); setLoading(false); });
 
     // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -98,13 +122,15 @@ export function useAuth(options?: UseAuthOptions) {
             role: 'user',
             avatarUrl: session.user.user_metadata?.avatar_url || null,
           });
-          // Sync with backend on auth state change
-          await syncSession(session.user);
+          // Only sync on SIGNED_IN (non-blocking)
+          if (event === 'SIGNED_IN') {
+            syncSession(session.user).catch(() => {});
+          }
         } else {
           setSupabaseUser(null);
           setUser(null);
         }
-        setLoading(false);
+        setLoading(false); // Always resolve loading on auth state change
       }
     );
 
@@ -138,11 +164,12 @@ export function useAuth(options?: UseAuthOptions) {
     }
   }, []);
 
+  // Cleanup old localStorage entries
+  useEffect(() => {
+    localStorage.removeItem('manus-runtime-user-info');
+  }, []);
+
   const state = useMemo(() => {
-    localStorage.setItem(
-      "manus-runtime-user-info",
-      JSON.stringify(user)
-    );
     return {
       user,
       supabaseUser,

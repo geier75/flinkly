@@ -19,7 +19,14 @@ export const stripeConnectRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const user = ctx.user;
+      const authUser = ctx.user;
+
+      // Get full user from database using numeric user ID
+      const user = await db.getUserById(authUser.id);
+      
+      if (!user) {
+        throw new Error("User nicht in Datenbank gefunden. Bitte melde dich erneut an.");
+      }
 
       // Check if user already has a Connect account
       if (user.stripeAccountId) {
@@ -41,7 +48,7 @@ export const stripeConnectRouter = router({
         country: input.country,
       });
 
-      // Save account ID to database
+      // Save account ID to database using numeric user ID
       await db.updateUser(user.id, {
         stripeAccountId: accountId,
       });
@@ -56,18 +63,23 @@ export const stripeConnectRouter = router({
    * Get onboarding link for seller to complete Stripe Connect setup
    * This redirects to Stripe's hosted onboarding flow
    */
-  getOnboardingLink: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.user;
+  getOnboardingLink: protectedProcedure.mutation(async ({ ctx }) => {
+    // Load user from DB to get stripeAccountId
+    const user = await db.getUserById(ctx.user.id);
+    
+    if (!user) {
+      throw new Error("User nicht in Datenbank gefunden. Bitte melde dich erneut an.");
+    }
 
     if (!user.stripeAccountId) {
-      throw new Error("User does not have a Stripe Connect account. Create one first.");
+      throw new Error("Kein Stripe-Konto gefunden. Bitte erstelle zuerst ein Konto.");
     }
 
     // Generate onboarding link
     const { url } = await stripeConnect.createAccountLink({
       accountId: user.stripeAccountId,
-      refreshUrl: `${ENV.frontendUrl}/seller/dashboard?refresh=true`,
-      returnUrl: `${ENV.frontendUrl}/seller/dashboard?onboarding=complete`,
+      refreshUrl: `${ENV.frontendUrl}/create-gig?refresh=true`,
+      returnUrl: `${ENV.frontendUrl}/create-gig?onboarding=complete`,
     });
 
     return { url };
@@ -78,7 +90,12 @@ export const stripeConnectRouter = router({
    * Shows if seller can receive payments
    */
   getAccountStatus: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.user;
+    // Load user from DB to get stripeAccountId
+    const user = await db.getUserById(ctx.user.id);
+    
+    if (!user) {
+      throw new Error("User nicht in Datenbank gefunden.");
+    }
 
     if (!user.stripeAccountId) {
       return {
@@ -111,10 +128,15 @@ export const stripeConnectRouter = router({
    * Sellers can view earnings, payouts, and manage their account
    */
   getDashboardLink: protectedProcedure.query(async ({ ctx }) => {
-    const user = ctx.user;
+    // Load user from DB to get stripeAccountId
+    const user = await db.getUserById(ctx.user.id);
+    
+    if (!user) {
+      throw new Error("User nicht in Datenbank gefunden.");
+    }
 
     if (!user.stripeAccountId) {
-      throw new Error("User does not have a Stripe Connect account");
+      throw new Error("Kein Stripe-Konto gefunden.");
     }
 
     const { url } = await stripeConnect.createLoginLink(user.stripeAccountId);

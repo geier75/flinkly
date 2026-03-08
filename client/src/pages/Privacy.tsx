@@ -374,7 +374,7 @@ export default function Privacy() {
                 <div className="bg-slate-900/40 border-2 border-slate-700/50 rounded-xl p-6">
                   <h3 className="text-xl font-bold text-white mb-4">Analyse-Cookies (optional):</h3>
                   <p className="mb-3">
-                    Wir verwenden Analyse-Tools (z.B. Google Analytics, PostHog) nur mit Ihrer ausdrücklichen Einwilligung.
+                    Wir verwenden Analyse-Tools (z.B. PostHog) nur mit Ihrer ausdrücklichen Einwilligung.
                   </p>
                   <p className="text-sm text-slate-400">
                     <span className="font-semibold">Rechtsgrundlage:</span> Art. 6 Abs. 1 lit. a DSGVO (Einwilligung, jederzeit widerrufbar)
@@ -522,6 +522,14 @@ export default function Privacy() {
               </div>
             </Card>
 
+            {/* EU AI Act Transparency Section */}
+            <Card className="cyber-glass-card border-2 border-purple-500/30 mb-8 p-8">
+              <h2 className="text-3xl font-bold text-white mb-6">KI-TRANSPARENZ (EU AI Act)</h2>
+              <div className="space-y-4 text-slate-300">
+                <p>Gemaess <strong>EU AI Act (VO 2024/1689)</strong>, Art. 50: Einige Gigs nutzen KI-Systeme. Verkaufer sind verpflichtet, KI-generierte Inhalte zu kennzeichnen. Flinkly selbst setzt KI fuer Betrugspr&auml;vention und Suchrelevanz ein.</p>
+                <p className="text-sm text-slate-400">Rechtsgrundlage: Art. 50 EU AI Act | Gueltig ab: August 2026</p>
+              </div>
+            </Card>
             {/* Section 7: SSL-Verschlüsselung */}
             <Card className="cyber-glass-card border-2 border-emerald-500/30 mb-8 p-8">
               <h2 className="text-3xl font-bold text-white mb-6 cyber-chrome-text flex items-center gap-3">
@@ -624,7 +632,7 @@ export default function Privacy() {
                 </div>
 
                 <p className="text-sm text-slate-400 mt-6">
-                  Stand dieser Datenschutzerklärung: Dezember 2024 | Version 2.0 (DSGVO-konform)
+                  Stand dieser Datenschutzerklärung: März 2026 | Version 2.0 (DSGVO-konform)
                 </p>
               </div>
             </Card>

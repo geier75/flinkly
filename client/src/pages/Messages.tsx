@@ -21,6 +21,8 @@ import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function Messages() {
   const { user, loading } = useAuth();
+  const [loadingTimedOut, setLoadingTimedOut] = useState(false);
+  const effectiveLoading = loading && !loadingTimedOut;
   const [selectedConversationId, setSelectedConversationId] = useState<number | null>(null);
   const [messageText, setMessageText] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -189,7 +191,13 @@ export default function Messages() {
     startTyping();
   };
 
-  if (loading) {
+  useEffect(() => {
+    if (!loading) return;
+    const t = setTimeout(() => setLoadingTimedOut(true), 5000);
+    return () => clearTimeout(t);
+  }, [loading]);
+
+  if (effectiveLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
@@ -231,7 +239,7 @@ export default function Messages() {
                     <Send className="h-8 w-8 text-slate-400" />
                   </div>
                   <p className="text-slate-600 font-medium">Keine Konversationen</p>
-                  <p className="text-sm text-slate-400 mt-2">Starten Sie eine Bestellung, um mit Verkäufern zu chatten.</p>
+                  <p className="text-sm text-slate-400 mt-2">Starte eine Bestellung, um mit Verkäufern zu chatten.</p>
                 </div>
               )}
 
@@ -445,7 +453,7 @@ export default function Messages() {
                 <div className="w-20 h-20 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
                   <Send className="h-10 w-10 text-slate-400" />
                 </div>
-                <p className="text-lg font-medium text-slate-700">Wählen Sie eine Konversation aus</p>
+                <p className="text-lg font-medium text-slate-700">Wähle eine Konversation aus</p>
                 <p className="text-sm text-slate-400 mt-2">um Nachrichten zu sehen</p>
               </div>
             </div>

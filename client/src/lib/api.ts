@@ -90,7 +90,9 @@ async function trpcQuery<T>(procedure: string, input?: TrpcInput): Promise<T> {
   if (result[0]?.error) {
     throw new Error(result[0].error.json?.message || result[0].error.message || 'Unknown error');
   }
-  return result[0]?.result?.data?.json ?? result[0]?.result?.data;
+  // FIX: use explicit null check so null values are returned as null (not {json:null})
+  const _data = result[0]?.result?.data;
+  return (_data !== undefined && _data !== null && 'json' in _data) ? _data.json : _data;
 }
 
 // tRPC Mutation Call (POST) - for local development only
@@ -344,7 +346,7 @@ export const gigsApi = {
     if (IS_PRODUCTION) {
       return edgeFunctionCall('gigs', 'GET', `/${id}`);
     }
-    return trpcQuery('gigs.getById', { gigId: id });
+    return trpcQuery('gigs.getById', { id });
   },
   
   create: (input: GigCreateInput): Promise<Gig> => {
@@ -358,14 +360,14 @@ export const gigsApi = {
     if (IS_PRODUCTION) {
       return edgeFunctionCall('gigs', 'PUT', `/${id}`, input);
     }
-    return trpcMutation('gigs.update', { gigId: id, ...input });
+    return trpcMutation('gigs.update', { id, ...input });
   },
   
   delete: (id: number): Promise<{ success: boolean }> => {
     if (IS_PRODUCTION) {
       return edgeFunctionCall('gigs', 'DELETE', `/${id}`);
     }
-    return trpcMutation('gigs.delete', { gigId: id });
+    return trpcMutation('gigs.delete', { id });
   },
   
   myGigs: (): Promise<Gig[]> => {
@@ -459,11 +461,11 @@ export const checkoutApi = {
     if (IS_PRODUCTION) {
       return edgeFunctionCall('checkout', 'POST', '', input);
     }
-    return trpcMutation('checkout.createSession', input);
+    return trpcMutation('payment.createCheckout', input);
   },
   
   confirmSession: (sessionId: string): Promise<{ success: boolean; orderId: number }> =>
-    trpcMutation('checkout.createFromStripeSession', { sessionId }),
+    trpcMutation('orders.createFromStripeSession', { sessionId }),
 };
 
 export const usersApi = {
@@ -502,7 +504,7 @@ export const favoritesApi = {
     trpcMutation('favorites.remove', { gigId }),
   
   check: (gigId: number): Promise<{ isFavorite: boolean }> =>
-    trpcQuery('favorites.check', { gigId }),
+    trpcQuery('favorites.isFavorite', { gigId }),
 };
 
 export const messagesApi = {
@@ -588,9 +590,31 @@ export const discountApi = {
 export const dataExportApi = {
   request: (): Promise<{ success: boolean; exportId: string }> =>
     trpcMutation('dataExport.exportMyData'),
-  
+
   getStatus: (exportId: string): Promise<{ status: string; downloadUrl?: string }> =>
     trpcQuery('dataExport.getStatus', { exportId }),
+
+  getHistory: (): Promise<Array<{ id: number; export_type: string; file_format: string; file_size_bytes: number; status: string; created_at: string }>> =>
+    trpcQuery('dataExport.getHistory'),
+};
+
+export interface UserSettings {
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  marketingEmails: boolean;
+  orderUpdates: boolean;
+  messageNotifications: boolean;
+  reviewNotifications: boolean;
+  language: string;
+  timezone: string;
+}
+
+export const settingsApi = {
+  get: (): Promise<UserSettings> =>
+    trpcQuery('settings.get'),
+
+  update: (settings: Partial<UserSettings>): Promise<{ success: boolean }> =>
+    trpcMutation('settings.update', settings),
 };
 
 export const consentApi = {
@@ -642,6 +666,56 @@ export const verificationApi = {
   
   submitKybc: (data: any): Promise<{ success: boolean }> =>
     trpcMutation('verification.submitKybc', data),
+};
+
+
+export const contactApi = {
+  submit: (data: { name: string; email: string; subject: string; message: string }): Promise<{ success: boolean; message: string }> =>
+    trpcMutation('contact.submit', data),
+};
+
+
+export const disputesApi = {
+  all: (): Promise<any[]> =>
+    trpcQuery('disputes.all'),
+
+  resolve: (
+    disputeId: number,
+    resolution: 'refund_full' | 'refund_partial' | 'revision_requested' | 'buyer_favor' | 'seller_favor' | 'no_action',
+    adminNotes: string
+  ): Promise<{ success: boolean }> =>
+    trpcMutation('disputes.resolve', { disputeId, resolution, adminNotes }),
+};
+
+export const moderationApi = {
+  getPendingGigs: (): Promise<any[]> =>
+    trpcQuery('admin.getGigsForModeration', { limit: 50, offset: 0 }),
+};
+
+
+export interface GigPackageInput {
+  gigId: number;
+  packageType: 'basic' | 'standard' | 'premium';
+  name: string;
+  description: string;
+  price: number;
+  deliveryDays: number;
+  revisions: number;
+  features?: string[];
+}
+
+export const gigPackagesApi = {
+  list: (gigId: number): Promise<GigPackage[]> =>
+    trpcQuery('gigPackages.list', { gigId }),
+
+  create: (input: GigPackageInput): Promise<{ success: boolean; id: number }> =>
+    trpcMutation('gigPackages.create', input),
+
+  update: (id: number, input: Partial<Omit<GigPackageInput, 'gigId' | 'packageType'>>): Promise<{ success: boolean }> =>
+    trpcMutation('gigPackages.update', { id, ...input }),
+
+  delete: (id: number): Promise<{ success: boolean }> =>
+    trpcMutation('gigPackages.delete', { id }),
 };
 
 // ============ LEGACY COMPATIBILITY ============

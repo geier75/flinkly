@@ -73,6 +73,7 @@ export default function Favorites() {
             <Button 
               onClick={() => setLocation("/")}
               className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold px-8 py-3 rounded-xl shadow-lg shadow-rose-500/20"
+              aria-label="Zur Startseite"
             >
               Zur Startseite
             </Button>
@@ -207,6 +208,7 @@ export default function Favorites() {
             <Button
               onClick={() => setLocation("/marketplace")}
               className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white shadow-lg shadow-rose-500/20 hover:scale-105 transition-all duration-300 px-8 py-4 text-lg rounded-xl"
+              aria-label="Zum Marketplace"
             >
               <ShoppingBag className="h-5 w-5 mr-2" />
               Zum Marketplace
@@ -261,6 +263,7 @@ export default function Favorites() {
                             onClick={(e) => handleRemoveFavorite(e, gig.id)}
                             disabled={removeFavoriteMutation.isPending}
                             className="absolute top-5 right-5 w-11 h-11 flex items-center justify-center bg-white/95 backdrop-blur-sm rounded-xl hover:bg-rose-50 transition-all duration-300 hover:scale-110 z-20 disabled:opacity-50 shadow-lg group/btn"
+                            aria-label="Aus Favoriten entfernen"
                           >
                             <Trash2 className="h-5 w-5 text-slate-400 group-hover/btn:text-rose-500 transition-colors" />
                           </button>

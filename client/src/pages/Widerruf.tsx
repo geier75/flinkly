@@ -344,7 +344,7 @@ export default function Widerruf() {
                 </div>
 
                 <p className="text-sm text-slate-400 mt-6">
-                  Stand dieser Widerrufsbelehrung: Dezember 2024 | Version 2.0
+                  Stand dieser Widerrufsbelehrung: März 2026 | Version 2.0
                 </p>
               </div>
             </Card>

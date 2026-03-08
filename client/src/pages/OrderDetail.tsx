@@ -22,12 +22,17 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuth } from "@/_core/hooks/useAuth";
+import DeliveryUpload from "@/components/DeliveryUpload";
+import DeliveryList from "@/components/DeliveryList";
 
 export default function OrderDetail() {
   const { id } = useParams();
   const [, setLocation] = useLocation();
+  const { user } = useAuth();
   const [message, setMessage] = useState("");
   const [revisionRequest, setRevisionRequest] = useState("");
+  const [showUploadForm, setShowUploadForm] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: order, isLoading } = useQuery({
@@ -227,8 +232,8 @@ export default function OrderDetail() {
                   <TabsContent value="files" className="space-y-4">
                     <div>
                       <h4 className="font-semibold text-slate-900 mb-3">Briefing</h4>
-                      <div className="bg-transparent rounded-lg p-4">
-                        <p className="text-sm text-slate-700 whitespace-pre-line">
+                      <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4">
+                        <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-line">
                           {order.buyerMessage || "Kein Briefing vorhanden"}
                         </p>
                       </div>
@@ -237,13 +242,53 @@ export default function OrderDetail() {
                     <Separator />
 
                     <div>
-                      <h4 className="font-semibold text-slate-900 mb-3">Deliverables</h4>
-                      <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center">
-                        <Upload className="h-8 w-8 text-slate-400 mx-auto mb-2" />
-                        <p className="text-sm text-slate-600">
-                          Noch keine Dateien hochgeladen
-                        </p>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-slate-900">Deliverables</h4>
+                        {/* Show Upload button for sellers only */}
+                        {user?.id === order.sellerId && 
+                         ["in_progress", "in_review", "revision"].includes(order.status) && (
+                          <Button
+                            size="sm"
+                            onClick={() => setShowUploadForm(!showUploadForm)}
+                            variant={showUploadForm ? "outline" : "default"}
+                          >
+                            {showUploadForm ? (
+                              <>
+                                <XCircle className="h-4 w-4 mr-2" />
+                                Cancel
+                              </>
+                            ) : (
+                              <>
+                                <Upload className="h-4 w-4 mr-2" />
+                                Upload Delivery
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
+
+                      {/* Upload Form (Seller only) */}
+                      {showUploadForm && user?.id === order.sellerId && (
+                        <div className="mb-4">
+                          <DeliveryUpload
+                            orderId={order.id}
+                            onSuccess={() => {
+                              setShowUploadForm(false);
+                              queryClient.invalidateQueries({ queryKey: ['order', id] });
+                            }}
+                            onCancel={() => setShowUploadForm(false)}
+                          />
+                        </div>
+                      )}
+
+                      {/* Delivery List (Both Buyer and Seller) */}
+                      <DeliveryList
+                        orderId={order.id}
+                        userRole={user?.id === order.sellerId ? "seller" : "buyer"}
+                        onDeliveryAccepted={() => {
+                          queryClient.invalidateQueries({ queryKey: ['order', id] });
+                        }}
+                      />
                     </div>
                   </TabsContent>
 

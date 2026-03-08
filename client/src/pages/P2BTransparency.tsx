@@ -494,7 +494,7 @@ export default function P2BTransparency() {
 
           {/* Version Info */}
           <div className="text-center text-sm text-slate-500 pt-8 border-t border-slate-800">
-            <p>Stand: Dezember 2024 | Version 1.0</p>
+            <p>Stand: März 2026 | Version 1.0</p>
             <p className="mt-1">
               Rechtsgrundlage: Verordnung (EU) 2019/1150 des Europäischen Parlaments und des Rates
             </p>

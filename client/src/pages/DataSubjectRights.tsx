@@ -470,6 +470,7 @@ export default function DataSubjectRights() {
                     type="submit"
                     disabled={isSubmitting || !selectedRight || !acceptedIdentity || !acceptedProcessing}
                     className="w-full bg-primary hover:bg-primary/90 py-6"
+                    aria-label="Antrag einreichen"
                   >
                     {isSubmitting ? (
                       <span className="flex items-center gap-2">
@@ -523,7 +524,7 @@ export default function DataSubjectRights() {
 
           {/* Version Info */}
           <div className="text-center text-sm text-slate-500 pt-8 border-t border-slate-800 mt-8">
-            <p>Stand: Dezember 2024 | Version 1.0</p>
+            <p>Stand: März 2026 | Version 1.0</p>
             <p className="mt-1">
               Rechtsgrundlage: DSGVO Art. 15-22
             </p>

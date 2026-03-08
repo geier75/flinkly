@@ -1,6 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRoot } from "react-dom/client";
 import { initSentry } from "@/lib/sentry";
+import { migrateAuthTokenFromLocalStorage } from "@/lib/supabase";
+import { initConsentFromCookie } from "@/components/CookieConsent";
 import App from "./App";
 import "./index.css";
 import React from "react";
@@ -52,8 +54,19 @@ class ErrorBoundary extends React.Component<
   }
 }
 
-// Initialize Sentry Error Monitoring
+/**
+ * SECURITY BOOT SEQUENCE
+ * Order is critical - execute before React renders
+ */
+
+// 1. Initialize Sentry Error Monitoring
 initSentry();
+
+// 2. Migrate auth tokens from localStorage to sessionStorage (one-time cleanup)
+migrateAuthTokenFromLocalStorage();
+
+// 3. Initialize analytics only if user has previously given consent
+initConsentFromCookie();
 
 const queryClient = new QueryClient({
   defaultOptions: {

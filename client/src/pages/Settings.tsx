@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Link, useLocation } from "wouter";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { Settings as SettingsIcon, User, Bell, Shield, CreditCard, Trash2, ArrowLeft, Mail, Lock, AlertTriangle, Loader2 } from "lucide-react";
-import { usersApi } from "@/lib/api";
+import { usersApi, settingsApi } from "@/lib/api";
 import { PaymentMethodsManager } from "@/components/PaymentMethodsManager";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function Settings() {
   const { user, isAuthenticated, refresh } = useAuth();
@@ -26,6 +27,38 @@ export default function Settings() {
     orderUpdates: true,
     marketingEmails: false,
     twoFactorAuth: false,
+  });
+
+  // Load & sync settings from server
+  const queryClient = useQueryClient();
+  const { data: serverSettings } = useQuery({
+    queryKey: ["userSettings"],
+    queryFn: () => settingsApi.get(),
+    enabled: isAuthenticated,
+  });
+  useEffect(() => {
+    if (serverSettings) {
+      setSettings(prev => ({
+        ...prev,
+        emailNotifications: serverSettings.emailNotifications,
+        orderUpdates: serverSettings.orderUpdates,
+        marketingEmails: serverSettings.marketingEmails,
+      }));
+    }
+  }, [serverSettings]);
+  const saveSettingsMutation = useMutation({
+    mutationFn: () => settingsApi.update({
+      emailNotifications: settings.emailNotifications,
+      orderUpdates: settings.orderUpdates,
+      marketingEmails: settings.marketingEmails,
+    }),
+    onSuccess: () => {
+      toast.success("Einstellungen gespeichert!");
+      queryClient.invalidateQueries({ queryKey: ["userSettings"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Fehler beim Speichern");
+    },
   });
 
   const handleSaveProfile = async () => {
@@ -46,15 +79,54 @@ export default function Settings() {
   };
 
   const handleSaveSettings = () => {
-    // TODO: Implement notification settings via tRPC
-    toast.success("Einstellungen gespeichert!");
+    saveSettingsMutation.mutate();
   };
 
+  // GDPR Art. 17: Account Deletion (via usersApi)
+  const deletionStatusQuery = useQuery({
+    queryKey: ["accountDeletionStatus"],
+    queryFn: () => usersApi.getAccountDeletionStatus(),
+    enabled: isAuthenticated,
+  });
+  const requestDeletionMutation = useMutation({
+    mutationFn: ({ reason }: { reason?: string }) => usersApi.requestAccountDeletion(),
+    onSuccess: (data) => {
+      const scheduledDate = (data as any).scheduledDate;
+      toast.success(scheduledDate
+        ? `Account-Löschung geplant für: ${new Date(scheduledDate).toLocaleDateString("de-DE")}`
+        : "Account-Löschung beantragt.");
+      queryClient.invalidateQueries({ queryKey: ["accountDeletionStatus"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Fehler beim Löschen des Accounts");
+    },
+  });
+  const cancelDeletionMutation = useMutation({
+    mutationFn: () => usersApi.cancelAccountDeletion(),
+    onSuccess: () => {
+      toast.success("Account-Löschung erfolgreich widerrufen.");
+      queryClient.invalidateQueries({ queryKey: ["accountDeletionStatus"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Fehler beim Widerrufen");
+    },
+  });
+
   const handleDeleteAccount = () => {
-    if (confirm("Möchtest du dein Konto wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.")) {
-      // TODO: Implement via tRPC
-      toast.success("Konto gelöscht.");
-      setLocation("/");
+    const reason = prompt("Optional: Warum möchtest du deinen Account löschen?");
+    
+    if (confirm(
+      "⚠️ WICHTIG: Dein Account wird in 30 Tagen permanent gelöscht.\n\n" +
+      "Du kannst die Löschung innerhalb dieser 30 Tage jederzeit widerrufen.\n\n" +
+      "Möchtest du fortfahren?"
+    )) {
+      requestDeletionMutation.mutate({ reason: reason || undefined });
+    }
+  };
+
+  const handleCancelDeletion = () => {
+    if (confirm("Möchtest du die Account-Löschung wirklich widerrufen?")) {
+      cancelDeletionMutation.mutate();
     }
   };
 
@@ -241,8 +313,8 @@ export default function Settings() {
                   />
                 </div>
 
-                <Button onClick={handleSaveSettings} className="bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-white rounded-xl shadow-lg shadow-blue-500/20">
-                  Einstellungen speichern
+                <Button onClick={handleSaveSettings} disabled={saveSettingsMutation.isPending} className="bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-white rounded-xl shadow-lg shadow-blue-500/20">
+                  {saveSettingsMutation.isPending ? "Speichern..." : "Einstellungen speichern"}
                 </Button>
               </CardContent>
             </Card>

@@ -4,15 +4,24 @@
 
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import Cookies from "js-cookie";
+
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    // Get session token from cookie
-    const token = Cookies.get("session");
+    // Get Supabase access token from sessionStorage (HTTP-only cookies not readable by JS)
+    const SUPABASE_PROJECT = 'fpiszghehrjmkbxhbwqr';
+    const storageKey = `sb-${SUPABASE_PROJECT}-auth-token`;
+    let token: string | null = null;
+    try {
+      const stored = sessionStorage.getItem(storageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        token = parsed?.access_token || null;
+      }
+    } catch {}
     
     if (!token) {
       console.warn("[Socket.io] No session token found");

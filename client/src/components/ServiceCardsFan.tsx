@@ -203,8 +203,14 @@ export default function ServiceCardsFan() {
       >
         <motion.img
           src="/images/flinkly-graffiti-v2.png"
-          alt="Flinkly" translate="no"
-          className="w-[4000000px] h-auto opacity-60"
+          alt="" 
+          role="presentation"
+          translate="no"
+          width={1536}
+          height={1024}
+          loading="lazy"
+          decoding="async"
+          className="w-full max-w-lg h-auto opacity-60"
           animate={{
             scale: [1, 1.05, 1],
             opacity: [0.6, 0.8, 0.6]

@@ -24,6 +24,8 @@ import { featureFlagsRouter } from "./routers/featureFlags";
 import { passwordResetRouter } from "./routers/passwordReset";
 import { paymentMethodsRouter } from "./routers/paymentMethods";
 import { stripeConnectRouter } from "./routers/stripeConnect";
+import { settingsRouter } from "./routers/settings";
+import { contactRouter } from "./routers/contact";
 import { sendEmail } from "./_core/email";
 import { orderConfirmationTemplate } from "./_core/emailTemplates";
 import { trackPaymentSuccess } from "./_core/analytics";
@@ -48,6 +50,8 @@ export const appRouter = router({
   passwordReset: passwordResetRouter,
   paymentMethods: paymentMethodsRouter,
   stripeConnect: stripeConnectRouter,
+  settings: settingsRouter,
+  contact: contactRouter,
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -142,9 +146,14 @@ export const appRouter = router({
       .query(async ({ input }) => {
         const gig = await db.getGigById(input.id);
         if (!gig) return null;
-        
-        // Load seller info
-        const seller = await db.getUserById(gig.sellerId);
+
+        // Load seller info, reviews, packages, extras in parallel
+        const [seller, packages, reviews, extras] = await Promise.all([
+          db.getUserById(gig.sellerId),
+          db.getGigPackages(gig.id),
+          db.getGigReviews(gig.id, 50, 0),
+          db.getGigExtras(gig.id),
+        ]);
         return {
           ...gig,
           seller: seller ? {
@@ -153,7 +162,11 @@ export const appRouter = router({
             avatarUrl: seller.avatarUrl,
             emailVerified: seller.emailVerified,
             sellerLevel: seller.sellerLevel,
+            verified: seller.emailVerified,
           } : null,
+          packages: packages || [],
+          reviews: reviews || [],
+          extras: extras || [],
         };
       }),
 
@@ -175,7 +188,7 @@ export const appRouter = router({
         category: z.string(),
         price: z.number().min(100).max(50000),
         deliveryDays: z.number().default(3),
-        imageUrl: z.string().optional(),
+        imageUrl: z.string().url().optional(),
         // Optional packages for package-based pricing
         packages: z.array(z.object({
           packageType: z.enum(["basic", "standard", "premium"]),
@@ -232,9 +245,28 @@ export const appRouter = router({
         category: z.string().optional(),
         price: z.number().min(100).max(50000).optional(),
         deliveryDays: z.number().optional(),
-        imageUrl: z.string().optional(),
+        imageUrl: z.string().url().optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        console.log('[DEBUG] gigs.update received:', JSON.stringify(input, null, 2));
+        
+        // SECURITY: Verify ownership before update (IDOR prevention)
+        const gig = await db.getGigById(input.id);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Bearbeiten dieses Gigs',
+          });
+        }
+        
         const { id, ...updates } = input;
         await db.updateGig(id, updates);
         return { success: true };
@@ -242,7 +274,24 @@ export const appRouter = router({
 
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership before deletion (IDOR prevention)
+        const gig = await db.getGigById(input.id);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Löschen dieses Gigs',
+          });
+        }
+        
         await db.deleteGig(input.id);
         return { success: true };
       }),
@@ -254,7 +303,7 @@ export const appRouter = router({
         category: z.string(),
         price: z.number().min(100).max(50000),
         deliveryDays: z.number().default(3),
-        imageUrl: z.string().optional(),
+        imageUrl: z.string().url().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await db.createGig({
@@ -279,7 +328,24 @@ export const appRouter = router({
 
     publish: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership before publishing
+        const gig = await db.getGigById(input.id);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Veröffentlichen dieses Gigs',
+          });
+        }
+        
         await db.publishGig(input.id);
         return { success: true };
       }),
@@ -301,7 +367,24 @@ export const appRouter = router({
         revisions: z.number().min(0).max(10),
         features: z.array(z.string()).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify gig ownership before creating package
+        const gig = await db.getGigById(input.gigId);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Erstellen von Paketen für dieses Gig',
+          });
+        }
+        
         const featuresJson = input.features ? JSON.stringify(input.features) : null;
         const id = await db.createGigPackage({
           gigId: input.gigId,
@@ -327,7 +410,17 @@ export const appRouter = router({
         revisions: z.number().min(0).max(10).optional(),
         features: z.array(z.string()).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership via parent gig (IDOR prevention)
+        const pkg = await db.getGigPackageById(input.id);
+        if (!pkg) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Paket nicht gefunden' });
+        }
+        const gig = await db.getGigById(pkg.gigId);
+        if (!gig || gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Keine Berechtigung zum Bearbeiten dieses Pakets' });
+        }
+        
         const { id, features, ...updates } = input;
         const finalUpdates = {
           ...updates,
@@ -339,7 +432,17 @@ export const appRouter = router({
 
     delete: protectedProcedure
       .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership via parent gig (IDOR prevention)
+        const pkg = await db.getGigPackageById(input.id);
+        if (!pkg) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Paket nicht gefunden' });
+        }
+        const gig = await db.getGigById(pkg.gigId);
+        if (!gig || gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Keine Berechtigung zum Löschen dieses Pakets' });
+        }
+        
         await db.deleteGigPackage(input.id);
         return { success: true };
       }),
@@ -360,7 +463,24 @@ export const appRouter = router({
         deliveryDaysReduction: z.number().min(0).max(10).optional(),
         revisionsAdded: z.number().min(0).max(5).optional(),
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify gig ownership before creating extra
+        const gig = await db.getGigById(input.gigId);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Erstellen von Extras für dieses Gig',
+          });
+        }
+        
         const id = await db.createGigExtra(input);
         return { success: true, id };
       }),
@@ -368,21 +488,59 @@ export const appRouter = router({
     update: protectedProcedure
       .input(z.object({
         id: z.number(),
+        gigId: z.number(), // Need gigId to verify ownership
         name: z.string().min(3).max(100).optional(),
         description: z.string().optional(),
         price: z.number().min(100).max(10000).optional(),
         deliveryDaysReduction: z.number().min(0).max(10).optional(),
         revisionsAdded: z.number().min(0).max(5).optional(),
       }))
-      .mutation(async ({ input }) => {
-        const { id, ...updates } = input;
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership via parent gig
+        const gig = await db.getGigById(input.gigId);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Bearbeiten dieses Extras',
+          });
+        }
+        
+        const { id, gigId, ...updates } = input;
         await db.updateGigExtra(id, updates);
         return { success: true };
       }),
 
     delete: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
+      .input(z.object({ 
+        id: z.number(),
+        gigId: z.number(), // Need gigId to verify ownership
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership via parent gig
+        const gig = await db.getGigById(input.gigId);
+        
+        if (!gig) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Gig nicht gefunden',
+          });
+        }
+        
+        if (gig.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Keine Berechtigung zum Löschen dieses Extras',
+          });
+        }
+        
         await db.deleteGigExtra(input.id);
         return { success: true };
       }),
@@ -413,8 +571,14 @@ export const appRouter = router({
 
     getById: protectedProcedure
       .input(z.object({ orderId: z.number() }))
-      .query(async ({ input }) => {
-        return await db.getOrderById(input.orderId);
+      .query(async ({ ctx, input }) => {
+        const order = await db.getOrderById(input.orderId);
+        if (!order) return null;
+        // SECURITY: Only buyer or seller may view this order (IDOR prevention)
+        if (order.buyerId !== ctx.user.id && order.sellerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Keine Berechtigung auf diese Bestellung' });
+        }
+        return order;
       }),
 
     create: protectedProcedure
@@ -427,9 +591,15 @@ export const appRouter = router({
       .mutation(async ({ ctx, input }) => {
         const gig = await db.getGigById(input.gigId);
         if (!gig) throw new Error("Gig not found");
+ if (gig.sellerId === ctx.user.id) throw new TRPCError({ code: "FORBIDDEN", message: "Du kannst deinen eigenen Gig nicht bestellen." });
 
-        // Calculate platform fee (15% default)
-        const totalPrice = gig.price;
+        // SECURITY: Server-side price calculation (prevent price manipulation)
+        let totalPrice = gig.price;
+        if (input.selectedPackage) {
+          const packages = await db.getGigPackages(input.gigId);
+          const selectedPkg = packages.find(p => p.packageType === input.selectedPackage);
+          if (selectedPkg) totalPrice = selectedPkg.price;
+        }
         const platformFeePercent = 15;
         const platformFee = Math.round((totalPrice * platformFeePercent) / 100);
         const sellerEarnings = totalPrice - platformFee;
@@ -486,28 +656,92 @@ export const appRouter = router({
         orderId: z.number(), 
         status: z.enum(["pending", "in_progress", "preview", "delivered", "revision", "completed", "disputed", "cancelled"])
       }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership - only buyer or seller can update order status
+        const order = await db.getOrderById(input.orderId);
+        if (!order) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Order not found',
+          });
+        }
+        
+        if (order.buyerId !== ctx.user.id && order.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the buyer or seller can update this order',
+          });
+        }
+        
         await db.updateOrderStatus(input.orderId, input.status);
         return { success: true };
       }),
 
     acceptDelivery: protectedProcedure
       .input(z.object({ orderId: z.number() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership - only buyer can accept delivery
+        const order = await db.getOrderById(input.orderId);
+        if (!order) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Order not found',
+          });
+        }
+        
+        if (order.buyerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the buyer can accept delivery',
+          });
+        }
+        
         await db.updateOrderStatus(input.orderId, "completed");
         return { success: true };
       }),
 
     requestRevision: protectedProcedure
       .input(z.object({ orderId: z.number(), reason: z.string() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership - only buyer can request revision
+        const order = await db.getOrderById(input.orderId);
+        if (!order) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Order not found',
+          });
+        }
+        
+        if (order.buyerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the buyer can request a revision',
+          });
+        }
+        
         await db.updateOrderStatus(input.orderId, "revision");
         return { success: true };
       }),
 
     openDispute: protectedProcedure
       .input(z.object({ orderId: z.number(), reason: z.string() }))
-      .mutation(async ({ input }) => {
+      .mutation(async ({ ctx, input }) => {
+        // SECURITY: Verify ownership - only buyer or seller can open dispute
+        const order = await db.getOrderById(input.orderId);
+        if (!order) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Order not found',
+          });
+        }
+        
+        if (order.buyerId !== ctx.user.id && order.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the buyer or seller can open a dispute',
+          });
+        }
+        
         await db.updateOrderStatus(input.orderId, "disputed");
         return { success: true };
       }),
@@ -617,9 +851,23 @@ export const appRouter = router({
         orderId: z.number(),
         gigId: z.number(),
         rating: z.number().min(1).max(5),
-        comment: z.string().optional(),
+        comment: z.string().max(2000).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
+        // SECURITY: Only buyer of the order can review, and order must be completed (IDOR + business logic)
+        const order = await db.getOrderById(input.orderId);
+        if (!order) {
+          throw new TRPCError({ code: 'NOT_FOUND', message: 'Bestellung nicht gefunden' });
+        }
+        if (order.buyerId !== ctx.user.id) {
+          throw new TRPCError({ code: 'FORBIDDEN', message: 'Nur der Käufer kann eine Bewertung abgeben' });
+        }
+        if (order.gigId !== input.gigId) {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Gig stimmt nicht mit der Bestellung überein' });
+        }
+        if (order.status !== 'completed') {
+          throw new TRPCError({ code: 'BAD_REQUEST', message: 'Bestellung muss abgeschlossen sein um zu bewerten' });
+        }
         await db.createReview({
           orderId: input.orderId,
           gigId: input.gigId,
@@ -696,7 +944,34 @@ export const appRouter = router({
     capturePayment: protectedProcedure
       .input(z.object({ paymentIntentId: z.string() }))
       .mutation(async ({ ctx, input }) => {
-        const { capturePayment } = await import('./payment');
+        const { capturePayment, getStripe } = await import('./payment');
+        
+        // SECURITY: Verify ownership - only buyer can capture payment
+        const paymentIntent = await getStripe().paymentIntents.retrieve(input.paymentIntentId);
+        const orderId = paymentIntent.metadata?.order_id;
+        
+        if (!orderId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Payment Intent has no associated order',
+          });
+        }
+        
+        const order = await db.getOrderById(parseInt(orderId));
+        if (!order) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Order not found',
+          });
+        }
+        
+        if (order.buyerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the buyer can capture this payment',
+          });
+        }
+        
         await capturePayment(input.paymentIntentId);
         return { success: true };
       }),
@@ -707,7 +982,35 @@ export const appRouter = router({
         amount: z.number().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { refundPayment } = await import('./payment');
+        const { refundPayment, getStripe } = await import('./payment');
+        
+        // SECURITY: Verify ownership - only buyer or seller can refund
+        const paymentIntent = await getStripe().paymentIntents.retrieve(input.paymentIntentId);
+        const orderId = paymentIntent.metadata?.order_id;
+        
+        if (!orderId) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Payment Intent has no associated order',
+          });
+        }
+        
+        const order = await db.getOrderById(parseInt(orderId));
+        if (!order) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Order not found',
+          });
+        }
+        
+        // Allow refund only for buyer or seller
+        if (order.buyerId !== ctx.user.id && order.sellerId !== ctx.user.id) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Only the buyer or seller can refund this payment',
+          });
+        }
+        
         await refundPayment(input.paymentIntentId, input.amount);
         return { success: true };
       }),

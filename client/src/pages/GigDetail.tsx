@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useParams, useLocation, Link } from "wouter";
-import { useGig } from "@/hooks/useApi";
+import { useAuth } from "@/_core/hooks/useAuth";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +28,8 @@ import {
   CheckCircle2,
   Timer,
   Target,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from "lucide-react";
 import GigDetailSkeleton from "@/components/GigDetailSkeleton";
 import GigExtrasCard from "@/components/GigExtrasCard";
@@ -35,10 +38,13 @@ import { GigExtrasSelector } from "@/components/GigExtrasSelector";
 import { useCTAClick, useScrollDepth } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/hooks/useAnalytics";
 import { useCTAButtonText, useTrustBadge } from "@/hooks/useFeatureFlags";
+import { useGig } from "@/hooks/useApi";
+import MarkdownContent from "@/components/MarkdownContent";
 
 export default function GigDetail() {
   const { id } = useParams();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
+  const { user, isAuthenticated } = useAuth();
   const gigId = id ? parseInt(id) : 0;
   
   // Analytics
@@ -54,24 +60,22 @@ export default function GigDetail() {
   const [starFilter, setStarFilter] = useState<number | null>(null); // null = all, 1-5 = filter by stars
   const [selectedExtras, setSelectedExtras] = useState<number[]>([]);
   const [extrasTotal, setExtrasTotal] = useState(0);
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [selectedPackage, setSelectedPackage] = useState<"basic" | "standard" | "premium">("basic");
+  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   const { data: gig, isLoading } = useGig(gigId);
   
-  // Favorites - temporarily disabled until Edge Function is ready
+  // Favorites - Edge Function deployed, but tRPC router integration pending
+  const [isFavorited, setIsFavorited] = useState(false);
+
   const handleToggleFavorite = () => {
-    if (isFavorited) {
-      setIsFavorited(false);
-      toast.success("Aus Favoriten entfernt", {
-        description: "Das Gig wurde aus deinen Favoriten entfernt.",
-      });
-    } else {
-      setIsFavorited(true);
-      toast.success("Zu Favoriten hinzugefügt", {
-        description: "Das Gig wurde zu deinen Favoriten hinzugefügt.",
-        icon: "❤️",
-      });
+    if (!isAuthenticated) {
+      setLocation('/login?redirect=' + encodeURIComponent(location));
+      return;
     }
+    
+    // Favorites temporarily disabled - tRPC router needed
+    console.log('Toggle favorite:', id);
   };
 
   const handleShare = async () => {
@@ -169,14 +173,11 @@ export default function GigDetail() {
 
   // Generate Breadcrumb schema
   const breadcrumbSchema = gig ? generateBreadcrumbSchema([
-    { name: "Home", url: "https://flinkly.de" },
-    { name: "Marketplace", url: "https://flinkly.de/marketplace" },
-    { name: gig.category, url: `https://flinkly.de/marketplace?category=${gig.category}` },
-    { name: gig.title, url: `https://flinkly.de/gig/${gig.id}` },
+    { name: "Home", url: "https://flinkly.eu" },
+    { name: "Marketplace", url: "https://flinkly.eu/marketplace" },
+    { name: gig.category, url: `https://flinkly.eu/marketplace?category=${gig.category}` },
+    { name: gig.title, url: `https://flinkly.eu/gig/${gig.id}` },
   ]) : undefined;
-
-  const [selectedPackage, setSelectedPackage] = useState<"basic" | "standard" | "premium">("basic");
-  const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   const faqItems = [
     {
@@ -292,15 +293,15 @@ export default function GigDetail() {
         title={gig.title}
         description={gig.description}
         image={gig.imageUrl || undefined}
-        url={`https://flinkly.de/gig/${gig.id}`}
+        url={`https://flinkly.eu/gig/${gig.id}`}
         type="product"
         schema={{
           "@graph": [productSchema, breadcrumbSchema],
         }}
       />
       <MetaTags 
-        title={`${gig.title} ab ${(gig.price / 100).toFixed(0)}€ | Lieferung in ${gig.deliveryDays} Tagen | Flinkly`}
-        description={`${gig.description.slice(0, 150)}... ⭐ ${gig.averageRating || 5.0}/5 Sterne. Sichere Zahlung. DSGVO-konform. Geld-zurück-Garantie.`}
+        title={gig?.title ? `${gig.title} ab ${(gig.price / 100).toFixed(0)}€ | Lieferung in ${gig.deliveryDays} Tagen | Flinkly` : 'Gig | Flinkly'}
+        description={`${(gig.description || "").slice(0, 150)}... ⭐ ${gig.averageRating || 5.0}/5 Sterne. Sichere Zahlung. DSGVO-konform. Geld-zurück-Garantie.`}
         type="website"
       />
 
@@ -411,9 +412,19 @@ export default function GigDetail() {
                     </div>
                   </div>
 
-                  <p className="text-lg text-slate-300 leading-relaxed">
-                    {gig.description}
-                  </p>
+                  <div className="text-lg prose prose-invert max-w-none">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        p: ({ children }) => <p className="mb-4 text-slate-300 leading-relaxed">{children}</p>,
+                        strong: ({ children }) => <strong className="font-bold text-white">{children}</strong>,
+                        ul: ({ children }) => <ul className="list-disc list-inside mb-4 space-y-2 text-slate-300">{children}</ul>,
+                        li: ({ children }) => <li className="text-slate-300">{children}</li>,
+                      }}
+                    >
+                      {gig.description || ''}
+                    </ReactMarkdown>
+                  </div>
                 </motion.div>
 
                 {/* About This Gig */}
@@ -645,7 +656,7 @@ export default function GigDetail() {
                           <div className="flex items-center gap-2 mt-2">
                             <div className="flex items-center gap-1">
                               <Star className="h-4 w-4 text-success fill-success" />
-                              <span className="text-sm font-bold text-white">{gig.averageRating ? (gig.averageRating / 100).toFixed(1) : "Neu"}</span>
+                              <span className="text-sm font-bold text-white">{gig.averageRating ? Number(gig.averageRating).toFixed(1) : "Neu"}</span>
                             </div>
                             <span className="text-sm text-slate-400">•</span>
                             <span className="text-sm text-slate-400">{gig.completedOrders || 0} Aufträge</span>
@@ -716,6 +727,46 @@ export default function GigDetail() {
                     </Card>
                   )}
 
+                  {/* Fallback CTA when no packages - direct order at base price */}
+                  {(!gigPackages || gigPackages.length === 0) && (
+                    <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
+                      <CardContent className="p-6">
+                        <div className="mb-4">
+                          <p className="text-slate-400 text-sm mb-1">Preis</p>
+                          <p className="text-3xl font-black text-white">{((gig.price || 0) / 100).toFixed(0)}€</p>
+                          <p className="text-slate-400 text-sm mt-1">Lieferung in {gig.deliveryDays || 3} Tagen</p>
+                        </div>
+                        <Button
+                          size="lg"
+                          className="w-full bg-accent hover:bg-accent/90 text-white font-bold py-6 rounded-xl shadow-lg shadow-accent/30 hover:shadow-accent/50 transition-all duration-300"
+                          onClick={() => {
+                            trackCTA('projekt_starten', {
+                              gig_id: gig.id,
+                              gig_title: gig.title,
+                              price: gig.price,
+                              package: 'basic',
+                            });
+                            sessionStorage.setItem('checkout_package', 'basic');
+                            sessionStorage.setItem('checkout_extras', JSON.stringify([]));
+                            setLocation(`/checkout/${gig.id}`);
+                          }}
+                        >
+                          {ctaButtonText}
+                        </Button>
+                        <Link href="/messages">
+                          <Button
+                            size="lg"
+                            variant="outline"
+                            className="w-full mt-3 border-slate-700 hover:border-primary text-white bg-slate-900/40 backdrop-blur-sm"
+                          >
+                            <MessageCircle className="h-5 w-5 mr-2" />
+                            Frage stellen
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  )}
+
                   {/* Gig Extras / Add-ons - New GigExtrasSelector */}
                   {gigExtras && gigExtras.length > 0 && (
                     <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl overflow-hidden">
@@ -735,42 +786,45 @@ export default function GigDetail() {
                     </Card>
                   )}
 
-                  {/* Seller Stats */}
-                  <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
-                    <CardContent className="p-6">
-                      <h3 className="text-lg font-bold text-white mb-4">Seller Performance</h3>
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Timer className="h-5 w-5 text-primary" />
-                            <span className="text-slate-300">Antwortzeit</span>
+                  {/* Seller Stats - nur bei echten Daten anzeigen */}
+                  {(gig.completedOrders ?? 0) > 0 && (
+                    <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                      <CardContent className="p-6">
+                        <h3 className="text-lg font-bold text-white mb-4">Seller Performance</h3>
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Award className="h-5 w-5 text-primary" />
+                              <span className="text-slate-300">Abgeschlossene Aufträge</span>
+                            </div>
+                            <span className="font-bold text-white">{gig.completedOrders}</span>
                           </div>
-                          <span className="font-bold text-white">&lt; 1 Std.</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Target className="h-5 w-5 text-success" />
-                            <span className="text-slate-300">Abschlussrate</span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Star className="h-5 w-5 text-warning" />
+                              <span className="text-slate-300">Durchschnittliche Bewertung</span>
+                            </div>
+                            <span className="font-bold text-white">{gig.averageRating ? Number(gig.averageRating).toFixed(1) : "5.0"}/5</span>
                           </div>
-                          <span className="font-bold text-white">98%</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <CheckCircle2 className="h-5 w-5 text-accent" />
-                            <span className="text-slate-300">Pünktliche Lieferung</span>
+                      </CardContent>
+                    </Card>
+                  )}
+                  
+                  {/* Neuer Seller Badge */}
+                  {(!gig.completedOrders || gig.completedOrders === 0) && (
+                    <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
+                      <CardContent className="p-6">
+                        <div className="flex items-center gap-3">
+                          <Sparkles className="h-6 w-6 text-primary" />
+                          <div>
+                            <h3 className="text-lg font-bold text-white">Neu auf Flinkly</h3>
+                            <p className="text-sm text-slate-400">Dieser Seller startet gerade durch!</p>
                           </div>
-                          <span className="font-bold text-white">100%</span>
                         </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Award className="h-5 w-5 text-primary" />
-                            <span className="text-slate-300">Abgeschlossene Aufträge</span>
-                          </div>
-                          <span className="font-bold text-white">{gig.completedOrders || 0}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  )}
 
                   {/* Trust Badges */}
                   <Card className="bg-slate-900/40 border-2 border-slate-700/50 backdrop-blur-xl">
@@ -821,7 +875,7 @@ export default function GigDetail() {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-sm text-slate-400">Preis</p>
-            <p className="text-2xl font-black text-white">{(selectedPkg.price / 100).toFixed(0)}€</p>
+            <p className="text-2xl font-black text-white">{selectedPkg ? (selectedPkg.price / 100).toFixed(0) : "0"}€</p>
           </div>
           <Button 
             size="lg"

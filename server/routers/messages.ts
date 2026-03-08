@@ -12,8 +12,6 @@ import { scanFileForVirus } from "../_core/virusScan";
 import { sendEmail } from "../_core/email";
 import { messageNotificationTemplate } from "../_core/emailTemplates";
 import { TRPCError } from "@trpc/server";
-import { eq } from "drizzle-orm";
-import { conversations, messages } from "../../drizzle/schema";
 
 export const messagesRouter = router({
   /**
@@ -63,14 +61,8 @@ export const messagesRouter = router({
     .query(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       
-      const dbInstance = await db.getDb();
-      if (!dbInstance) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-      
-      const convResult = await dbInstance.select().from(conversations)
-        .where(eq(conversations.id, input.conversationId))
-        .limit(1);
-      
-      const conversation = convResult[0];
+      // Use adapter function instead of direct DB access
+      const conversation = await db.getConversationById(input.conversationId);
       
       if (!conversation) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Conversation not found" });
@@ -107,14 +99,8 @@ export const messagesRouter = router({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       
-      const dbInstance = await db.getDb();
-      if (!dbInstance) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-      
-      const convResult = await dbInstance.select().from(conversations)
-        .where(eq(conversations.id, input.conversationId))
-        .limit(1);
-      
-      const conversation = convResult[0];
+      // Use adapter function instead of direct DB access
+      const conversation = await db.getConversationById(input.conversationId);
       
       if (!conversation) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Conversation not found" });
@@ -181,24 +167,13 @@ export const messagesRouter = router({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       
-      const dbInstance = await db.getDb();
-      if (!dbInstance) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-      
-      const msgResult = await dbInstance.select().from(messages)
-        .where(eq(messages.id, input.messageId))
-        .limit(1);
-      
-      const message = msgResult[0];
-      
-      if (!message) {
+      const msg = await db.getMessageById(input.messageId);
+      if (!msg) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Message not found" });
       }
       
-      const convResult = await dbInstance.select().from(conversations)
-        .where(eq(conversations.id, message.conversationId))
-        .limit(1);
-      
-      const conversation = convResult[0];
+      // Use adapter function instead of direct DB access
+      const conversation = await db.getConversationById(msg.conversationId);
       
       if (!conversation) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Conversation not found" });
@@ -208,7 +183,7 @@ export const messagesRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Not a participant" });
       }
       
-      if (message.senderId !== userId) {
+      if (msg.senderId !== userId) {
         await db.markMessageAsRead(input.messageId);
       }
       
@@ -231,14 +206,8 @@ export const messagesRouter = router({
     .mutation(async ({ ctx, input }) => {
       const userId = ctx.user.id;
       
-      const dbInstance = await db.getDb();
-      if (!dbInstance) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database unavailable" });
-      
-      const convResult = await dbInstance.select().from(conversations)
-        .where(eq(conversations.id, input.conversationId))
-        .limit(1);
-      
-      const conversation = convResult[0];
+      // Use adapter function instead of direct DB access
+      const conversation = await db.getConversationById(input.conversationId);
       
       if (!conversation) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Conversation not found" });

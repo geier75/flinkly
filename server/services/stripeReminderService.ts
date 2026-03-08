@@ -21,7 +21,9 @@ import { notifyOwner } from '../_core/notification';
  * Returns number of reminders sent
  */
 export async function sendStripeConnectReminders(): Promise<number> {
-  console.log('[Stripe Reminder] Starting Stripe Connect reminder check...');
+  if (process.env.NODE_ENV === 'development') {
+    console.log('[Stripe Reminder] Starting reminder check...');
+  }
   
   try {
     const db = await getDb();
@@ -54,7 +56,9 @@ export async function sendStripeConnectReminders(): Promise<number> {
         )
       );
 
-    console.log(`[Stripe Reminder] Found ${sellersWithoutStripe.length} sellers without Stripe Connect`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Stripe Reminder] Found ${sellersWithoutStripe.length} sellers to notify`);
+    }
 
     if (sellersWithoutStripe.length === 0) {
       return 0;
@@ -71,7 +75,9 @@ export async function sendStripeConnectReminders(): Promise<number> {
       }
     }
 
-    console.log(`[Stripe Reminder] Sending reminders to ${uniqueSellers.size} unique sellers`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Stripe Reminder] Sending ${uniqueSellers.size} reminders`);
+    }
 
     for (const userId of Array.from(uniqueSellers.keys())) {
       const seller = uniqueSellers.get(userId)!;
@@ -92,14 +98,16 @@ export async function sendStripeConnectReminders(): Promise<number> {
         });
 
         successCount++;
-        console.log(`[Stripe Reminder] ✅ Reminder sent to seller ${userId} (${seller.userEmail})`);
+        // Reminder sent successfully
       } catch (error) {
         console.error(`[Stripe Reminder] ❌ Error sending reminder to seller ${userId}:`, error);
         errorCount++;
       }
     }
 
-    console.log(`[Stripe Reminder] Completed: ${successCount} success, ${errorCount} errors`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Stripe Reminder] Completed: ${successCount} success, ${errorCount} errors`);
+    }
 
     // Notify admin about reminder campaign
     if (successCount > 0) {

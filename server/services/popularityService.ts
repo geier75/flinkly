@@ -35,7 +35,14 @@ export function calculatePopularityScore(metrics: PopularityMetrics): number {
 }
 
 export async function updateAllPopularityScores(): Promise<number> {
+  // TODO: Fix DB access - getDb() returns Supabase client, not Drizzle
+  // Need to create adapter function or use Supabase RPC
+  console.log("[PopularityService] Skipping popularity update - DB adapter needed");
+  return 0;
+  
+  /* DISABLED - DB BUG
   const db = await getDb();
+  
   if (!db) {
     console.error("[PopularityService] Database not available");
     return 0;
@@ -80,15 +87,16 @@ export async function updateAllPopularityScores(): Promise<number> {
       updateCount++;
     }
     
-    console.log(
-      `[PopularityService] Updated popularity scores for ${updateCount} gigs`
-    );
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[PopularityService] Updated ${updateCount} gigs`);
+    }
     
     return updateCount;
   } catch (error) {
     console.error("[PopularityService] Failed to update popularity scores:", error);
     throw error;
   }
+  */
 }
 
 /**
@@ -136,9 +144,7 @@ export async function updateGigPopularityScore(gigId: number): Promise<void> {
       .set({ popularityScore })
       .where(eq(gigs.id, gigId));
     
-    console.log(
-      `[PopularityService] Updated popularity score for gig ${gigId}: ${popularityScore}`
-    );
+    // Popularity score updated
   } catch (error) {
     console.error(
       `[PopularityService] Failed to update popularity score for gig ${gigId}:`,

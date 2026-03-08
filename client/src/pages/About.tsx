@@ -12,7 +12,7 @@ export default function About() {
       <div className="bg-white border-b border-slate-200">
         <div className="container mx-auto px-4 py-8">
           <Link href="/">
-            <Button variant="ghost" className="mb-4">← Zurück</Button>
+            <Button variant="ghost" className="mb-4" aria-label="Zurück zur Startseite">← Zurück</Button>
           </Link>
           <h1 className="text-4xl font-bold text-slate-900 mb-2">Über Flinkly</h1>
           <p className="text-lg text-slate-600">
@@ -125,12 +125,12 @@ export default function About() {
           </p>
           <div className="flex gap-4 justify-center">
             <Link href="/marketplace">
-              <Button size="lg" variant="secondary">
+              <Button size="lg" variant="secondary" aria-label="Gigs durchsuchen">
                 Gigs durchsuchen
               </Button>
             </Link>
             <Link href="/create-gig">
-              <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-slate-100">
+              <Button size="lg" variant="outline" className="bg-white text-primary hover:bg-slate-100" aria-label="Gig erstellen">
                 Gig erstellen
               </Button>
             </Link>

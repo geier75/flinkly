@@ -30,6 +30,12 @@ export function VideoScene({
     animationId: number;
   } | null>(null);
 
+  // WCAG 2.3.3: Respect prefers-reduced-motion
+  const prefersReducedMotion = useRef(
+    typeof window !== 'undefined' && 
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -47,24 +53,35 @@ export function VideoScene({
     try {
       renderer = new THREE.WebGLRenderer({
         alpha: true,
-        antialias: true,
+        antialias: false, // PERFORMANCE: Antialias costs 30-50% FPS on mobile
+        powerPreference: 'low-power', // BATTERY: Prefer integrated GPU
       });
     } catch (error) {
       console.warn('WebGL not supported, skipping video scene:', error);
       return;
     }
     renderer.setSize(containerRef.current.clientWidth, containerRef.current.clientHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    // CRITICAL: setPixelRatio AFTER setSize - otherwise setSize overwrites PR
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // Cap at 1.5x (33% less pixels than 2x)
     containerRef.current.appendChild(renderer.domElement);
 
-    // Video setup
+    // Video setup with lazy loading and reduced motion support
     const video = document.createElement('video');
     video.src = videoSrc;
     video.loop = true;
     video.muted = true;
     video.playsInline = true;
-    video.autoplay = true;
-    video.play().catch((err) => console.warn('Video autoplay failed:', err));
+    video.preload = 'none'; // Lazy load - don't download until needed
+    
+    // WCAG 2.3.3: Pause video if user prefers reduced motion
+    if (!prefersReducedMotion.current) {
+      video.autoplay = true;
+      video.play().catch((err) => console.warn('Video autoplay failed:', err));
+    } else {
+      // Show first frame only for users with motion sensitivity
+      video.autoplay = false;
+      video.load();
+    }
 
     const videoTexture = new THREE.VideoTexture(video);
     videoTexture.minFilter = THREE.LinearFilter;

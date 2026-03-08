@@ -5,68 +5,30 @@ import { APP_TITLE, getLoginUrl } from "@/const";
 import { Link, useLocation } from "wouter";
 import { Star, CheckCircle, ArrowRight, Play, Sparkles, Shield } from "lucide-react";
 import MetaTags from "@/components/MetaTags";
-import { OrganizationSchema, WebSiteSchema, AggregateRatingSchema } from "@/components/SchemaOrg";
-import { VideoScene } from "@/components/webgl/VideoScene";
-import { useParallaxScroll, useMultiLayerParallax } from "@/hooks/useParallaxScroll";
+import { OrganizationSchema, WebSiteSchema } from "@/components/SchemaOrg";
+import { SEO_CONFIG } from "@/config/seo";
 import { motion } from "framer-motion";
 import ServiceCardsFan from "@/components/ServiceCardsFan";
 import ServiceCardsSkeleton from "@/components/ServiceCardsSkeleton";
 import { ValueCardCarousel } from "@/components/ValueCardCarousel";
 import TestimonialsSkeleton from "@/components/TestimonialsSkeleton";
-import F1RaceStart from "@/components/F1RaceStart";
 import { useState, useEffect } from "react";
 
 
 function HeroSection() {
-  const { ref, scrollYProgress } = useParallaxScroll();
-  const parallax = useMultiLayerParallax(scrollYProgress);
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* WebGL Video Background Layer (Slowest Parallax) */}
-      <motion.div 
-        className="absolute inset-0 z-0"
-        style={{
-          y: parallax.background.y,
-          opacity: parallax.background.opacity,
-          willChange: 'transform, opacity',
-        }}
-      >
-        <VideoScene
-          videoSrc="/videos/hero-collaboration.mp4"
-          blendMode="overlay"
-          opacity={0.7}
-          brightness={1.8}
-          contrast={1.25}
-          saturation={1.3}
-          className="w-full h-full scale-110"
-        />
-      </motion.div>
-
-      {/* Gradient Overlay Layer (Medium Parallax) */}
-      <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-violet-950/25 via-violet-900/15 to-violet-950/30 z-0"
-        style={{
-          y: parallax.middle.y,
-          opacity: parallax.middle.opacity,
-          willChange: 'transform, opacity',
-        }}
-      />
+    <section className="relative min-h-dvh pb-32 flex items-center justify-center overflow-hidden">
+      {/* Static Gradient Background (Performance Optimized) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-950 via-slate-900 to-slate-950 z-0" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-violet-900/20 via-transparent to-transparent z-0" />
 
 
 
-      {/* Content Layer (Fastest Parallax) */}
-      <motion.div 
-        className="container mx-auto px-4 relative z-10 text-center"
-        style={{
-          y: parallax.foreground.y,
-          opacity: parallax.foreground.opacity,
-          scale: parallax.foreground.scale,
-          willChange: 'transform, opacity',
-        }}
-      >
+      {/* Content Layer (No Parallax for Performance) */}
+      <div className="container mx-auto px-4 relative z-10 text-center">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-6xl md:text-8xl font-black mb-8 leading-tight tracking-tighter">
             <span className="animated-gradient-text">
@@ -84,7 +46,7 @@ function HeroSection() {
           <div className="flex gap-6 justify-center flex-wrap">
             <Button 
               size="lg"
-              className="bg-accent hover:bg-accent/90 text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold"
+              className="bg-gradient-to-r from-[oklch(0.50_0.22_30)] to-[oklch(0.45_0.20_150)] hover:from-[oklch(0.48_0.23_28)] hover:to-[oklch(0.43_0.21_148)] text-white text-lg px-12 py-8 rounded-2xl shadow-2xl shadow-accent/30 hover:shadow-accent/50 transition-all duration-300 font-bold focus-visible:outline focus-visible:outline-3 focus-visible:outline-white focus-visible:outline-offset-2 focus-visible:ring-4 focus-visible:ring-[oklch(0.50_0.22_30/0.4)]"
               onClick={() => {
                 if (isAuthenticated) {
                   setLocation("/marketplace");
@@ -124,7 +86,7 @@ function HeroSection() {
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
@@ -148,21 +110,17 @@ export default function Home() {
   }, []);
 
   return (
-    <div id="main-content" className="min-h-screen flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white relative overflow-hidden">
       {/* Schema.org Structured Data */}
       <OrganizationSchema
         name="Flinkly"
-        url="https://flinkly.de"
-        logo="https://flinkly.de/logo.png"
+        url={SEO_CONFIG.CANONICAL_DOMAIN}
+        logo={SEO_CONFIG.logo}
         description="Europas Marktplatz für Freelancer-Dienstleistungen"
       />
       <WebSiteSchema
         name="Flinkly"
-        url="https://flinkly.de"
-      />
-      <AggregateRatingSchema
-        ratingValue={4.8}
-        reviewCount={247}
+        url={SEO_CONFIG.CANONICAL_DOMAIN}
       />
 
       {/* Meta Tags */}
@@ -174,17 +132,10 @@ export default function Home() {
       {/* Hero Section with WebGL Video Background + Parallax */}
       <HeroSection />
 
-      {/* Services Section with WebGL Video Background */}
+      {/* Services Section (Performance Optimized) */}
       <section className="relative py-32 overflow-hidden -mt-48 z-40">
-        {/* Video Background */}
-        <div className="absolute inset-0 z-0">
-          <VideoScene
-            videoSrc="/videos/services-expertise.mp4"
-            blendMode="overlay"
-            opacity={0.1}
-            className="w-full h-full"
-          />
-        </div>
+        {/* Static Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 z-0" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
@@ -231,23 +182,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section with Flinkly Video Background */}
+      {/* Testimonials Section (Performance Optimized) */}
       <section className="relative py-32 overflow-hidden -mt-48 z-30">
-        {/* Flinkly Video Background (HELLER!) */}
-        <div className="absolute inset-0 z-0">
-          <VideoScene
-            videoSrc="/videos/testimonials-flinkly.mp4"
-            blendMode="overlay"
-            opacity={0.25}
-            brightness={1.4}
-            contrast={1.15}
-            saturation={1.25}
-            className="w-full h-full scale-110"
-          />
-        </div>
-
-        {/* Gradient Overlay for better readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-900/60 to-slate-950/80 z-[1]" />
+        {/* Static Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-slate-900/95 to-slate-950 z-0" />
 
         <div className="container mx-auto px-4 relative z-10">
           <div className="text-center mb-20">
@@ -357,23 +295,6 @@ export default function Home() {
 
       {/* CTA Section with F1 Start Animation */}
       <CTASection />
-
-      {/* Footer */}
-      <footer className="relative py-12 border-t border-slate-800 bg-slate-900 z-30">
-        <div className="container mx-auto px-4">
-          {/* Links in einer Zeile */}
-          <div className="flex flex-wrap justify-center items-center gap-6 md:gap-10 mb-8 text-sm text-slate-400">
-            <a href="https://www.mimitechai.com/contact" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Kontakt</a>
-            <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
-            <Link href="/privacy" className="hover:text-white transition-colors">Datenschutz</Link>
-            <Link href="/terms" className="hover:text-white transition-colors">AGB</Link>
-            <Link href="/widerruf" className="hover:text-white transition-colors">Widerrufsbelehrung</Link>
-          </div>
-          <div className="text-center text-slate-500 text-sm pt-6 border-t border-slate-800">
-            © 2025 MiMi Tech Ai UG (haftungsbeschränkt). Alle Rechte vorbehalten.
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
@@ -387,19 +308,15 @@ function CTASection() {
   
   return (
     <section className="relative py-32 overflow-hidden -mt-48 z-20">
-      {/* F1-Canvas-Animation-Hintergrund */}
-      <div className="absolute inset-0 z-0">
-        <F1RaceStart />
-      </div>
-
-      {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 via-emerald-500/10 to-green-500/10 z-0" />
+      {/* Clean gradient background - no Easter-Egg distractions */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 z-0" />
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-teal-500/10 to-emerald-500/10 z-0" />
       
-      {/* Content DARÜBER */}
+      {/* Content */}
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <motion.h2 
-            className="text-5xl md:text-6xl font-black text-white mb-8"
+            className="text-5xl md:text-6xl font-black text-white mb-6"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -408,7 +325,43 @@ function CTASection() {
             BEREIT ZU STARTEN?
           </motion.h2>
           
-          
+          <motion.p
+            className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            Finde verifizierte Experten für dein nächstes Projekt oder biete deine Skills an.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            viewport={{ once: true }}
+          >
+            <Button
+              size="lg"
+              onClick={() => setLocation('/marketplace')}
+              className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+            >
+              <Sparkles className="mr-2 h-5 w-5" />
+              Gig finden
+            </Button>
+            
+            {!isAuthenticated && (
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setLocation(getLoginUrl())}
+                className="border-2 border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg font-semibold backdrop-blur-sm"
+              >
+                Gig anbieten
+              </Button>
+            )}
+          </motion.div>
         </div>
       </div>
     </section>

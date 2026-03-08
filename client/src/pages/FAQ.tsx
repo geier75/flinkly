@@ -116,7 +116,7 @@ export default function FAQ() {
       <div className="bg-white border-b border-slate-200">
         <div className="container mx-auto px-4 py-8">
           <Link href="/">
-            <Button variant="ghost" className="mb-4">← Zurück</Button>
+            <Button variant="ghost" className="mb-4" aria-label="Zurück zur Startseite">← Zurück</Button>
           </Link>
           <h1 className="text-4xl font-bold text-slate-900 mb-2">Häufig gestellte Fragen</h1>
           <p className="text-lg text-slate-600">
@@ -152,7 +152,7 @@ export default function FAQ() {
             Unser Support-Team hilft dir gerne weiter!
           </p>
           <Link href="/contact">
-            <Button size="lg">Kontakt aufnehmen</Button>
+            <Button size="lg" aria-label="Kontakt aufnehmen">Kontakt aufnehmen</Button>
           </Link>
         </div>
       </div>

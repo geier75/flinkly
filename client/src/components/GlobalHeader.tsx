@@ -71,7 +71,7 @@ export default function GlobalHeader() {
       {/* Neon Top Border */}
       <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary to-transparent opacity-60" />
       {/* Main Header */}
-      <div className="container mx-auto px-4">
+      <nav className="container mx-auto px-4" aria-label="Main navigation">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/">
@@ -339,16 +339,22 @@ export default function GlobalHeader() {
               Gig finden
             </Button>
 
-            {/* Mobile Search */}
-            <form onSubmit={handleSearch}>
+            {/* Search Bar */}
+            <form onSubmit={handleSearch} className="flex-1 max-w-md" role="search">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <label htmlFor="global-search-mobile" className="sr-only">
+                  Suche nach Dienstleistungen
+                </label>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden="true" />
                 <Input
-                  type="text"
-                  placeholder="Gigs durchsuchen..."
+                  id="global-search-mobile"
+                  name="search"
+                  type="search"
+                  placeholder="Suche nach Dienstleistungen..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-10 bg-slate-900/50 border-slate-700 text-slate-200"
+                  aria-label="Suche nach Dienstleistungen"
                 />
               </div>
             </form>
@@ -385,7 +391,7 @@ export default function GlobalHeader() {
             )}
           </div>
         )}
-      </div>
+      </nav>
     </header>
   );
 }

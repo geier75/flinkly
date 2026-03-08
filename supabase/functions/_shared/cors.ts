@@ -4,21 +4,29 @@
  */
 
 const ALLOWED_ORIGINS = [
+  'https://flinkly.de',
+  'https://www.flinkly.de',
   'https://flinkly.eu',
   'https://www.flinkly.eu',
   'https://flinkly.vercel.app',
   'https://flinkly-bemlerinhos-projects.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
+  'http://localhost:3001',
   'http://127.0.0.1:5173',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
 ];
 
 export function getCorsHeaders(req: Request): Record<string, string> {
   const origin = req.headers.get('origin') || '';
   
   // Allow any Vercel preview URL for this project
+  // Allow any localhost/127.0.0.1 for development
   const isAllowed = ALLOWED_ORIGINS.includes(origin) || 
-    origin.includes('flinkly') && origin.includes('vercel.app');
+    (origin.includes('flinkly') && origin.includes('vercel.app')) ||
+    origin.startsWith('http://localhost:') ||
+    origin.startsWith('http://127.0.0.1:');
   
   return {
     'Access-Control-Allow-Origin': isAllowed ? origin : ALLOWED_ORIGINS[0],

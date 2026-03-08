@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { supabase } from "@/lib/supabase";
+import EmailVerificationPending from "@/components/EmailVerificationPending";
 
 /**
  * DSGVO/ISO 27001 konforme Login & Registrierung
@@ -45,7 +46,7 @@ interface FormErrors {
 }
 
 export default function Login() {
-  const [, setLocation] = useLocation();
+  const [, setLocation] = useLocation();  const redirectUrl = typeof window !== "undefined" ? (new URLSearchParams(window.location.search).get("redirect") || "/dashboard") : "/dashboard";
   
   // Form State
   const [mode, setMode] = useState<AuthMode>("login");
@@ -143,7 +144,7 @@ export default function Login() {
       
       if (data.user) {
         // User is synced via Supabase auth
-        setLocation("/dashboard");
+        setLocation(redirectUrl);
       }
     } catch (error) {
       setErrors({ general: error instanceof Error ? error.message : "Login fehlgeschlagen" });
@@ -223,6 +224,19 @@ export default function Login() {
     }
   };
 
+  // Show email verification screen if registration was successful
+  if (registrationSuccess) {
+    return (
+      <EmailVerificationPending 
+        email={email}
+        onBackToLogin={() => {
+          setRegistrationSuccess(false);
+          setMode("login");
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-lg space-y-6">
@@ -276,11 +290,15 @@ export default function Login() {
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
                       id="login-email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
                       placeholder="deine@email.de"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary"
+                      required
+                      aria-label="E-Mail-Adresse"
                     />
                   </div>
                   {errors.email && <p className="text-xs text-red-400">{errors.email}</p>}
@@ -302,11 +320,15 @@ export default function Login() {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
                       id="login-password"
+                      name="password"
                       type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 pr-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary"
+                      required
+                      aria-label="Passwort"
                     />
                     <button
                       type="button"
@@ -483,11 +505,15 @@ export default function Login() {
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
                       id="register-email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
                       placeholder="deine@email.de"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary"
+                      required
+                      aria-label="E-Mail-Adresse"
                     />
                   </div>
                   {errors.email && <p className="text-xs text-red-400">{errors.email}</p>}
@@ -500,11 +526,16 @@ export default function Login() {
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                     <Input
                       id="register-password"
+                      name="password"
                       type={showPassword ? "text" : "password"}
+                      autoComplete="new-password"
                       placeholder="Mindestens 8 Zeichen"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="pl-10 pr-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-primary"
+                      required
+                      minLength={8}
+                      aria-label="Passwort"
                     />
                     <button
                       type="button"

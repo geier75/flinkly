@@ -187,12 +187,14 @@ export default function Checkout() {
 
   if (!isAuthenticated) {
     return (
-    <div className="min-h-screen bg-slate-950 text-white">
-        <Card className="max-w-md">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
+        <Card className="max-w-md w-full bg-slate-900 border-slate-700">
           <CardContent className="pt-6 text-center p-6 md:p-8 p-6 md:p-8">
             <AlertCircle className="h-12 w-12 text-amber-500 mx-auto mb-4" />
-            <p className="text-slate-600 mb-4">Bitte melde dich an, um fortzufahren</p>
-            <Button onClick={() => setLocation("/")}>Zur Startseite</Button>
+ <h2 className="text-white text-xl font-bold mb-2">Anmeldung erforderlich</h2>
+            <p className="text-slate-400 mb-6">Bitte melde dich an, um den Kauf fortzusetzen.</p>
+            <Button onClick={() => setLocation("/login?redirect=/checkout/" + gigId)}>Jetzt anmelden</Button>
+            <Button variant="ghost" className="w-full mt-3 text-slate-400 hover:text-white" onClick={() => setLocation("/gig/" + gigId)}>Zurück zum Gig</Button>
           </CardContent>
         </Card>
       </div>
@@ -821,13 +823,14 @@ export default function Checkout() {
                   </div>
 
                   <div className="flex gap-3 pt-4">
-                    <Button variant="outline" onClick={() => setCurrentStep(3)}>
+                    <Button variant="outline" onClick={() => setCurrentStep(3)} aria-label="Zurück zu Schritt 3">
                       Zurück
                     </Button>
                     <Button
                       className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold text-base py-6"
                       onClick={handleSubmit}
                       disabled={!isStepComplete(4) || isSubmitting}
+                      aria-label="Zahlungspflichtig bestellen"
                     >
                       {isSubmitting
                         ? "Weiterleitung zu Stripe..."

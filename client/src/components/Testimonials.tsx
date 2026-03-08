@@ -25,52 +25,17 @@ interface Testimonial {
   result?: string; // Optional: Konkrete Ergebnisse (z.B. "+30% Traffic")
 }
 
-// TODO: Diese Testimonials durch echte Kundenfeedback ersetzen
-const testimonials: Testimonial[] = [
-  {
-    id: 1,
-    name: "Sarah Müller",
-    role: "Marketing Managerin",
-    company: "TechStart GmbH",
-    image: "https://i.pravatar.cc/150?img=1",
-    rating: 5,
-    text: "Flinkly hat uns geholfen, schnell und unkompliziert einen Logo-Designer zu finden. Innerhalb von 3 Tagen hatten wir 5 Entwürfe zur Auswahl. Absolut empfehlenswert!",
-    result: "5 Entwürfe in 3 Tagen",
-  },
-  {
-    id: 2,
-    name: "Michael Schmidt",
-    role: "Gründer",
-    company: "FoodBlog.de",
-    image: "https://i.pravatar.cc/150?img=12",
-    rating: 5,
-    text: "Die DSGVO-konforme Abwicklung war für mich als Kleinunternehmer super wichtig. Flinkly macht alles transparent und rechtssicher. Keine versteckten Kosten!",
-    result: "100% DSGVO-konform",
-  },
-  {
-    id: 3,
-    name: "Anna Weber",
-    role: "Freelance Designerin",
-    company: "Selbstständig",
-    image: "https://i.pravatar.cc/150?img=5",
-    rating: 5,
-    text: "Als Verkäuferin schätze ich das Escrow-System. Ich weiß, dass mein Geld sicher ist, sobald der Kunde zufrieden ist. Faire 15% Gebühr für den Service.",
-    result: "€2.400 Umsatz in 2 Monaten",
-  },
-  {
-    id: 4,
-    name: "Thomas Becker",
-    role: "E-Commerce Manager",
-    company: "OnlineShop24",
-    image: "https://i.pravatar.cc/150?img=8",
-    rating: 4,
-    text: "Perfekt für kleinere Aufgaben wie Produktbeschreibungen oder Social-Media-Posts. Die Qualität ist durchweg gut und die Preise fair.",
-    result: "50+ Aufträge abgeschlossen",
-  },
-];
+// Real customer testimonials will be added after launch
+// Displaying fake testimonials violates UWG §5 (Misleading Commercial Practices)
+const testimonials: Testimonial[] = [];
 
 export default function Testimonials() {
   const { ref, isVisible } = useScrollAnimation({ threshold: 0.2 });
+
+  // Hide section if no testimonials available yet
+  if (testimonials.length === 0) {
+    return null;
+  }
 
   return (
     <section ref={ref as any} className="bg-gradient-to-b from-slate-50 to-white py-24">

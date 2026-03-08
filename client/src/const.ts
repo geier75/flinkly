@@ -96,8 +96,3 @@ export const getLoginUrl = () => {
 
   return url.toString();
 };
-
-// Get URL to login as a specific seller (for testing)
-export const getDevLoginUrl = (sellerId: number) => {
-  return `/api/dev-login/${sellerId}`;
-};

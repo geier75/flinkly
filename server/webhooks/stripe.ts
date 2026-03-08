@@ -34,11 +34,15 @@ export async function handleStripeWebhook(req: Request, res: Response) {
     // Verify webhook signature
     const event = constructWebhookEvent(req.body, signature);
 
-    console.log(`[Stripe Webhook] Received event: ${event.type} (${event.id})`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Stripe Webhook] Received event: ${event.type}`);
+    }
 
     // Handle test events (required for webhook verification)
     if (event.id.startsWith('evt_test_')) {
-      console.log('[Stripe Webhook] Test event detected, returning verification response');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Stripe Webhook] Test event detected');
+      }
       return res.json({ verified: true });
     }
 
@@ -65,7 +69,9 @@ export async function handleStripeWebhook(req: Request, res: Response) {
         break;
 
       default:
-        console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`[Stripe Webhook] Unhandled event type: ${event.type}`);
+        }
     }
 
     // Always return 200 to acknowledge receipt
@@ -131,7 +137,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       status: 'authorized',
     });
 
-    console.log(`[Stripe Webhook] Order created for gig ${gigId}, buyer ${buyerId}`);
+    // Order created - logged in audit table, no console.log for security
   } catch (error) {
     console.error('[Stripe Webhook] Failed to create order:', error);
   }
@@ -142,7 +148,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
  * Log successful payment
  */
 async function handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent) {
-  console.log(`[Stripe Webhook] Payment succeeded: ${paymentIntent.id} (${paymentIntent.amount / 100}€)`);
+  // Payment succeeded - logged in database, no console.log for PCI-DSS compliance
   
   // Optional: Send notification to buyer
   // await notifyOwner({ 
@@ -200,7 +206,7 @@ async function handleChargeRefunded(charge: Stripe.Charge) {
       .set({ status: 'cancelled' })
       .where(eq(orders.id, transaction.orderId));
 
-    console.log(`[Stripe Webhook] Order refunded for payment ${paymentIntentId}`);
+    // Refund processed - logged in database
   } catch (error) {
     console.error('[Stripe Webhook] Failed to update refunded order:', error);
   }
@@ -237,11 +243,9 @@ async function handleAccountUpdated(account: Stripe.Account) {
     // Check if account is fully functional
     const isFullyVerified = chargesEnabled && payoutsEnabled && onboardingComplete;
 
-    console.log(`[Stripe Webhook] Seller ${sellerId} account updated:`);
-    console.log(`  - Charges Enabled: ${chargesEnabled}`);
-    console.log(`  - Payouts Enabled: ${payoutsEnabled}`);
-    console.log(`  - Onboarding Complete: ${onboardingComplete}`);
-    console.log(`  - Fully Verified: ${isFullyVerified}`);
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`[Stripe Webhook] Seller account updated: ${isFullyVerified ? 'verified' : 'pending'}`);
+    }
 
     // Update seller's Stripe Connect status in database
     const { updateUserStripeAccount } = await import('../db');
@@ -255,12 +259,12 @@ async function handleAccountUpdated(account: Stripe.Account) {
       }
     );
 
-    console.log(`[Stripe Webhook] ✅ Seller ${sellerId} capabilities updated in database`);
+    // Seller capabilities updated in database
     
     // Optional: Send notification to seller if fully verified
     if (isFullyVerified) {
-      console.log(`[Stripe Webhook] 🎉 Seller ${sellerId} is now fully verified!`);
-      // TODO: Send email notification to seller
+      // Seller fully verified - send email notification
+      // TODO: Implement email notification
       // await sendEmail({
       //   to: sellerEmail,
       //   subject: 'Stripe-Konto erfolgreich verifiziert',
